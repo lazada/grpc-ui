@@ -375,8 +375,9 @@ function ServiceGrpcCtrl($scope, $http) {
                 },
                 function (err) {
                     method.cancel = null;
-                    method.output_errors.push('' + err);
+                    method.output_errors.push(err);
                     method.output_log = [];
+                    $scope.$applyAsync();
                 },
                 function () {
                     method.cancel = null;
