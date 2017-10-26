@@ -8,7 +8,6 @@ import (
 	"net/http"
 
 	"context"
-	"errors"
 	"github.com/gorilla/websocket"
 	"github.com/lazada/grpc-ui/reflection"
 )
@@ -18,28 +17,28 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 2048,
 }
 
-type Req struct {
-	Type string           `json:"type"`
-	Data *json.RawMessage `json:"data"`
-}
-
 type InvokeReq struct {
-	IsStream    bool   `json:"is_stream"`
-	Addr        string `json:"addr"`
-	PackageName string `json:"package_name"`
-	ServiceName string `json:"service_name"`
-	MethodName  string `json:"method_name"`
-	GRPCMethod  string `json:"grpc_method"`
-	GRPCArgs    string `json:"grpc_args"`
+	Addr       string `json:"addr"`
+	GRPCMethod string `json:"grpc_method"`
+	GRPCArgs   string `json:"grpc_args"`
 }
 
 type InvokeResp struct {
-	Type        string      `json:"type"`
-	PackageName string      `json:"package_name"`
-	ServiceName string      `json:"service_name"`
-	MethodName  string      `json:"method_name"`
-	Error       string      `json:"error"`
-	Data        interface{} `json:"data"`
+	Status string      `json:"status"`
+	Data   interface{} `json:"data"`
+	Error  string      `json:"error"`
+}
+
+type InvokeStreamReq struct {
+	Addr       string `json:"addr"`
+	GRPCMethod string `json:"grpc_method"`
+	GRPCArgs   string `json:"grpc_args"`
+}
+
+type InvokeStreamResp struct {
+	Status string      `json:"status"`
+	Data   interface{} `json:"data"`
+	Error  string      `json:"error"`
 }
 
 func main() {
@@ -78,120 +77,80 @@ func main() {
 		}
 	})
 
-	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		conn, err := upgrader.Upgrade(w, r, nil)
-		if err != nil {
-			log.Printf("Can't upgrade connection: %v", err)
+	http.HandleFunc("/invoke", func(w http.ResponseWriter, r *http.Request) {
+		if r.FormValue("stream") == "" {
+			handleUnary(w, r)
 			return
 		}
-		defer conn.Close()
-
-		for {
-			msg := Req{}
-			if err := conn.ReadJSON(&msg); err != nil {
-				if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
-					log.Printf("ReadJSON error: %v", err)
-				}
-				return
-			}
-			switch msg.Type {
-			case "invoke":
-				if err := handleInvoke(r.Context(), conn, msg.Data); err != nil {
-					log.Printf("Can't handle invoke method %v", err)
-					sendError(conn, err)
-				}
-			default:
-				log.Printf("Invalid message type: %v", msg.Type)
-				sendError(conn, errors.New("Invalid message type"))
-				return
-			}
-		}
+		handleStream(w, r)
 	})
 
 	http.ListenAndServe(":3000", nil)
 }
 
-func sendError(conn *websocket.Conn, err error) error {
-	resp := struct {
-		Type string `json:"type"`
-		Data string `json:"data"`
-	}{
-		Type: "ERROR",
-		Data: err.Error(),
-	}
-	if err := conn.WriteJSON(&resp); err != nil {
-		return err
-	}
+func handleUnary(w http.ResponseWriter, r *http.Request) {
+	req := InvokeReq{}
 
-	return nil
+	defer r.Body.Close()
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, fmt.Sprintf("json.Unmarshal error: %v", err), http.StatusInternalServerError)
+		return
+	}
+	enc := json.NewEncoder(w)
+	invokeRes, err := reflection.Invoke(r.Context(), req.Addr, req.GRPCMethod, []byte(req.GRPCArgs))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		enc.Encode(&InvokeResp{
+			Status: "error",
+			Error:  err.Error(),
+		})
+		return
+	}
+	enc.Encode(&InvokeResp{
+		Status: "ok",
+		Data:   invokeRes,
+	})
 }
 
-func handleInvoke(ctx context.Context, conn *websocket.Conn, bytes *json.RawMessage) error {
-	log.Printf("handleInvokeMethod")
-
-	if bytes == nil {
-		return errors.New("Empty `data` field")
+func handleStream(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Printf("Can't upgrade connection: %v", err)
+		return
 	}
+	defer conn.Close()
 
-	req := InvokeReq{}
-	if err := json.Unmarshal(*bytes, &req); err != nil {
-		return err
-	}
+	log.Print("WebSocket connected")
+	defer log.Print("WebSocket disconnected")
 
-	if req.IsStream {
+	ctx, cancel := context.WithCancel(r.Context())
+	defer cancel()
+
+	for {
+		req := InvokeStreamReq{}
+		if err := conn.ReadJSON(&req); err != nil {
+			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseNormalClosure) {
+				log.Printf("ReadJSON error: %v", err)
+			}
+			return
+		}
+
 		go func() {
-			err := reflection.InvokeStream(ctx, req.Addr, req.GRPCMethod, []byte(req.GRPCArgs), func(msg string) {
-				log.Printf("Stream message: %v", msg)
-				if err := conn.WriteJSON(InvokeResp{
-					Type:        "stream_message",
-					PackageName: req.PackageName,
-					ServiceName: req.ServiceName,
-					MethodName:  req.MethodName,
-					Data:        msg,
-				}); err != nil {
-					log.Printf("Can't marshal message: %v", err)
-				}
+			err = reflection.InvokeStream(ctx, req.Addr, req.GRPCMethod, []byte(req.GRPCArgs), func(msg string) {
+				conn.WriteJSON(&InvokeStreamResp{
+					Status: "ok",
+					Data:   msg,
+				})
+
 			})
 			if err != nil {
-				if err := conn.WriteJSON(InvokeResp{
-					Type:        "invoke_resp",
-					PackageName: req.PackageName,
-					ServiceName: req.ServiceName,
-					MethodName:  req.MethodName,
-					Error:       err.Error(),
-				}); err != nil {
-					log.Printf("Can't marshal message: %v", err)
-				}
+				conn.WriteJSON(&InvokeStreamResp{
+					Status: "error",
+					Error:  err.Error(),
+				})
 			}
 		}()
-
-		return nil
 	}
 
-	invokeRes, err := reflection.Invoke(ctx, req.Addr, req.GRPCMethod, []byte(req.GRPCArgs))
-	if err != nil {
-		err := conn.WriteJSON(InvokeResp{
-			Type:        "invoke_resp",
-			PackageName: req.PackageName,
-			ServiceName: req.ServiceName,
-			MethodName:  req.MethodName,
-			Error:       err.Error(),
-		})
-		if err != nil {
-			return err
-		}
-		return nil
-	}
-
-	if err := conn.WriteJSON(InvokeResp{
-		Type:        "invoke_resp",
-		PackageName: req.PackageName,
-		ServiceName: req.ServiceName,
-		MethodName:  req.MethodName,
-		Data:        invokeRes,
-	}); err != nil {
-		return err
-	}
-
-	return nil
 }

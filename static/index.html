@@ -10,7 +10,7 @@
 </head>
 <body ng-app="grpc-ui">
     <div class="container">
-        <div ng-controller="ServiceGrpcCtrl">
+        <div ng-controller="ServiceGrpcCtrl as grpcCtrl">
             <div class="well">
                 <form class="form-inline" ng-submit="grpcInfoSubmit(); $event.preventDefault();">
                     <div class="form-group">
@@ -68,49 +68,44 @@
                                             </tbody>
                                         </table>
 
-                                        <div
-                                                ng-if=" method.can_invoke "
-                                        >
-                                            <div>
-
+                                        <div ng-if=" method.can_invoke">
                                             <span ng-if="method.is_stream" class="pull-right">
                                                 View mode:
                                                 <div class="btn-group">
                                                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                        {{ limit == 1 ? 'Recent message' : ('Last ' + limit +' messages')}}  <span class="caret"></span>
+                                                        {{ grpcCtrl.limit == 1 ? 'Recent message' : ('Last ' + grpcCtrl.limit +' messages')}}  <span class="caret"></span>
                                                     </button>
                                                     <ul class="dropdown-menu">
-                                                        <li><a ng-click="limit = 1">Recent message</a></li>
-                                                        <li><a ng-click="limit = 10">Last 10 messages</a></li>
-                                                        <li><a ng-click="limit = 30">Last 30 messages</a></li>
-                                                        <li><a ng-click="limit =  50">Last 50 messages</a></li>
+                                                        <li><a ng-click="grpcCtrl.limit = 1">Recent message</a></li>
+                                                        <li><a ng-click="grpcCtrl.limit = 10">Last 10 messages</a></li>
+                                                        <li><a ng-click="grpcCtrl.limit = 30">Last 30 messages</a></li>
+                                                        <li><a ng-click="grpcCtrl.limit =  50">Last 50 messages</a></li>
                                                     </ul>
                                                 </div>
                                             </span>
 
-                                                <button type="button" class="btn btn-primary"
-                                                        ng-disabled="method.invoking && !method.is_stream"
-                                                        ng-click="invoke_method(package_name, service_name, method_name);"
-                                                > {{method.invoking ? 'Stop' : 'Invoke'}}</button>
-                                            </div>
-
-                                            <div class="alert alert-danger"
-                                                 ng-if=" method.output_errors.length "
-                                            >
+                                            <button type="button" class="btn btn-primary"
+                                                    ng-if="method.is_stream"
+                                                    ng-click="method.cancel ? stop_stream_method(method) : invoke_stream_method(method)">{{method.cancel ? 'Stop' : 'Invoke'}}</button>
+                                            <button type="button" class="btn btn-primary"
+                                                    ng-disabled="method.loading"
+                                                    ng-if="!method.is_stream"
+                                                    ng-click="invoke_method(method)">Invoke</button>
+                                            <br>
+                                            <div ng-if=" method.output_errors.length " class="alert alert-danger">
                                                 <div><b>Invoke Errors</b></div>
-                                                <div ng-repeat=" err in method.output_errors ">
+                                                <div ng-repeat="err in method.output_errors ">
                                                     {{ err }}
                                                 </div>
                                             </div>
-
                                             <br>
 
                                             <div ng-if="method.output_result_formatted">
                                                 <pre style="height: auto; max-height: 400px; overflow: auto; background-color: #ffffff;">{{ method.output_result_formatted }}</pre>
                                             </div>
-                                            <div ng-if=" method.output_log">
+                                            <div ng-if="method.output_log">
                                                 <ul style="overflow: scroll; list-style: none; margin: 0; padding: 0;">
-                                                    <li ng-repeat="m in method.output_log track by $index | limitTo: limit">
+                                                    <li ng-repeat="m in method.output_log | limitTo: grpcCtrl.limit track by $index">
                                                         <pre>{{ m }}</pre>
                                                     </li>
                                                 </ul>
