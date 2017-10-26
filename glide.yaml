@@ -1,0 +1,19 @@
+package: github.com/lazada/grpc-ui
+import:
+- package: github.com/golang/protobuf
+  subpackages:
+  - jsonpb
+  - proto
+  - protoc-gen-go/descriptor
+- package: github.com/jhump/protoreflect
+  subpackages:
+  - desc
+  - dynamic
+  - dynamic/grpcdynamic
+  - grpcreflect
+- package: golang.org/x/net
+  subpackages:
+  - context
+- package: google.golang.org/grpc
+  subpackages:
+  - reflection/grpc_reflection_v1alpha
