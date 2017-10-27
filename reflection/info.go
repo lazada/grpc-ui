@@ -39,9 +39,7 @@ type FieldInfo struct {
 	Name     string                                `json:"name"`
 	Number   int                                   `json:"number"`
 	Label    descriptor.FieldDescriptorProto_Label `json:"label,omitempty"`
-	Enum     EnumInfo                              `json:"enum"`
 	Options  *descriptor.FieldOptions              `json:"options,omitempty"`
-	Type     *TypeInfo                             `json:"type"`
 	TypeName string                                `json:"type_name"`
 	TypeID   int                                   `json:"type_id"`
 }
@@ -121,21 +119,6 @@ func GetTypeInfo(pool *descPool, typeName string) *TypeInfo {
 		info.Fields[i].Options = field.GetOptions()
 		info.Fields[i].TypeName = field.GetTypeName()
 		info.Fields[i].TypeID = int(field.GetType())
-
-		//
-		//if fieldType == descriptor.FieldDescriptorProto_TYPE_ENUM {
-		//	info.Fields[i].Type.Name = "enum"
-		//	if enumInfo := pool.getEnumDescriptor(fieldTypeName); enumInfo != nil {
-		//		info.Fields[i].Enum.Name = enumInfo.GetName()
-		//		for _, ee := range enumInfo.Value {
-		//			info.Fields[i].Enum.Values = append(info.Fields[i].Enum.Values, EnumValueInfo{
-		//				Name:   ee.GetName(),
-		//				Number: int(ee.GetNumber()),
-		//			})
-		//		}
-		//	}
-		//}
-
 	}
 	return info
 }

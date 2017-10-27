@@ -4,14 +4,35 @@ import ReactDOM from 'react-dom';
 
 const Int32Field = (props) => <input name={props.name} id={props.name} type="number"/>;
 
-const UnknownField = (props) => <input name={props.name} id={props.name} type="text"/>;
+const StringField = (props) => <input name={props.name} id={props.name} type="text"/>;
+
+const BooleanField = (props) => <input name={props.name} id={props.name} type="checkbox"/>;
+
+const UnknownField = (props) => <input name={props.name} id={props.name} type="text" placeholder={'type id: ' + props.type_id}/>;
+
+const RepeatedField = (props) =>
+    <div>
+
+    </div>;
+
+const MessageField = (props) => {
+    const type = props.types[props.type_name];
+    return <Message {...type} types={props.types}/>
+};
 
 const Field = (props) => {
+    console.log(props);
     switch (props.type_id) {
         case 5: // int32:
             return <Int32Field {...props}/>;
+        case 8: // boolean
+            return <BooleanField {...props}/>;
+        case 9: // int32:
+            return <StringField {...props}/>;
+        case 11: // message
+            return <MessageField {...props}/>;
         default:
-            return <UnknownField  {...props}/>
+            return <UnknownField  {...props}/>;
     }
 };
 
@@ -29,7 +50,7 @@ const Message = (props) =>
                     <label htmlFor={f.name}>{f.name}</label>
                 </td>
                 <td>
-                    <Field {...f} />
+                    <Field {...f} types={props.types} />
                 </td>
             </tr>)}
 
@@ -41,10 +62,10 @@ const Method = (props) =>
         <div className="panel-heading">
             <h4>{props.name}</h4>
             <div className="well">
-                <Message {...props.in}/>
+                <Message {...props.in} types={props.types}/>
             </div>
             <div className="well">
-                <Message {...props.out}/>
+                <Message {...props.out} types={props.types}/>
             </div>
         </div>
         <div className="panel-body">
@@ -57,7 +78,7 @@ class App extends Component {
         super(props);
         this.state = {
             services: [],
-            types: [],
+            types: {},
         };
     }
     componentDidMount() {
@@ -76,7 +97,7 @@ class App extends Component {
             return (
                 <div>
                     <h3>{service.name}</h3>
-                    {service.methods.map((method) => <Method {...method}/>)}
+                    {service.methods.map((method) => <Method {...method} types={this.state.types}/>)}
                 </div>
             );
         });

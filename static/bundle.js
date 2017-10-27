@@ -961,6 +961,8 @@ module.exports = getActiveElement;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _react = __webpack_require__(6);
 
 var _react2 = _interopRequireDefault(_react);
@@ -981,15 +983,42 @@ var Int32Field = function Int32Field(props) {
     return _react2.default.createElement('input', { name: props.name, id: props.name, type: 'number' });
 };
 
-var UnknownField = function UnknownField(props) {
+var StringField = function StringField(props) {
     return _react2.default.createElement('input', { name: props.name, id: props.name, type: 'text' });
 };
 
+var BooleanField = function BooleanField(props) {
+    return _react2.default.createElement('input', { name: props.name, id: props.name, type: 'checkbox' });
+};
+
+var UnknownField = function UnknownField(props) {
+    return _react2.default.createElement('input', { name: props.name, id: props.name, type: 'text', placeholder: 'type id: ' + props.type_id });
+};
+
+var RepeatedField = function RepeatedField(props) {
+    return _react2.default.createElement('div', null);
+};
+
+var MessageField = function MessageField(props) {
+    var type = props.types[props.type_name];
+    return _react2.default.createElement(Message, _extends({}, type, { types: props.types }));
+};
+
 var Field = function Field(props) {
+    console.log(props);
     switch (props.type_id) {
         case 5:
             // int32:
             return _react2.default.createElement(Int32Field, props);
+        case 8:
+            // boolean
+            return _react2.default.createElement(BooleanField, props);
+        case 9:
+            // int32:
+            return _react2.default.createElement(StringField, props);
+        case 11:
+            // message
+            return _react2.default.createElement(MessageField, props);
         default:
             return _react2.default.createElement(UnknownField, props);
     }
@@ -1038,7 +1067,7 @@ var Message = function Message(props) {
                     _react2.default.createElement(
                         'td',
                         null,
-                        _react2.default.createElement(Field, f)
+                        _react2.default.createElement(Field, _extends({}, f, { types: props.types }))
                     )
                 );
             })
@@ -1061,12 +1090,12 @@ var Method = function Method(props) {
             _react2.default.createElement(
                 'div',
                 { className: 'well' },
-                _react2.default.createElement(Message, props.in)
+                _react2.default.createElement(Message, _extends({}, props.in, { types: props.types }))
             ),
             _react2.default.createElement(
                 'div',
                 { className: 'well' },
-                _react2.default.createElement(Message, props.out)
+                _react2.default.createElement(Message, _extends({}, props.out, { types: props.types }))
             )
         ),
         _react2.default.createElement('div', { className: 'panel-body' })
@@ -1083,7 +1112,7 @@ var App = function (_Component) {
 
         _this.state = {
             services: [],
-            types: []
+            types: {}
         };
         return _this;
     }
@@ -1109,6 +1138,8 @@ var App = function (_Component) {
     }, {
         key: 'render',
         value: function render() {
+            var _this3 = this;
+
             var services = this.state.services.map(function (service) {
                 return _react2.default.createElement(
                     'div',
@@ -1119,7 +1150,7 @@ var App = function (_Component) {
                         service.name
                     ),
                     service.methods.map(function (method) {
-                        return _react2.default.createElement(Method, method);
+                        return _react2.default.createElement(Method, _extends({}, method, { types: _this3.state.types }));
                     })
                 );
             });
