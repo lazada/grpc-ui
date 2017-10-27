@@ -7,6 +7,11 @@ import (
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 )
 
+type InfoResp struct {
+	Types    map[string]*TypeInfo `json:"types"`
+	Services []Service            `json:"services"`
+}
+
 type Service struct {
 	Name        string   `json:"name"`
 	PackageName string   `json:"package_name"`
@@ -16,8 +21,8 @@ type Service struct {
 type Method struct {
 	Name string `json:"name"`
 
-	In  TypeInfo `json:"in"`
-	Out TypeInfo `json:"out"`
+	In  string `json:"in"`
+	Out string `json:"out"`
 
 	InStream  bool `json:"in_stream,omitempty"`
 	OutStream bool `json:"out_stream,omitempty"`
@@ -31,12 +36,13 @@ type TypeInfo struct {
 }
 
 type FieldInfo struct {
-	Name    string                                `json:"name"`
-	Number  int                                   `json:"number"`
-	Label   descriptor.FieldDescriptorProto_Label `json:"label,omitempty"`
-	Type    TypeInfo                              `json:"type"`
-	Enum    EnumInfo                              `json:"enum"`
-	Options *descriptor.FieldOptions              `json:"options,omitempty"`
+	Name     string                                `json:"name"`
+	Number   int                                   `json:"number"`
+	Label    descriptor.FieldDescriptorProto_Label `json:"label,omitempty"`
+	Enum     EnumInfo                              `json:"enum"`
+	Options  *descriptor.FieldOptions              `json:"options,omitempty"`
+	TypeName string                                `json:"type_name"`
+	TypeID   int                                   `json:"type_id"`
 }
 
 type EnumInfo struct {
@@ -49,7 +55,7 @@ type EnumValueInfo struct {
 	Number int    `json:"number"`
 }
 
-func GetInfo(ctx context.Context, addr string) ([]Service, error) {
+func GetInfo(ctx context.Context, addr string) (*InfoResp, error) {
 	pool := &descPool{}
 	if err := pool.connect(ctx, addr); err != nil {
 		return nil, err
@@ -62,7 +68,9 @@ func GetInfo(ctx context.Context, addr string) ([]Service, error) {
 		return nil, err
 	}
 
-	res := make([]Service, 0, len(services))
+	res := &InfoResp{}
+	res.Services = make([]Service, 0)
+	res.Types = make(map[string]*TypeInfo)
 	for sname, descr := range services {
 
 		packageName := strings.Split(sname, "/")[0]
@@ -80,32 +88,32 @@ func GetInfo(ctx context.Context, addr string) ([]Service, error) {
 			s.Methods[i] = Method{
 				Name: method.GetName(),
 
-				In:  GetTypeInfo(pool, method.GetInputType()),
-				Out: GetTypeInfo(pool, method.GetOutputType()),
+				In:  method.GetInputType(),
+				Out: method.GetOutputType(),
 
 				InStream:  method.GetClientStreaming(),
 				OutStream: method.GetServerStreaming(),
 			}
 		}
 
-		res = append(res, s)
+		res.Services = append(res.Services, s)
+	}
+
+	res.Types = make(map[string]*TypeInfo)
+	for k := range pool.getTypes() {
+		res.Types[k] = GetTypeInfo(pool, k)
 	}
 
 	return res, nil
 }
 
-func GetTypeInfo(pool *descPool, typeName string) (res TypeInfo) {
+func GetTypeInfo(pool *descPool, typeName string) *TypeInfo {
 	desc := pool.getTypeDescriptor(typeName)
-
-	// ERROR
 	if desc == nil {
-		return TypeInfo{
-			Id:   0, // ERROR TYPE
-			Name: typeName,
-		}
+		return nil
 	}
 
-	info := TypeInfo{
+	info := &TypeInfo{
 		Name:    desc.GetName(),
 		Fields:  make([]FieldInfo, len(desc.GetField())),
 		Options: desc.GetOptions(),
@@ -116,32 +124,22 @@ func GetTypeInfo(pool *descPool, typeName string) (res TypeInfo) {
 		info.Fields[i].Number = int(field.GetNumber())
 		info.Fields[i].Label = field.GetLabel()
 		info.Fields[i].Options = field.GetOptions()
+		info.Fields[i].TypeName = field.GetTypeName()
+		info.Fields[i].TypeID = int(field.GetType())
 
-		fieldType := field.GetType()
-		fieldTypeName := field.GetTypeName()
-
-		if fieldTypeName != "" {
-			info.Fields[i].Type = GetTypeInfo(pool, fieldTypeName)
-			info.Fields[i].Type.Id = int(fieldType)
-		} else {
-			info.Fields[i].Type = TypeInfo{
-				Name: strings.ToLower(fieldType.String()[5:]),
-				Id:   int(fieldType),
-			}
-		}
-
-		if fieldType == descriptor.FieldDescriptorProto_TYPE_ENUM {
-			info.Fields[i].Type.Name = "enum"
-			if enumInfo := pool.getEnumDescriptor(fieldTypeName); enumInfo != nil {
-				info.Fields[i].Enum.Name = enumInfo.GetName()
-				for _, ee := range enumInfo.Value {
-					info.Fields[i].Enum.Values = append(info.Fields[i].Enum.Values, EnumValueInfo{
-						Name:   ee.GetName(),
-						Number: int(ee.GetNumber()),
-					})
-				}
-			}
-		}
+		//
+		//if fieldType == descriptor.FieldDescriptorProto_TYPE_ENUM {
+		//	info.Fields[i].Type.Name = "enum"
+		//	if enumInfo := pool.getEnumDescriptor(fieldTypeName); enumInfo != nil {
+		//		info.Fields[i].Enum.Name = enumInfo.GetName()
+		//		for _, ee := range enumInfo.Value {
+		//			info.Fields[i].Enum.Values = append(info.Fields[i].Enum.Values, EnumValueInfo{
+		//				Name:   ee.GetName(),
+		//				Number: int(ee.GetNumber()),
+		//			})
+		//		}
+		//	}
+		//}
 
 	}
 	return info

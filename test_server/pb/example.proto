@@ -7,9 +7,37 @@ service Example {
 }
 
 message Req {
-
+    int32 int32field = 1;
+    int64 int64field = 2;
+    float floatfield = 3;
+    double doublefield = 4;
+    uint32 uint32field = 5;
+    uint64 uint64field = 6;
+    sint32 sint32field = 7;
+    sint64 sint64field = 8;
+    fixed32 fixed32field = 9;
+    fixed64 fixed64field = 10;
+    sfixed32 sfixed32field = 11;
+    sfixed64 sfixed64field = 12;
+    bool boolfield = 13;
+    string stringfield = 14;
+    bytes bytesfield = 15;
 };
 
 message Res {
-
+    int32 int32field = 1;
+    int64 int64field = 2;
+    float floatfield = 3;
+    double doublefield = 4;
+    uint32 uint32field = 5;
+    uint64 uint64field = 6;
+    sint32 sint32field = 7;
+    sint64 sint64field = 8;
+    fixed32 fixed32field = 9;
+    fixed64 fixed64field = 10;
+    sfixed32 sfixed32field = 11;
+    sfixed64 sfixed64field = 12;
+    bool boolfield = 13;
+    string stringfield = 14;
+    bytes bytesfield = 15;
 };

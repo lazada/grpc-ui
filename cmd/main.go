@@ -57,7 +57,7 @@ func main() {
 			http.Error(w, "Invalid `addr` param", http.StatusBadRequest)
 			return
 		}
-		services, err := reflection.GetInfo(r.Context(), addr)
+		info, err := reflection.GetInfo(r.Context(), addr)
 
 		if err != nil {
 			log.Printf("Can't get grpc info: %v", err)
@@ -65,13 +65,8 @@ func main() {
 			return
 		}
 
-		resp := struct {
-			Services []reflection.Service `json:"services"`
-		}{
-			Services: services,
-		}
 
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
+		if err := json.NewEncoder(w).Encode(info); err != nil {
 			log.Printf("Can't encode json: %v", err)
 			return
 		}
