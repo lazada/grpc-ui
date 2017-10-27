@@ -6,8 +6,8 @@ import (
 	"log"
 	"net"
 	"net/http"
-
 	"context"
+
 	"github.com/gorilla/websocket"
 	"github.com/lazada/grpc-ui/reflection"
 )
