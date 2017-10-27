@@ -21,8 +21,8 @@ type Service struct {
 type Method struct {
 	Name string `json:"name"`
 
-	In  string `json:"in"`
-	Out string `json:"out"`
+	In  *TypeInfo `json:"in"`
+	Out *TypeInfo `json:"out"`
 
 	InStream  bool `json:"in_stream,omitempty"`
 	OutStream bool `json:"out_stream,omitempty"`
@@ -41,6 +41,7 @@ type FieldInfo struct {
 	Label    descriptor.FieldDescriptorProto_Label `json:"label,omitempty"`
 	Enum     EnumInfo                              `json:"enum"`
 	Options  *descriptor.FieldOptions              `json:"options,omitempty"`
+	Type     *TypeInfo                             `json:"type"`
 	TypeName string                                `json:"type_name"`
 	TypeID   int                                   `json:"type_id"`
 }
@@ -74,11 +75,6 @@ func GetInfo(ctx context.Context, addr string) (*InfoResp, error) {
 	for sname, descr := range services {
 
 		packageName := strings.Split(sname, "/")[0]
-
-		if packageName == "grpc.reflection.v1alpha" {
-			continue
-		}
-
 		s := Service{
 			Name:        *descr.Name,
 			PackageName: packageName,
@@ -87,9 +83,8 @@ func GetInfo(ctx context.Context, addr string) (*InfoResp, error) {
 		for i, method := range descr.Method {
 			s.Methods[i] = Method{
 				Name: method.GetName(),
-
-				In:  method.GetInputType(),
-				Out: method.GetOutputType(),
+				In:   GetTypeInfo(pool, method.GetInputType()),
+				Out:  GetTypeInfo(pool, method.GetOutputType()),
 
 				InStream:  method.GetClientStreaming(),
 				OutStream: method.GetServerStreaming(),
@@ -114,7 +109,7 @@ func GetTypeInfo(pool *descPool, typeName string) *TypeInfo {
 	}
 
 	info := &TypeInfo{
-		Name:    desc.GetName(),
+		Name:    typeName,
 		Fields:  make([]FieldInfo, len(desc.GetField())),
 		Options: desc.GetOptions(),
 	}
