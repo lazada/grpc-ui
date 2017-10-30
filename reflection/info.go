@@ -66,6 +66,9 @@ func GetInfo(ctx context.Context, addr string) (*InfoResp, error) {
 
 	for sname, descr := range services {
 		packageName := strings.Split(sname, "/")[0]
+		if packageName == "grpc.reflection.v1alpha" {
+			continue
+		}
 
 		s := &Service{
 			Name:    *descr.Name,
@@ -106,10 +109,10 @@ func GetTypeInfo(pool *descPool, typeName string) *TypeInfo {
 	for _, field := range desc.GetField() {
 		label := field.GetLabel()
 		info.Fields = append(info.Fields, &FieldInfo{
-			Name:     field.GetName(),
-			Number:   int(field.GetNumber()),
-			TypeName: field.GetTypeName(),
-			TypeID:   int(field.GetType()),
+			Name:       field.GetName(),
+			Number:     int(field.GetNumber()),
+			TypeName:   field.GetTypeName(),
+			TypeID:     int(field.GetType()),
 			IsRepeated: label == descriptor.FieldDescriptorProto_LABEL_REPEATED,
 			IsRequired: label == descriptor.FieldDescriptorProto_LABEL_REQUIRED,
 		})
