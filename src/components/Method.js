@@ -29,8 +29,13 @@ const Field = (props) => {
 };
 
 const Message = (props) =>
-    <div>
-        {props.fields.map((f) => <Field key={f.name} {...f} types={props.types} /> )}
+    <div className={`message ${props.in ? 'message--in' : ''}`}>
+        <form>
+            {props.fields.map((f) => <Field key={f.name} {...f} types={props.types} /> )}
+            {props.in ? <div className="message__controls">
+                    <button type="submit" className="button">Invoke</button>
+                </div> : null }
+        </form>
     </div>;
 
 export default class Method extends Component {
@@ -52,11 +57,8 @@ export default class Method extends Component {
                 <h4 className="method__name"> {this.props.name} <i className={this.state.expanded ? '' : 'fa fa-angle-down'}/></h4>
             </div>
             <div className="method__body" style={{display: this.state.expanded ? 'block' : 'none'}}>
-                <form>
-                    <Message {...this.props.types[this.props.in]} types={this.props.types}/>
-                    <button type="submit" className="btn btn-primary pull-right">Invoke</button>
-                    <Message {...this.props.types[this.props.out]} types={this.props.types}/>
-                </form>
+                <Message {...this.props.types[this.props.in]} types={this.props.types} in={true}/>
+                <Message {...this.props.types[this.props.out]} types={this.props.types}/>
             </div>
         </div>
     }

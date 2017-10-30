@@ -13,5 +13,29 @@
             size: 20px
     &__name
         margin: 0
-    &__body
-        padding: 20px
+
+.message
+    &--in
+        border-bottom: 1px solid #eee
+    padding: 40px 20px
+    &__controls
+        text-align: right
+
+
+
+.button
+    padding: 10px
+    background: none
+    outline: none
+    border-radius: 10px
+    cursor: pointer
+    border: 2px solid $primary
+    font:
+        family: Roboto, sans-serif
+        weight: bold
+        size: 14px
+    transition: all 150ms ease-in-out
+    &:hover
+        background: $primary
+        border: 2px solid $primary-light
+        color: #fff

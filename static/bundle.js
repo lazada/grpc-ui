@@ -21902,10 +21902,23 @@ var Field = function Field(props) {
 var Message = function Message(props) {
     return _react2.default.createElement(
         'div',
-        null,
-        props.fields.map(function (f) {
-            return _react2.default.createElement(Field, _extends({ key: f.name }, f, { types: props.types }));
-        })
+        { className: 'message ' + (props.in ? 'message--in' : '') },
+        _react2.default.createElement(
+            'form',
+            null,
+            props.fields.map(function (f) {
+                return _react2.default.createElement(Field, _extends({ key: f.name }, f, { types: props.types }));
+            }),
+            props.in ? _react2.default.createElement(
+                'div',
+                { className: 'message__controls' },
+                _react2.default.createElement(
+                    'button',
+                    { type: 'submit', className: 'button' },
+                    'Invoke'
+                )
+            ) : null
+        )
     );
 };
 
@@ -21952,17 +21965,8 @@ var Method = function (_Component) {
                 _react2.default.createElement(
                     'div',
                     { className: 'method__body', style: { display: this.state.expanded ? 'block' : 'none' } },
-                    _react2.default.createElement(
-                        'form',
-                        null,
-                        _react2.default.createElement(Message, _extends({}, this.props.types[this.props.in], { types: this.props.types })),
-                        _react2.default.createElement(
-                            'button',
-                            { type: 'submit', className: 'btn btn-primary pull-right' },
-                            'Invoke'
-                        ),
-                        _react2.default.createElement(Message, _extends({}, this.props.types[this.props.out], { types: this.props.types }))
-                    )
+                    _react2.default.createElement(Message, _extends({}, this.props.types[this.props.in], { types: this.props.types, 'in': true })),
+                    _react2.default.createElement(Message, _extends({}, this.props.types[this.props.out], { types: this.props.types }))
                 )
             );
         }
@@ -22220,7 +22224,7 @@ exports = module.exports = __webpack_require__(35)(undefined);
 
 
 // module
-exports.push([module.i, ".method {\n  border: 1px solid #eee;\n  margin-bottom: 20px; }\n  .method__heading {\n    cursor: pointer;\n    padding: 15px;\n    background: #04acb4;\n    color: #fff;\n    font-wight: bold;\n    font-size: 20px; }\n  .method__name {\n    margin: 0; }\n  .method__body {\n    padding: 20px; }\n", ""]);
+exports.push([module.i, ".method {\n  border: 1px solid #eee;\n  margin-bottom: 20px; }\n  .method__heading {\n    cursor: pointer;\n    padding: 15px;\n    background: #04acb4;\n    color: #fff;\n    font-wight: bold;\n    font-size: 20px; }\n  .method__name {\n    margin: 0; }\n\n.message {\n  padding: 40px 20px; }\n  .message--in {\n    border-bottom: 1px solid #eee; }\n  .message__controls {\n    text-align: right; }\n\n.button {\n  padding: 10px;\n  background: none;\n  outline: none;\n  border-radius: 10px;\n  cursor: pointer;\n  border: 2px solid #04acb4;\n  font-family: Roboto, sans-serif;\n  font-weight: bold;\n  font-size: 14px;\n  transition: all 150ms ease-in-out; }\n  .button:hover {\n    background: #04acb4;\n    border: 2px solid #05c4cd;\n    color: #fff; }\n", ""]);
 
 // exports
 
