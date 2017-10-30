@@ -9,6 +9,7 @@ import (
 )
 
 type impl struct {
+	pb.ExampleServer
 }
 
 func (i *impl) Test(ctx context.Context, req *pb.Req) (*pb.Res, error) {
@@ -31,8 +32,8 @@ func (i *impl) Test(ctx context.Context, req *pb.Req) (*pb.Res, error) {
 	}, nil
 }
 
-func (i *impl) GetUser(ctx context.Context, req *pb.GetUserReq) (*pb.User, error) {
-	return &pb.User{
+func (i *impl) GetUser(ctx context.Context, req *pb.GetUserReq) (*pb.UserResp, error) {
+	return &pb.UserResp{
 		FirstName: "TestUser",
 		LastName: "Test last name",
 		Active: true,

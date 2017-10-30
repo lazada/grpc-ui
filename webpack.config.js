@@ -24,7 +24,10 @@ module.exports = {
                 }, {
                     loader: "sass-loader", // compiles Sass to CSS
                     options: {
-                        'indented_syntax': 'on',
+                        indented_syntax: 'on',
+                        includePaths: [
+                            path.resolve(__dirname + "/src/sass"),
+                        ]
                     }
                 }]
             }

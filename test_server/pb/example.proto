@@ -3,16 +3,43 @@ syntax = "proto3";
 package pb;
 
 service Example {
-    rpc Test(Req) returns (Res);
-    rpc GetUser(GetUserReq) returns (User);
+    //rpc Test(Req) returns (Res);
+    rpc GetUser(GetUserReq) returns (UserResp);
+    rpc CreateUser(CreateUserReq) returns (CreateUserResp);
+    rpc UserList(UserListReq) returns (UserListResp);
+    rpc DeleteUser(DeleteUserReq) returns (DeleteUserResp);
 }
+
+message CreateUserReq {
+
+};
+
+message CreateUserResp {
+
+};
+
+message UserListReq {
+
+};
+
+message UserListResp {
+
+};
+
+message DeleteUserReq {
+
+};
+
+message DeleteUserResp {
+
+};
 
 message GetUserReq {
     string firstName = 1;
     string lastName = 2;
 }
 
-message User {
+message UserResp {
     string firstName  = 1;
     string lastName = 2;
     bool active = 3;
