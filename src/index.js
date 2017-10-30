@@ -3,14 +3,9 @@ import ReactDOM from 'react-dom';
 import './app.sass';
 
 
-const Int32Field = (props) => <div className="form-group">
-    <label htmlFor={props.name}>{props.name}</label>
-    <input className="form-control" name={props.name} id={props.name} type="number"/>
-</div>;
-
-const UnknownField = (props) => <div className="form-group">
-    <label htmlFor={props.name}>{props.name}</label>
-    <input className="form-control" name={props.name} id={props.name} placeholder={'type id: ' + props.type_id} type="text"/>
+const UnknownField = (props) => <div className="field">
+    <label className="field__label" htmlFor={props.name}>{props.name}</label>
+    <input className="field__input" name={props.name} id={props.name} type="text"/>
 </div>;
 
 const MessageField = (props) => {
@@ -21,7 +16,7 @@ const MessageField = (props) => {
 const Field = (props) => {
     switch (props.type_id) {
         case 5: // int32:
-            return <Int32Field {...props}/>;
+            return <UnknownField {...props}/>;
         case 8: // boolean
             return <UnknownField {...props}/>;
         case 9: // int32:
@@ -44,7 +39,7 @@ const Method = (props) =>
             <h4 className="method__name">{props.name}</h4>
         </div>
         <div className="method__body">
-            <form onSubmit={props.onCall}>
+            <form>
                 <Message {...props.types[props.in]} types={props.types}/>
                 <button type="submit" className="btn btn-primary pull-right">Invoke</button>
 
@@ -79,10 +74,6 @@ class App extends Component {
                 })
             });
     }
-    onMethodCall(e) {
-        e.preventDefault();
-        console.log(arguments);
-    }
     render() {
         const packages = Object.keys(this.state.packages).map(package_name => {
             return this.state.packages[package_name].map((service) => {
@@ -97,11 +88,35 @@ class App extends Component {
                         <a href="" className="logo"/>
                     </div>
                 </div>
-                <div className="packages-list">
-                    <div className="packages-list__container">
-                        {packages}
+                <div className="app">
+                    <div className="app__container">
+                        <div className="sidebar">
+                            <ul class="sidebar__list">
+                                {Object.keys(this.state.packages).map(p =>
+                                    <li>
+                                        {p}
+                                        <ul>
+                                            {this.state.packages[p].map((s) => (
+                                                <li>
+                                                    {s.name}
+                                                    <ul>
+                                                        {s.methods.map((m) =>
+                                                            <li>{m.name}</li>
+                                                        )}
+                                                    </ul>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </li>
+                                )}
+                            </ul>
+                        </div>
+                        <div className="packages-list">
+                            {packages}
+                        </div>
                     </div>
                 </div>
+
             </div>
         );
     }

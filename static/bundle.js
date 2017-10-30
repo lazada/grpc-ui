@@ -981,29 +981,16 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Int32Field = function Int32Field(props) {
-    return _react2.default.createElement(
-        'div',
-        { className: 'form-group' },
-        _react2.default.createElement(
-            'label',
-            { htmlFor: props.name },
-            props.name
-        ),
-        _react2.default.createElement('input', { className: 'form-control', name: props.name, id: props.name, type: 'number' })
-    );
-};
-
 var UnknownField = function UnknownField(props) {
     return _react2.default.createElement(
         'div',
-        { className: 'form-group' },
+        { className: 'field' },
         _react2.default.createElement(
             'label',
-            { htmlFor: props.name },
+            { className: 'field__label', htmlFor: props.name },
             props.name
         ),
-        _react2.default.createElement('input', { className: 'form-control', name: props.name, id: props.name, placeholder: 'type id: ' + props.type_id, type: 'text' })
+        _react2.default.createElement('input', { className: 'field__input', name: props.name, id: props.name, type: 'text' })
     );
 };
 
@@ -1016,7 +1003,7 @@ var Field = function Field(props) {
     switch (props.type_id) {
         case 5:
             // int32:
-            return _react2.default.createElement(Int32Field, props);
+            return _react2.default.createElement(UnknownField, props);
         case 8:
             // boolean
             return _react2.default.createElement(UnknownField, props);
@@ -1059,7 +1046,7 @@ var Method = function Method(props) {
             { className: 'method__body' },
             _react2.default.createElement(
                 'form',
-                { onSubmit: props.onCall },
+                null,
                 _react2.default.createElement(Message, _extends({}, props.types[props.in], { types: props.types })),
                 _react2.default.createElement(
                     'button',
@@ -1121,12 +1108,6 @@ var App = function (_Component) {
             });
         }
     }, {
-        key: 'onMethodCall',
-        value: function onMethodCall(e) {
-            e.preventDefault();
-            console.log(arguments);
-        }
-    }, {
         key: 'render',
         value: function render() {
             var _this3 = this;
@@ -1151,11 +1132,52 @@ var App = function (_Component) {
                 ),
                 _react2.default.createElement(
                     'div',
-                    { className: 'packages-list' },
+                    { className: 'app' },
                     _react2.default.createElement(
                         'div',
-                        { className: 'packages-list__container' },
-                        packages
+                        { className: 'app__container' },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'sidebar' },
+                            _react2.default.createElement(
+                                'ul',
+                                { 'class': 'sidebar__list' },
+                                Object.keys(this.state.packages).map(function (p) {
+                                    return _react2.default.createElement(
+                                        'li',
+                                        null,
+                                        p,
+                                        _react2.default.createElement(
+                                            'ul',
+                                            null,
+                                            _this3.state.packages[p].map(function (s) {
+                                                return _react2.default.createElement(
+                                                    'li',
+                                                    null,
+                                                    s.name,
+                                                    _react2.default.createElement(
+                                                        'ul',
+                                                        null,
+                                                        s.methods.map(function (m) {
+                                                            return _react2.default.createElement(
+                                                                'li',
+                                                                null,
+                                                                m.name
+                                                            );
+                                                        })
+                                                    )
+                                                );
+                                            })
+                                        )
+                                    );
+                                })
+                            )
+                        ),
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'packages-list' },
+                            packages
+                        )
                     )
                 )
             );
@@ -21406,7 +21428,7 @@ exports = module.exports = __webpack_require__(34)(undefined);
 
 
 // module
-exports.push([module.i, "html, body {\n  margin: 0;\n  padding: 0;\n  font-family: 'Roboto', sans-serif; }\n\n.navbar {\n  padding: 20px;\n  border-bottom: 1px solid #eee; }\n  .navbar__container {\n    width: 920px;\n    margin: 0 auto; }\n\n.logo {\n  display: block;\n  width: 80px;\n  height: 28px;\n  background-image: url(\"/static/img/grpc.png\"); }\n\n.packages-list__container {\n  width: 920px;\n  margin: 0 auto; }\n\n.package__title {\n  font-size: 28px;\n  font-weight: bold; }\n\n.method {\n  border: 1px solid #eee; }\n  .method__heading {\n    padding: 20px;\n    background: #04acb4;\n    color: #fff;\n    font-wight: bold;\n    font-size: 20px; }\n  .method__name {\n    margin: 0; }\n  .method__body {\n    padding: 20px; }\n", ""]);
+exports.push([module.i, "html, body {\n  margin: 0;\n  padding: 0;\n  font-family: 'Roboto', sans-serif; }\n\n.navbar {\n  padding: 20px;\n  border-bottom: 1px solid #eee; }\n  .navbar__container {\n    width: 1080px;\n    margin: 0 auto; }\n\n.logo {\n  display: block;\n  width: 80px;\n  height: 28px;\n  background-image: url(\"/static/img/grpc.png\"); }\n\n.app__container {\n  width: 1080px;\n  margin: 0 auto; }\n\n.sidebar {\n  padding-top: 30px;\n  width: 30%;\n  float: left; }\n  .sidebar__list {\n    list-style: none;\n    margin: 0;\n    padding: 0; }\n\n.packages-list {\n  width: 70%;\n  float: left; }\n\n.package__title {\n  font-size: 28px;\n  font-weight: bold; }\n\n.method {\n  border: 1px solid #eee;\n  margin-bottom: 40px; }\n  .method__heading {\n    padding: 20px;\n    background: #04acb4;\n    color: #fff;\n    font-wight: bold;\n    font-size: 20px; }\n  .method__name {\n    margin: 0; }\n  .method__body {\n    padding: 20px; }\n\n.field {\n  margin-bottom: 20px; }\n  .field__label {\n    display: block;\n    width: 150px; }\n  .field__input {\n    font-size: 14px;\n    box-sizing: border-box;\n    width: 100%;\n    padding: 10px; }\n", ""]);
 
 // exports
 

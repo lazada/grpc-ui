@@ -4,6 +4,18 @@ package pb;
 
 service Example {
     rpc Test(Req) returns (Res);
+    rpc GetUser(GetUserReq) returns (User);
+}
+
+message GetUserReq {
+    string firstName = 1;
+    string lastName = 2;
+}
+
+message User {
+    string firstName  = 1;
+    string lastName = 2;
+    bool active = 3;
 }
 
 message Req {

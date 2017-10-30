@@ -31,6 +31,14 @@ func (i *impl) Test(ctx context.Context, req *pb.Req) (*pb.Res, error) {
 	}, nil
 }
 
+func (i *impl) GetUser(ctx context.Context, req *pb.GetUserReq) (*pb.User, error) {
+	return &pb.User{
+		FirstName: "TestUser",
+		LastName: "Test last name",
+		Active: true,
+	}, nil
+}
+
 func start() error {
 	ln, err := net.Listen("tcp", ":3001")
 	if err != nil {
