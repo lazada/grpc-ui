@@ -9,11 +9,6 @@ const UnknownField = (props) => <div className="field">
     <input className="field__input" name={props.name} id={props.name} type="text" placeholder="string" value={props.val} onChange={props.onChange}/>
 </div>;
 
-const MessageField = (props) => {
-    const type = props.types[props.type_name];
-    return <Message {...type} types={props.types}/>
-};
-
 
 class Message extends Component {
     constructor(props) {

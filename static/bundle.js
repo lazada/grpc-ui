@@ -2401,6 +2401,7 @@ Object.defineProperty(exports, "__esModule", {
 var REQUEST_PACKAGES_AND_TYPES = exports.REQUEST_PACKAGES_AND_TYPES = 'REQUEST_PACKAGES_AND_TYPES';
 var REQUEST_PACKAGES_AND_TYPES_SUCCESS = exports.REQUEST_PACKAGES_AND_TYPES_SUCCESS = 'REQUEST_PACKAGES_AND_TYPES_SUCCESS';
 var INVOKE_METHOD = exports.INVOKE_METHOD = 'INVOKE_METHOD';
+var INVOKE_METHOD_SUCCESS = exports.INVOKE_METHOD_SUCCESS = 'INVOKE_METHOD';
 
 var loadPackages = exports.loadPackages = function loadPackages() {
     return function (dispatch) {
@@ -2427,6 +2428,23 @@ var loadPackages = exports.loadPackages = function loadPackages() {
 var invokeMethod = exports.invokeMethod = function invokeMethod(package_name, service_name, method_name, args) {
     return function (dispatch) {
         dispatch({ type: INVOKE_METHOD, package_name: package_name, service_name: service_name, method_name: method_name, args: args });
+
+        var addr = '127.0.0.1:3001';
+
+        fetch('/api/invoke', {
+            method: 'POST',
+            body: JSON.stringify({
+                addr: addr,
+                package_name: package_name,
+                service_name: service_name,
+                method_name: method_name,
+                grpc_args: args
+            })
+        }).then(function (res) {
+            return res.json;
+        }).then(function (data) {
+            console.log(data);
+        });
     };
 };
 
@@ -24308,9 +24326,9 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(1);
 
@@ -24339,11 +24357,6 @@ var UnknownField = function UnknownField(props) {
         ),
         _react2.default.createElement('input', { className: 'field__input', name: props.name, id: props.name, type: 'text', placeholder: 'string', value: props.val, onChange: props.onChange })
     );
-};
-
-var MessageField = function MessageField(props) {
-    var type = props.types[props.type_name];
-    return _react2.default.createElement(Message, _extends({}, type, { types: props.types }));
 };
 
 var Message = function (_Component) {

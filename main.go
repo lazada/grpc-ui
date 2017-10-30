@@ -23,7 +23,7 @@ type InvokeReq struct {
 	ServiceName string `json:"service_name"`
 	PackageName string `json:"package_name"`
 	MethodName string `json:"method_name"`
-	GRPCArgs   map[string]interface{} `json:"grpc_args"`
+	GRPCArgs   proto.FieldData `json:"grpc_args"`
 }
 
 type InvokeResp struct {
@@ -75,7 +75,7 @@ func main() {
 		}
 	})
 
-	http.HandleFunc("/invoke", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/api/invoke", func(w http.ResponseWriter, r *http.Request) {
 		if r.FormValue("stream") == "" {
 			handleUnary(w, r)
 			return
