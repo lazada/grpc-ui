@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
 
 import './Method.sass';
 
 
 const UnknownField = (props) => <div className="field">
     <label className="field__label" htmlFor={props.name}>{props.name}</label>
-    <input className="field__input" name={props.name} id={props.name} type="text" placeholder="string"/>
+    <input className="field__input" name={props.name} id={props.name} type="text" placeholder="string" value={props.val} onChange={props.onChange}/>
 </div>;
 
 const MessageField = (props) => {
@@ -13,32 +14,55 @@ const MessageField = (props) => {
     return <Message {...type} types={props.types}/>
 };
 
-const Field = (props) => {
-    switch (props.type_id) {
-        case 5: // int32:
-            return <UnknownField {...props}/>;
-        case 8: // boolean
-            return <UnknownField {...props}/>;
-        case 9: // int32:
-            return <UnknownField {...props}/>;
-        case 11: // message
-            return <MessageField {...props}/>;
-        default:
-            return <UnknownField  {...props}/>;
+
+class Message extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            fields: props.fields.map(f => {
+                return {val: ''}
+            }),
+        };
     }
-};
+    handleInvokeMethod(e) {
+        e.preventDefault();
+        const args = this.props.fields.map((f, i) => {
+            return {
+                number: f.number,
+                val: this.state.fields[i].val,
+            };
+        });
+        this.props.onInvokeMethod(args);
+    }
 
-const Message = (props) =>
-    <div className={`message ${props.in ? 'message--in' : ''}`}>
-        <form>
-            {props.fields.map((f) => <Field key={f.name} {...f} types={props.types} /> )}
-            {props.in ? <div className="message__controls">
-                    <button type="submit" className="button">Invoke</button>
-                </div> : null }
-        </form>
-    </div>;
+    handleChange(i, val) {
+        let fields = this.state.fields.slice();
+        fields[i] = {val:val};
 
-export default class Method extends Component {
+        this.setState({
+            fields: fields,
+        });
+        console.log(this.state.fields);
+    }
+    render() {
+        return (
+            <div className={`message ${this.props.in ? 'message--in' : ''}`}>
+                <form onSubmit={this.handleInvokeMethod.bind(this)}>
+                    {this.props.fields.map((f, i) => <UnknownField  {...f} val={this.state.fields[i].val}
+                                                  onChange={(e) => this.handleChange(i, e.target.value)}/>
+                    )}
+
+                    {this.props.in ? <div className="message__controls">
+                        <button type="submit" className="button">Invoke</button>
+                    </div> : null }
+                </form>
+            </div>
+        );
+    }
+}
+
+
+class Method extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -57,9 +81,11 @@ export default class Method extends Component {
                 <h4 className="method__name"> {this.props.name} <i className={this.state.expanded ? '' : 'fa fa-angle-down'}/></h4>
             </div>
             <div className="method__body" style={{display: this.state.expanded ? 'block' : 'none'}}>
-                <Message {...this.props.types[this.props.in]} types={this.props.types} in={true}/>
+                <Message {...this.props.types[this.props.in]} types={this.props.types} in={true} onInvokeMethod={(args) => this.props.onInvokeMethod(this.props.name, args)}/>
                 <Message {...this.props.types[this.props.out]} types={this.props.types}/>
             </div>
         </div>
     }
 }
+
+export default Method;

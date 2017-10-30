@@ -1,37 +1,21 @@
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
 
 import Sidebar from './Sidebar';
 import Package from './Package';
+import {loadPackages, invokeMethod} from '../actions';
 
 import './app.sass';
 
 
-export default class App extends Component {
-    constructor() {
-        super();
-        this.state = {
-            packages: {},
-            types: {},
-        };
+class App extends Component {
+    constructor(props) {
+        super(props);
     }
     componentDidMount() {
-        const addr = '127.0.0.1:3001';
-        fetch('/api/info?addr=' + addr)
-            .then(r => r.json())
-            .then(({packages, types}) => {
-                this.setState({
-                    packages,
-                    types,
-                })
-            });
+        this.props.loadPackages();
     }
     render() {
-        const packages = Object.keys(this.state.packages).map(package_name => {
-            return this.state.packages[package_name].map((service) => {
-                return <Package key={package_name} name={package_name} service={service} types={this.state.types}/>
-            });
-        });
-
         return (
             <div>
                 <div className="navbar">
@@ -42,11 +26,18 @@ export default class App extends Component {
                 <div className="app">
                     <div className="app__container">
                         <div className="app__left">
-                            <Sidebar packages={this.state.packages}/>
+                            <Sidebar packages={this.props.packages}/>
                         </div>
                         <div className="app__right">
                             <div className="packages-list">
-                                {packages}
+                                {Object.keys(this.props.packages).map(package_name => {
+                                    return this.props.packages[package_name].map((service) => {
+                                        return <Package key={package_name} name={package_name}
+                                                        service={service} types={this.props.types}
+                                                        onInvokeMethod={(method_name, args) =>
+                                                            this.props.invokeMethod(package_name, service.name, method_name, args)} />
+                                    });
+                                })}
                             </div>
                         </div>
 
@@ -57,3 +48,26 @@ export default class App extends Component {
         );
     }
 }
+
+
+const mapStateToProps = state => {
+    return {
+        packages: state.packages,
+        types: state.types,
+    }
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        loadPackages: () => {
+            dispatch(loadPackages())
+        },
+        invokeMethod: (package_name, service_name, method_name, args) => {
+            dispatch(invokeMethod(package_name, service_name, method_name, args))
+        },
+    };
+};
+
+App = connect(mapStateToProps, mapDispatchToProps)(App);
+
+export default App;
