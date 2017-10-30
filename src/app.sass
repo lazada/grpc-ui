@@ -1,6 +1,7 @@
 html, body
     margin: 0
     padding: 0
+    font-family: 'Roboto', sans-serif
 
 =container
     &__container
@@ -19,3 +20,22 @@ html, body
 
 .packages-list
     +container
+
+.package
+    &__title
+        font:
+            size: 28px
+            weight: bold
+.method
+    border: 1px solid #eee
+    &__heading
+        padding: 20px
+        background: rgb(4, 172, 180)
+        color: #fff
+        font:
+            wight: bold
+            size: 20px
+    &__name
+        margin: 0
+    &__body
+        padding: 20px

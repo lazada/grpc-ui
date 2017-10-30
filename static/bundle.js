@@ -1035,14 +1035,8 @@ var Message = function Message(props) {
     return _react2.default.createElement(
         'div',
         null,
-        _react2.default.createElement(
-            'h4',
-            null,
-            props.name
-        ),
-        _react2.default.createElement('hr', null),
         props.fields.map(function (f) {
-            return _react2.default.createElement(Field, _extends({}, f, { types: props.types }));
+            return _react2.default.createElement(Field, _extends({ key: f.name }, f, { types: props.types }));
         })
     );
 };
@@ -1050,39 +1044,46 @@ var Message = function Message(props) {
 var Method = function Method(props) {
     return _react2.default.createElement(
         'div',
-        { className: 'panel panel-default' },
+        { className: 'method' },
         _react2.default.createElement(
             'div',
-            { className: 'panel-heading' },
+            { className: 'method__heading' },
             _react2.default.createElement(
                 'h4',
-                null,
+                { className: 'method__name' },
                 props.name
             )
         ),
         _react2.default.createElement(
             'div',
-            { className: 'panel-body' },
+            { className: 'method__body' },
             _react2.default.createElement(
                 'form',
                 { onSubmit: props.onCall },
+                _react2.default.createElement(Message, _extends({}, props.types[props.in], { types: props.types })),
                 _react2.default.createElement(
-                    'div',
-                    { className: 'well clearfix' },
-                    _react2.default.createElement(Message, _extends({}, props.types[props.in], { types: props.types })),
-                    _react2.default.createElement(
-                        'button',
-                        { type: 'submit', className: 'btn btn-primary pull-right' },
-                        'Invoke'
-                    )
+                    'button',
+                    { type: 'submit', className: 'btn btn-primary pull-right' },
+                    'Invoke'
                 ),
-                _react2.default.createElement(
-                    'div',
-                    { className: '' },
-                    _react2.default.createElement(Message, _extends({}, props.types[props.out], { types: props.types }))
-                )
+                _react2.default.createElement(Message, _extends({}, props.types[props.out], { types: props.types }))
             )
         )
+    );
+};
+
+var Package = function Package(props) {
+    return _react2.default.createElement(
+        'div',
+        { className: 'package' },
+        _react2.default.createElement(
+            'h3',
+            { className: 'package__title' },
+            props.name + ' / ' + props.service.name
+        ),
+        props.service.methods.map(function (method) {
+            return _react2.default.createElement(Method, _extends({ key: method.name }, method, { types: props.types }));
+        })
     );
 };
 
@@ -1132,18 +1133,7 @@ var App = function (_Component) {
 
             var packages = Object.keys(this.state.packages).map(function (package_name) {
                 return _this3.state.packages[package_name].map(function (service) {
-                    return _react2.default.createElement(
-                        'div',
-                        null,
-                        _react2.default.createElement(
-                            'h3',
-                            null,
-                            package_name + ' / ' + service.name
-                        ),
-                        service.methods.map(function (method) {
-                            return _react2.default.createElement(Method, _extends({}, method, { types: _this3.state.types, onCall: _this3.onMethodCall.bind(_this3) }));
-                        })
-                    );
+                    return _react2.default.createElement(Package, { key: package_name, name: package_name, service: service, types: _this3.state.types });
                 });
             });
 
@@ -1156,7 +1146,7 @@ var App = function (_Component) {
                     _react2.default.createElement(
                         'div',
                         { className: 'navbar__container' },
-                        _react2.default.createElement('a', { href: '#', className: 'logo' })
+                        _react2.default.createElement('a', { href: '', className: 'logo' })
                     )
                 ),
                 _react2.default.createElement(
@@ -21391,7 +21381,7 @@ var transform;
 var options = {"hmr":true}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(34)(content, options);
+var update = __webpack_require__(35)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -21411,18 +21401,100 @@ if(false) {
 /* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(36)(undefined);
+exports = module.exports = __webpack_require__(34)(undefined);
 // imports
 
 
 // module
-exports.push([module.i, "html, body {\n  margin: 0;\n  padding: 0; }\n\n.navbar {\n  padding: 20px;\n  border-bottom: 1px solid #eee; }\n  .navbar__container {\n    width: 920px;\n    margin: 0 auto; }\n\n.logo {\n  display: block;\n  width: 80px;\n  height: 28px;\n  background-image: url(\"/static/img/grpc.png\"); }\n\n.packages-list__container {\n  width: 920px;\n  margin: 0 auto; }\n", ""]);
+exports.push([module.i, "html, body {\n  margin: 0;\n  padding: 0;\n  font-family: 'Roboto', sans-serif; }\n\n.navbar {\n  padding: 20px;\n  border-bottom: 1px solid #eee; }\n  .navbar__container {\n    width: 920px;\n    margin: 0 auto; }\n\n.logo {\n  display: block;\n  width: 80px;\n  height: 28px;\n  background-image: url(\"/static/img/grpc.png\"); }\n\n.packages-list__container {\n  width: 920px;\n  margin: 0 auto; }\n\n.package__title {\n  font-size: 28px;\n  font-weight: bold; }\n\n.method {\n  border: 1px solid #eee; }\n  .method__heading {\n    padding: 20px;\n    background: #04acb4;\n    color: #fff;\n    font-wight: bold;\n    font-size: 20px; }\n  .method__name {\n    margin: 0; }\n  .method__body {\n    padding: 20px; }\n", ""]);
 
 // exports
 
 
 /***/ }),
 /* 34 */
+/***/ (function(module, exports) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function(useSourceMap) {
+	var list = [];
+
+	// return the list of modules as css string
+	list.toString = function toString() {
+		return this.map(function (item) {
+			var content = cssWithMappingToString(item, useSourceMap);
+			if(item[2]) {
+				return "@media " + item[2] + "{" + content + "}";
+			} else {
+				return content;
+			}
+		}).join("");
+	};
+
+	// import a list of modules into the list
+	list.i = function(modules, mediaQuery) {
+		if(typeof modules === "string")
+			modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for(var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if(typeof id === "number")
+				alreadyImportedModules[id] = true;
+		}
+		for(i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if(mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if(mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
+
+function cssWithMappingToString(item, useSourceMap) {
+	var content = item[1] || '';
+	var cssMapping = item[3];
+	if (!cssMapping) {
+		return content;
+	}
+
+	if (useSourceMap && typeof btoa === 'function') {
+		var sourceMapping = toComment(cssMapping);
+		var sourceURLs = cssMapping.sources.map(function (source) {
+			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
+		});
+
+		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+	}
+
+	return [content].join('\n');
+}
+
+// Adapted from convert-source-map (MIT)
+function toComment(sourceMap) {
+	// eslint-disable-next-line no-undef
+	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+
+	return '/*# ' + data + ' */';
+}
+
+
+/***/ }),
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -21478,7 +21550,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(35);
+var	fixUrls = __webpack_require__(36);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -21794,7 +21866,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports) {
 
 
@@ -21886,88 +21958,6 @@ module.exports = function (css) {
 	// send back the fixed css
 	return fixedCss;
 };
-
-
-/***/ }),
-/* 36 */
-/***/ (function(module, exports) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-// css base code, injected by the css-loader
-module.exports = function(useSourceMap) {
-	var list = [];
-
-	// return the list of modules as css string
-	list.toString = function toString() {
-		return this.map(function (item) {
-			var content = cssWithMappingToString(item, useSourceMap);
-			if(item[2]) {
-				return "@media " + item[2] + "{" + content + "}";
-			} else {
-				return content;
-			}
-		}).join("");
-	};
-
-	// import a list of modules into the list
-	list.i = function(modules, mediaQuery) {
-		if(typeof modules === "string")
-			modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for(var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if(typeof id === "number")
-				alreadyImportedModules[id] = true;
-		}
-		for(i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if(mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if(mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
-};
-
-function cssWithMappingToString(item, useSourceMap) {
-	var content = item[1] || '';
-	var cssMapping = item[3];
-	if (!cssMapping) {
-		return content;
-	}
-
-	if (useSourceMap && typeof btoa === 'function') {
-		var sourceMapping = toComment(cssMapping);
-		var sourceURLs = cssMapping.sources.map(function (source) {
-			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
-		});
-
-		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
-	}
-
-	return [content].join('\n');
-}
-
-// Adapted from convert-source-map (MIT)
-function toComment(sourceMap) {
-	// eslint-disable-next-line no-undef
-	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
-	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
-
-	return '/*# ' + data + ' */';
-}
 
 
 /***/ })

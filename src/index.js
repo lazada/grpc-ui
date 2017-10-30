@@ -35,29 +35,30 @@ const Field = (props) => {
 
 const Message = (props) =>
     <div>
-        <h4>{props.name}</h4>
-        <hr/>
-        {props.fields.map((f) => <Field {...f} types={props.types} /> )}
+        {props.fields.map((f) => <Field key={f.name} {...f} types={props.types} /> )}
     </div>;
 
 const Method = (props) =>
-        <div className="panel panel-default">
-            <div className="panel-heading">
-                <h4>{props.name}</h4>
-            </div>
-            <div className="panel-body">
-                <form onSubmit={props.onCall}>
-                    <div className="well clearfix">
-                        <Message {...props.types[props.in]} types={props.types}/>
-                        <button type="submit" className="btn btn-primary pull-right">Invoke</button>
-                    </div>
+    <div className="method">
+        <div className="method__heading">
+            <h4 className="method__name">{props.name}</h4>
+        </div>
+        <div className="method__body">
+            <form onSubmit={props.onCall}>
+                <Message {...props.types[props.in]} types={props.types}/>
+                <button type="submit" className="btn btn-primary pull-right">Invoke</button>
 
-                    <div className="">
-                        <Message {...props.types[props.out]} types={props.types}/>
-                    </div>
-                </form>
-            </div>
+                <Message {...props.types[props.out]} types={props.types}/>
+            </form>
+        </div>
     </div>;
+
+const Package = (props) => (
+    <div className="package">
+        <h3 className="package__title">{props.name + ' / ' + props.service.name}</h3>
+        {props.service.methods.map((method) => <Method key={method.name} {...method} types={props.types}/>)}
+    </div>
+);
 
 class App extends Component {
     constructor(props) {
@@ -85,10 +86,7 @@ class App extends Component {
     render() {
         const packages = Object.keys(this.state.packages).map(package_name => {
             return this.state.packages[package_name].map((service) => {
-                return <div>
-                    <h3>{package_name + ' / ' + service.name}</h3>
-                    {service.methods.map((method) => <Method {...method} types={this.state.types} onCall={this.onMethodCall.bind(this)}/>)}
-                </div>
+                return <Package key={package_name} name={package_name} service={service} types={this.state.types}/>
             });
         });
 
@@ -96,7 +94,7 @@ class App extends Component {
             <div>
                 <div className="navbar">
                     <div className="navbar__container">
-                        <a href="#" className="logo"></a>
+                        <a href="" className="logo"/>
                     </div>
                 </div>
                 <div className="packages-list">
