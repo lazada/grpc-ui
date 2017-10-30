@@ -959,9 +959,9 @@ module.exports = getActiveElement;
 "use strict";
 
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(6);
 
@@ -995,9 +995,37 @@ var UnknownField = function UnknownField(props) {
     return _react2.default.createElement('input', { name: props.name, id: props.name, type: 'text', placeholder: 'type id: ' + props.type_id });
 };
 
-var RepeatedField = function RepeatedField(props) {
-    return _react2.default.createElement('div', null);
-};
+var RepeatedField = function (_Component) {
+    _inherits(RepeatedField, _Component);
+
+    function RepeatedField(props) {
+        _classCallCheck(this, RepeatedField);
+
+        var _this = _possibleConstructorReturn(this, (RepeatedField.__proto__ || Object.getPrototypeOf(RepeatedField)).call(this, props));
+
+        _this.state = {
+            count: 3
+        };
+        return _this;
+    }
+
+    _createClass(RepeatedField, [{
+        key: 'render',
+        value: function render() {
+            var children = [];
+            for (var i = 0; i < this.state.count; i++) {
+                children.push(this.props.children);
+            }
+            return _react2.default.createElement(
+                'div',
+                null,
+                children
+            );
+        }
+    }]);
+
+    return RepeatedField;
+}(_react.Component);
 
 var MessageField = function MessageField(props) {
     var type = props.types[props.type_name];
@@ -1005,7 +1033,14 @@ var MessageField = function MessageField(props) {
 };
 
 var Field = function Field(props) {
-    console.log(props);
+    if (props.label === 3) {
+        //LABEL_REPEATED
+        return _react2.default.createElement(
+            RepeatedField,
+            null,
+            _react2.default.createElement(Field, _extends({}, props, { label: 1 }))
+        );
+    }
     switch (props.type_id) {
         case 5:
             // int32:
@@ -1090,47 +1125,47 @@ var Method = function Method(props) {
             _react2.default.createElement(
                 'div',
                 { className: 'well' },
-                _react2.default.createElement(Message, _extends({}, props.in, { types: props.types }))
+                _react2.default.createElement(Message, _extends({}, props.types[props.in], { types: props.types }))
             ),
             _react2.default.createElement(
                 'div',
                 { className: 'well' },
-                _react2.default.createElement(Message, _extends({}, props.out, { types: props.types }))
+                _react2.default.createElement(Message, _extends({}, props.types[props.out], { types: props.types }))
             )
         ),
         _react2.default.createElement('div', { className: 'panel-body' })
     );
 };
 
-var App = function (_Component) {
-    _inherits(App, _Component);
+var App = function (_Component2) {
+    _inherits(App, _Component2);
 
     function App(props) {
         _classCallCheck(this, App);
 
-        var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
+        var _this2 = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
-        _this.state = {
-            services: [],
+        _this2.state = {
+            packages: {},
             types: {}
         };
-        return _this;
+        return _this2;
     }
 
     _createClass(App, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
-            var _this2 = this;
+            var _this3 = this;
 
             var addr = '127.0.0.1:3001';
             fetch('/api/info?addr=' + addr).then(function (r) {
                 return r.json();
             }).then(function (_ref) {
-                var services = _ref.services,
+                var packages = _ref.packages,
                     types = _ref.types;
 
-                _this2.setState({
-                    services: services,
+                _this3.setState({
+                    packages: packages,
                     types: types
                 });
             });
@@ -1138,21 +1173,23 @@ var App = function (_Component) {
     }, {
         key: 'render',
         value: function render() {
-            var _this3 = this;
+            var _this4 = this;
 
-            var services = this.state.services.map(function (service) {
-                return _react2.default.createElement(
-                    'div',
-                    null,
-                    _react2.default.createElement(
-                        'h3',
+            var packages = Object.keys(this.state.packages).map(function (package_name) {
+                return _this4.state.packages[package_name].map(function (service) {
+                    return _react2.default.createElement(
+                        'div',
                         null,
-                        service.name
-                    ),
-                    service.methods.map(function (method) {
-                        return _react2.default.createElement(Method, _extends({}, method, { types: _this3.state.types }));
-                    })
-                );
+                        _react2.default.createElement(
+                            'h3',
+                            null,
+                            package_name + ' / ' + service.name
+                        ),
+                        service.methods.map(function (method) {
+                            return _react2.default.createElement(Method, _extends({}, method, { types: _this4.state.types }));
+                        })
+                    );
+                });
             });
 
             return _react2.default.createElement(
@@ -1170,7 +1207,7 @@ var App = function (_Component) {
                     _react2.default.createElement(
                         'div',
                         { className: 'col-md-10' },
-                        services
+                        packages
                     )
                 )
             );

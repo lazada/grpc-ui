@@ -10,10 +10,23 @@ const BooleanField = (props) => <input name={props.name} id={props.name} type="c
 
 const UnknownField = (props) => <input name={props.name} id={props.name} type="text" placeholder={'type id: ' + props.type_id}/>;
 
-const RepeatedField = (props) =>
-    <div>
-
-    </div>;
+class RepeatedField extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+          count: 3,
+        };
+    }
+    render() {
+        const children = [];
+        for(let i = 0; i < this.state.count; i++) {
+            children.push(this.props.children);
+        }
+        return <div>
+            {children}
+        </div>
+    }
+}
 
 const MessageField = (props) => {
     const type = props.types[props.type_name];
@@ -21,7 +34,11 @@ const MessageField = (props) => {
 };
 
 const Field = (props) => {
-    console.log(props);
+    if (props.label === 3) { //LABEL_REPEATED
+        return <RepeatedField>
+                    <Field {...props} label={1}/>
+               </RepeatedField>
+    }
     switch (props.type_id) {
         case 5: // int32:
             return <Int32Field {...props}/>;
@@ -62,22 +79,22 @@ const Method = (props) =>
         <div className="panel-heading">
             <h4>{props.name}</h4>
             <div className="well">
-                <Message {...props.in} types={props.types}/>
+                <Message {...props.types[props.in]} types={props.types}/>
             </div>
             <div className="well">
-                <Message {...props.out} types={props.types}/>
+                <Message {...props.types[props.out]} types={props.types}/>
             </div>
         </div>
         <div className="panel-body">
 
         </div>
-    </div>
+    </div>;
 
 class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            services: [],
+            packages: {},
             types: {},
         };
     }
@@ -85,22 +102,23 @@ class App extends Component {
         const addr = '127.0.0.1:3001';
         fetch('/api/info?addr=' + addr)
             .then(r => r.json())
-            .then(({services, types}) => {
+            .then(({packages, types}) => {
                 this.setState({
-                    services,
+                    packages,
                     types,
                 })
             });
     }
     render() {
-        const services = this.state.services.map((service) => {
-            return (
-                <div>
-                    <h3>{service.name}</h3>
+        const packages = Object.keys(this.state.packages).map(package_name => {
+            return this.state.packages[package_name].map((service) => {
+                return <div>
+                    <h3>{package_name + ' / ' + service.name}</h3>
                     {service.methods.map((method) => <Method {...method} types={this.state.types}/>)}
                 </div>
-            );
+            });
         });
+
 
         return (
             <div>
@@ -110,7 +128,7 @@ class App extends Component {
 
                     </div>
                     <div className="col-md-10">
-                        {services}
+                        {packages}
                     </div>
                 </div>
             </div>

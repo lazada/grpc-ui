@@ -8,50 +8,42 @@ import (
 )
 
 type InfoResp struct {
-	Types    map[string]*TypeInfo `json:"types"`
-	Services []Service            `json:"services"`
+	Types    map[string]*TypeInfo  `json:"types"`
+	Packages map[string][]*Service `json:"packages"`
+}
+
+type Package struct {
+	Name     string     `json:"name"`
+	Services []*Service `json:"services"`
 }
 
 type Service struct {
-	Name        string   `json:"name"`
-	PackageName string   `json:"package_name"`
-	Methods     []Method `json:"methods"`
+	Name    string    `json:"name"`
+	Methods []*Method `json:"methods"`
 }
 
 type Method struct {
 	Name string `json:"name"`
 
-	In  *TypeInfo `json:"in"`
-	Out *TypeInfo `json:"out"`
+	In  string `json:"in"`
+	Out string `json:"out"`
 
-	InStream  bool `json:"in_stream,omitempty"`
-	OutStream bool `json:"out_stream,omitempty"`
+	InStream  bool `json:"in_stream"`
+	OutStream bool `json:"out_stream"`
 }
 
 type TypeInfo struct {
-	Id      int                        `json:"id"`
-	Name    string                     `json:"name"`
-	Fields  []FieldInfo                `json:"fields,omitempty"`
-	Options *descriptor.MessageOptions `json:"options,omitempty"`
+	Id     int          `json:"id"`
+	Fields []*FieldInfo `json:"fields"`
 }
 
 type FieldInfo struct {
-	Name     string                                `json:"name"`
-	Number   int                                   `json:"number"`
-	Label    descriptor.FieldDescriptorProto_Label `json:"label,omitempty"`
-	Options  *descriptor.FieldOptions              `json:"options,omitempty"`
-	TypeName string                                `json:"type_name"`
-	TypeID   int                                   `json:"type_id"`
-}
-
-type EnumInfo struct {
-	Name   string          `json:"name"`
-	Values []EnumValueInfo `json:"values,omitempty"`
-}
-
-type EnumValueInfo struct {
-	Name   string `json:"name"`
-	Number int    `json:"number"`
+	Name       string `json:"name"`
+	Number     int    `json:"number"`
+	IsRepeated bool   `json:"is_repeated"`
+	IsRequired bool   `json:"is_required"`
+	TypeName   string `json:"type_name"`
+	TypeID     int    `json:"type_id"`
 }
 
 func GetInfo(ctx context.Context, addr string) (*InfoResp, error) {
@@ -67,29 +59,30 @@ func GetInfo(ctx context.Context, addr string) (*InfoResp, error) {
 		return nil, err
 	}
 
-	res := &InfoResp{}
-	res.Services = make([]Service, 0)
-	res.Types = make(map[string]*TypeInfo)
-	for sname, descr := range services {
+	res := &InfoResp{
+		Packages: make(map[string][]*Service),
+		Types:    make(map[string]*TypeInfo),
+	}
 
+	for sname, descr := range services {
 		packageName := strings.Split(sname, "/")[0]
-		s := Service{
-			Name:        *descr.Name,
-			PackageName: packageName,
+
+		s := &Service{
+			Name:    *descr.Name,
+			Methods: make([]*Method, 0),
 		}
-		s.Methods = make([]Method, len(descr.Method))
-		for i, method := range descr.Method {
-			s.Methods[i] = Method{
+		for _, method := range descr.Method {
+			s.Methods = append(s.Methods, &Method{
 				Name: method.GetName(),
-				In:   GetTypeInfo(pool, method.GetInputType()),
-				Out:  GetTypeInfo(pool, method.GetOutputType()),
+				In:   method.GetInputType(),
+				Out:  method.GetOutputType(),
 
 				InStream:  method.GetClientStreaming(),
 				OutStream: method.GetServerStreaming(),
-			}
+			})
 		}
 
-		res.Services = append(res.Services, s)
+		res.Packages[packageName] = append(res.Packages[packageName], s)
 	}
 
 	res.Types = make(map[string]*TypeInfo)
@@ -107,18 +100,20 @@ func GetTypeInfo(pool *descPool, typeName string) *TypeInfo {
 	}
 
 	info := &TypeInfo{
-		Name:    typeName,
-		Fields:  make([]FieldInfo, len(desc.GetField())),
-		Options: desc.GetOptions(),
+		Fields: make([]*FieldInfo, 0),
 	}
 
-	for i, field := range desc.GetField() {
-		info.Fields[i].Name = field.GetName()
-		info.Fields[i].Number = int(field.GetNumber())
-		info.Fields[i].Label = field.GetLabel()
-		info.Fields[i].Options = field.GetOptions()
-		info.Fields[i].TypeName = field.GetTypeName()
-		info.Fields[i].TypeID = int(field.GetType())
+	for _, field := range desc.GetField() {
+		label := field.GetLabel()
+		info.Fields = append(info.Fields, &FieldInfo{
+			Name:     field.GetName(),
+			Number:   int(field.GetNumber()),
+			TypeName: field.GetTypeName(),
+			TypeID:   int(field.GetType()),
+			IsRepeated: label == descriptor.FieldDescriptorProto_LABEL_REPEATED,
+			IsRequired: label == descriptor.FieldDescriptorProto_LABEL_REQUIRED,
+		})
+
 	}
 	return info
 }
