@@ -1121,19 +1121,31 @@ var Method = function Method(props) {
                 'h4',
                 null,
                 props.name
-            ),
-            _react2.default.createElement(
-                'div',
-                { className: 'well' },
-                _react2.default.createElement(Message, _extends({}, props.types[props.in], { types: props.types }))
-            ),
-            _react2.default.createElement(
-                'div',
-                { className: 'well' },
-                _react2.default.createElement(Message, _extends({}, props.types[props.out], { types: props.types }))
             )
         ),
-        _react2.default.createElement('div', { className: 'panel-body' })
+        _react2.default.createElement(
+            'div',
+            { className: 'panel-body' },
+            _react2.default.createElement(
+                'form',
+                { onSubmit: props.onCall },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'well clearfix' },
+                    _react2.default.createElement(Message, _extends({}, props.types[props.in], { types: props.types })),
+                    _react2.default.createElement(
+                        'button',
+                        { type: 'submit', className: 'btn btn-primary pull-right' },
+                        'Invoke'
+                    )
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: '' },
+                    _react2.default.createElement(Message, _extends({}, props.types[props.out], { types: props.types }))
+                )
+            )
+        )
     );
 };
 
@@ -1171,6 +1183,12 @@ var App = function (_Component2) {
             });
         }
     }, {
+        key: 'onMethodCall',
+        value: function onMethodCall(e) {
+            e.preventDefault();
+            console.log(arguments);
+        }
+    }, {
         key: 'render',
         value: function render() {
             var _this4 = this;
@@ -1186,7 +1204,7 @@ var App = function (_Component2) {
                             package_name + ' / ' + service.name
                         ),
                         service.methods.map(function (method) {
-                            return _react2.default.createElement(Method, _extends({}, method, { types: _this4.state.types }));
+                            return _react2.default.createElement(Method, _extends({}, method, { types: _this4.state.types, onCall: _this4.onMethodCall.bind(_this4) }));
                         })
                     );
                 });

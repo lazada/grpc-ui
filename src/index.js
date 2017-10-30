@@ -75,20 +75,25 @@ const Message = (props) =>
     </div>;
 
 const Method = (props) =>
-    <div className="panel panel-default">
-        <div className="panel-heading">
-            <h4>{props.name}</h4>
-            <div className="well">
-                <Message {...props.types[props.in]} types={props.types}/>
+        <div className="panel panel-default">
+            <div className="panel-heading">
+                <h4>{props.name}</h4>
             </div>
-            <div className="well">
-                <Message {...props.types[props.out]} types={props.types}/>
-            </div>
-        </div>
-        <div className="panel-body">
+            <div className="panel-body">
+                <form onSubmit={props.onCall}>
+                    <div className="well clearfix">
+                        <Message {...props.types[props.in]} types={props.types}/>
+                        <button type="submit" className="btn btn-primary pull-right">Invoke</button>
 
-        </div>
+                    </div>
+
+                    <div className="">
+                        <Message {...props.types[props.out]} types={props.types}/>
+                    </div>
+                </form>
+            </div>
     </div>;
+
 
 class App extends Component {
     constructor(props) {
@@ -109,12 +114,16 @@ class App extends Component {
                 })
             });
     }
+    onMethodCall(e) {
+        e.preventDefault();
+        console.log(arguments);
+    }
     render() {
         const packages = Object.keys(this.state.packages).map(package_name => {
             return this.state.packages[package_name].map((service) => {
                 return <div>
                     <h3>{package_name + ' / ' + service.name}</h3>
-                    {service.methods.map((method) => <Method {...method} types={this.state.types}/>)}
+                    {service.methods.map((method) => <Method {...method} types={this.state.types} onCall={this.onMethodCall.bind(this)}/>)}
                 </div>
             });
         });

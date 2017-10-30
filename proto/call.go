@@ -38,7 +38,7 @@ func Invoke(ctx context.Context, addr string, packageName, serviceName, methodNa
 		return nil, err
 	}
 
-	return out, nil
+	return out.PB, nil
 }
 
 

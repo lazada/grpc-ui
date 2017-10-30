@@ -10,6 +10,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/lazada/grpc-ui/reflection"
+	"github.com/lazada/grpc-ui/proto"
 )
 
 var upgrader = websocket.Upgrader{
@@ -19,8 +20,10 @@ var upgrader = websocket.Upgrader{
 
 type InvokeReq struct {
 	Addr       string `json:"addr"`
-	GRPCMethod string `json:"grpc_method"`
-	GRPCArgs   string `json:"grpc_args"`
+	ServiceName string `json:"service_name"`
+	PackageName string `json:"package_name"`
+	MethodName string `json:"method_name"`
+	GRPCArgs   map[string]interface{} `json:"grpc_args"`
 }
 
 type InvokeResp struct {
@@ -93,7 +96,7 @@ func handleUnary(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	enc := json.NewEncoder(w)
-	invokeRes, err := reflection.Invoke(r.Context(), req.Addr, req.GRPCMethod, []byte(req.GRPCArgs))
+	invokeRes, err := proto.Invoke(r.Context(), req.Addr, req.PackageName, req.ServiceName, req.MethodName, req.GRPCArgs)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		enc.Encode(&InvokeResp{
@@ -122,6 +125,7 @@ func handleStream(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
+	_ = ctx
 	for {
 		req := InvokeStreamReq{}
 		if err := conn.ReadJSON(&req); err != nil {
@@ -131,21 +135,21 @@ func handleStream(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		go func() {
-			err = reflection.InvokeStream(ctx, req.Addr, req.GRPCMethod, []byte(req.GRPCArgs), func(msg string) {
-				conn.WriteJSON(&InvokeStreamResp{
-					Status: "ok",
-					Data:   msg,
-				})
-
-			})
-			if err != nil {
-				conn.WriteJSON(&InvokeStreamResp{
-					Status: "error",
-					Error:  err.Error(),
-				})
-			}
-		}()
+		//go func() {
+		//	err = reflection.InvokeStream(ctx, req.Addr, req.GRPCMethod, []byte(req.GRPCArgs), func(msg string) {
+		//		conn.WriteJSON(&InvokeStreamResp{
+		//			Status: "ok",
+		//			Data:   msg,
+		//		})
+		//
+		//	})
+		//	if err != nil {
+		//		conn.WriteJSON(&InvokeStreamResp{
+		//			Status: "error",
+		//			Error:  err.Error(),
+		//		})
+		//	}
+		//}()
 	}
 
 }
