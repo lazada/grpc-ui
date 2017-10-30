@@ -1,32 +1,17 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
+import './app.sass';
 
 
-const Int32Field = (props) => <input name={props.name} id={props.name} type="number"/>;
+const Int32Field = (props) => <div className="form-group">
+    <label htmlFor={props.name}>{props.name}</label>
+    <input className="form-control" name={props.name} id={props.name} type="number"/>
+</div>;
 
-const StringField = (props) => <input name={props.name} id={props.name} type="text"/>;
-
-const BooleanField = (props) => <input name={props.name} id={props.name} type="checkbox"/>;
-
-const UnknownField = (props) => <input name={props.name} id={props.name} type="text" placeholder={'type id: ' + props.type_id}/>;
-
-class RepeatedField extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-          count: 3,
-        };
-    }
-    render() {
-        const children = [];
-        for(let i = 0; i < this.state.count; i++) {
-            children.push(this.props.children);
-        }
-        return <div>
-            {children}
-        </div>
-    }
-}
+const UnknownField = (props) => <div className="form-group">
+    <label htmlFor={props.name}>{props.name}</label>
+    <input className="form-control" name={props.name} id={props.name} placeholder={'type id: ' + props.type_id} type="text"/>
+</div>;
 
 const MessageField = (props) => {
     const type = props.types[props.type_name];
@@ -34,18 +19,13 @@ const MessageField = (props) => {
 };
 
 const Field = (props) => {
-    if (props.label === 3) { //LABEL_REPEATED
-        return <RepeatedField>
-                    <Field {...props} label={1}/>
-               </RepeatedField>
-    }
     switch (props.type_id) {
         case 5: // int32:
             return <Int32Field {...props}/>;
         case 8: // boolean
-            return <BooleanField {...props}/>;
+            return <UnknownField {...props}/>;
         case 9: // int32:
-            return <StringField {...props}/>;
+            return <UnknownField {...props}/>;
         case 11: // message
             return <MessageField {...props}/>;
         default:
@@ -57,21 +37,7 @@ const Message = (props) =>
     <div>
         <h4>{props.name}</h4>
         <hr/>
-        <table className="table">
-            <tr>
-                <th>Name</th>
-                <th>Input</th>
-            </tr>
-            {props.fields.map((f) => <tr>
-                <td>
-                    <label htmlFor={f.name}>{f.name}</label>
-                </td>
-                <td>
-                    <Field {...f} types={props.types} />
-                </td>
-            </tr>)}
-
-        </table>
+        {props.fields.map((f) => <Field {...f} types={props.types} /> )}
     </div>;
 
 const Method = (props) =>
@@ -84,7 +50,6 @@ const Method = (props) =>
                     <div className="well clearfix">
                         <Message {...props.types[props.in]} types={props.types}/>
                         <button type="submit" className="btn btn-primary pull-right">Invoke</button>
-
                     </div>
 
                     <div className="">
@@ -93,7 +58,6 @@ const Method = (props) =>
                 </form>
             </div>
     </div>;
-
 
 class App extends Component {
     constructor(props) {
@@ -128,15 +92,15 @@ class App extends Component {
             });
         });
 
-
         return (
             <div>
-                <div className="container">
-                    <h1>GRPC UI</h1>
-                    <div className="col-md-2">
-
+                <div className="navbar">
+                    <div className="navbar__container">
+                        <a href="#" className="logo"></a>
                     </div>
-                    <div className="col-md-10">
+                </div>
+                <div className="packages-list">
+                    <div className="packages-list__container">
                         {packages}
                     </div>
                 </div>
