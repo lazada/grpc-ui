@@ -5,12 +5,6 @@ import:
   - jsonpb
   - proto
   - protoc-gen-go/descriptor
-- package: github.com/jhump/protoreflect
-  subpackages:
-  - desc
-  - dynamic
-  - dynamic/grpcdynamic
-  - grpcreflect
 - package: golang.org/x/net
   subpackages:
   - context

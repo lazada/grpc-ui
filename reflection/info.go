@@ -42,6 +42,7 @@ type FieldInfo struct {
 	Number     int    `json:"number"`
 	IsRepeated bool   `json:"is_repeated"`
 	IsRequired bool   `json:"is_required"`
+	IsMap     bool   `json:"is_map"` //TODO: implement
 	TypeName   string `json:"type_name"`
 	TypeID     int    `json:"type_id"`
 }

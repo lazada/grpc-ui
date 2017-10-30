@@ -3,7 +3,7 @@ package reflection
 import (
 	"context"
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
-	"github.com/lazada/grpc-ui/reflection/fixtures/simple"
+	"github.com/lazada/grpc-ui/fixtures/simple"
 	"google.golang.org/grpc"
 	grpcr "google.golang.org/grpc/reflection"
 	"net"
