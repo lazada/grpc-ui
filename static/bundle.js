@@ -21844,6 +21844,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _react = __webpack_require__(4);
@@ -21853,6 +21855,12 @@ var _react2 = _interopRequireDefault(_react);
 __webpack_require__(45);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var UnknownField = function UnknownField(props) {
     return _react2.default.createElement(
@@ -21901,39 +21909,67 @@ var Message = function Message(props) {
     );
 };
 
-var Method = function Method(props) {
-    return _react2.default.createElement(
-        'div',
-        { className: 'method' },
-        _react2.default.createElement(
-            'div',
-            { className: 'method__heading' },
-            _react2.default.createElement(
-                'h4',
-                { className: 'method__name' },
-                ' ',
-                props.name,
-                ' ',
-                _react2.default.createElement('i', { 'class': 'fa fa-angle-down' })
-            )
-        ),
-        _react2.default.createElement(
-            'div',
-            { className: 'method__body', style: { display: 'none' } },
-            _react2.default.createElement(
-                'form',
-                null,
-                _react2.default.createElement(Message, _extends({}, props.types[props.in], { types: props.types })),
+var Method = function (_Component) {
+    _inherits(Method, _Component);
+
+    function Method(props) {
+        _classCallCheck(this, Method);
+
+        var _this = _possibleConstructorReturn(this, (Method.__proto__ || Object.getPrototypeOf(Method)).call(this, props));
+
+        _this.state = {
+            expanded: false
+        };
+
+        return _this;
+    }
+
+    _createClass(Method, [{
+        key: 'onHeadingClick',
+        value: function onHeadingClick() {
+            this.setState({
+                expanded: !this.state.expanded
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                { className: 'method' },
                 _react2.default.createElement(
-                    'button',
-                    { type: 'submit', className: 'btn btn-primary pull-right' },
-                    'Invoke'
+                    'div',
+                    { className: 'method__heading', onClick: this.onHeadingClick.bind(this) },
+                    _react2.default.createElement(
+                        'h4',
+                        { className: 'method__name' },
+                        ' ',
+                        this.props.name,
+                        ' ',
+                        _react2.default.createElement('i', { className: this.state.expanded ? '' : 'fa fa-angle-down' })
+                    )
                 ),
-                _react2.default.createElement(Message, _extends({}, props.types[props.out], { types: props.types }))
-            )
-        )
-    );
-};
+                _react2.default.createElement(
+                    'div',
+                    { className: 'method__body', style: { display: this.state.expanded ? 'block' : 'none' } },
+                    _react2.default.createElement(
+                        'form',
+                        null,
+                        _react2.default.createElement(Message, _extends({}, this.props.types[this.props.in], { types: this.props.types })),
+                        _react2.default.createElement(
+                            'button',
+                            { type: 'submit', className: 'btn btn-primary pull-right' },
+                            'Invoke'
+                        ),
+                        _react2.default.createElement(Message, _extends({}, this.props.types[this.props.out], { types: this.props.types }))
+                    )
+                )
+            );
+        }
+    }]);
+
+    return Method;
+}(_react.Component);
 
 exports.default = Method;
 
@@ -22184,7 +22220,7 @@ exports = module.exports = __webpack_require__(35)(undefined);
 
 
 // module
-exports.push([module.i, ".method {\n  border: 1px solid #eee;\n  margin-bottom: 20px; }\n  .method__heading {\n    padding: 15px;\n    background: #04acb4;\n    color: #fff;\n    font-wight: bold;\n    font-size: 20px; }\n  .method__name {\n    margin: 0; }\n  .method__body {\n    padding: 20px; }\n", ""]);
+exports.push([module.i, ".method {\n  border: 1px solid #eee;\n  margin-bottom: 20px; }\n  .method__heading {\n    cursor: pointer;\n    padding: 15px;\n    background: #04acb4;\n    color: #fff;\n    font-wight: bold;\n    font-size: 20px; }\n  .method__name {\n    margin: 0; }\n  .method__body {\n    padding: 20px; }\n", ""]);
 
 // exports
 

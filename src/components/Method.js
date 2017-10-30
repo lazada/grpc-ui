@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 
 import './Method.sass';
 
@@ -33,19 +33,31 @@ const Message = (props) =>
         {props.fields.map((f) => <Field key={f.name} {...f} types={props.types} /> )}
     </div>;
 
-const Method = (props) =>
-    <div className="method">
-        <div className="method__heading">
-            <h4 className="method__name"> {props.name} <i class="fa fa-angle-down"></i></h4>
-        </div>
-        <div className="method__body" style={{display: 'none'}}>
-            <form>
-                <Message {...props.types[props.in]} types={props.types}/>
-                <button type="submit" className="btn btn-primary pull-right">Invoke</button>
+export default class Method extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            expanded: false,
+        };
 
-                <Message {...props.types[props.out]} types={props.types}/>
-            </form>
+    }
+    onHeadingClick() {
+        this.setState({
+            expanded: !this.state.expanded,
+        })
+    }
+    render() {
+        return <div className="method">
+            <div className="method__heading" onClick={this.onHeadingClick.bind(this)}>
+                <h4 className="method__name"> {this.props.name} <i className={this.state.expanded ? '' : 'fa fa-angle-down'}/></h4>
+            </div>
+            <div className="method__body" style={{display: this.state.expanded ? 'block' : 'none'}}>
+                <form>
+                    <Message {...this.props.types[this.props.in]} types={this.props.types}/>
+                    <button type="submit" className="btn btn-primary pull-right">Invoke</button>
+                    <Message {...this.props.types[this.props.out]} types={this.props.types}/>
+                </form>
+            </div>
         </div>
-    </div>;
-
-export default Method;
+    }
+}
