@@ -7,49 +7,47 @@ import (
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 )
 
+type InfoResp struct {
+	Types    map[string]*TypeInfo  `json:"types"`
+	Packages map[string][]*Service `json:"packages"`
+}
+
+type Package struct {
+	Name     string     `json:"name"`
+	Services []*Service `json:"services"`
+}
+
 type Service struct {
-	Name        string   `json:"name"`
-	PackageName string   `json:"package_name"`
-	Methods     []Method `json:"methods"`
+	Name    string    `json:"name"`
+	Methods []*Method `json:"methods"`
 }
 
 type Method struct {
 	Name string `json:"name"`
 
-	In  TypeInfo `json:"in"`
-	Out TypeInfo `json:"out"`
+	In  string `json:"in"`
+	Out string `json:"out"`
 
-	InStream  bool `json:"in_stream,omitempty"`
-	OutStream bool `json:"out_stream,omitempty"`
+	InStream  bool `json:"in_stream"`
+	OutStream bool `json:"out_stream"`
 }
 
 type TypeInfo struct {
-	Id      int                        `json:"id"`
-	Name    string                     `json:"name"`
-	Fields  []FieldInfo                `json:"fields,omitempty"`
-	Options *descriptor.MessageOptions `json:"options,omitempty"`
+	Id     int          `json:"id"`
+	Fields []*FieldInfo `json:"fields"`
 }
 
 type FieldInfo struct {
-	Name    string                                `json:"name"`
-	Number  int                                   `json:"number"`
-	Label   descriptor.FieldDescriptorProto_Label `json:"label,omitempty"`
-	Type    TypeInfo                              `json:"type"`
-	Enum    EnumInfo                              `json:"enum"`
-	Options *descriptor.FieldOptions              `json:"options,omitempty"`
+	Name       string `json:"name"`
+	Number     int    `json:"number"`
+	IsRepeated bool   `json:"is_repeated"`
+	IsRequired bool   `json:"is_required"`
+	IsMap     bool   `json:"is_map"` //TODO: implement
+	TypeName   string `json:"type_name"`
+	TypeID     int    `json:"type_id"`
 }
 
-type EnumInfo struct {
-	Name   string          `json:"name"`
-	Values []EnumValueInfo `json:"values,omitempty"`
-}
-
-type EnumValueInfo struct {
-	Name   string `json:"name"`
-	Number int    `json:"number"`
-}
-
-func GetInfo(ctx context.Context, addr string) ([]Service, error) {
+func GetInfo(ctx context.Context, addr string) (*InfoResp, error) {
 	pool := &descPool{}
 	if err := pool.connect(ctx, addr); err != nil {
 		return nil, err
@@ -62,86 +60,63 @@ func GetInfo(ctx context.Context, addr string) ([]Service, error) {
 		return nil, err
 	}
 
-	res := make([]Service, 0, len(services))
+	res := &InfoResp{
+		Packages: make(map[string][]*Service),
+		Types:    make(map[string]*TypeInfo),
+	}
+
 	for sname, descr := range services {
-
 		packageName := strings.Split(sname, "/")[0]
-
 		if packageName == "grpc.reflection.v1alpha" {
 			continue
 		}
 
-		s := Service{
-			Name:        *descr.Name,
-			PackageName: packageName,
+		s := &Service{
+			Name:    *descr.Name,
+			Methods: make([]*Method, 0),
 		}
-		s.Methods = make([]Method, len(descr.Method))
-		for i, method := range descr.Method {
-			s.Methods[i] = Method{
+		for _, method := range descr.Method {
+			s.Methods = append(s.Methods, &Method{
 				Name: method.GetName(),
-
-				In:  GetTypeInfo(pool, method.GetInputType()),
-				Out: GetTypeInfo(pool, method.GetOutputType()),
+				In:   method.GetInputType(),
+				Out:  method.GetOutputType(),
 
 				InStream:  method.GetClientStreaming(),
 				OutStream: method.GetServerStreaming(),
-			}
+			})
 		}
 
-		res = append(res, s)
+		res.Packages[packageName] = append(res.Packages[packageName], s)
+	}
+
+	res.Types = make(map[string]*TypeInfo)
+	for k := range pool.getTypes() {
+		res.Types[k] = GetTypeInfo(pool, k)
 	}
 
 	return res, nil
 }
 
-func GetTypeInfo(pool *descPool, typeName string) (res TypeInfo) {
+func GetTypeInfo(pool *descPool, typeName string) *TypeInfo {
 	desc := pool.getTypeDescriptor(typeName)
-
-	// ERROR
 	if desc == nil {
-		return TypeInfo{
-			Id:   0, // ERROR TYPE
-			Name: typeName,
-		}
+		return nil
 	}
 
-	info := TypeInfo{
-		Name:    desc.GetName(),
-		Fields:  make([]FieldInfo, len(desc.GetField())),
-		Options: desc.GetOptions(),
+	info := &TypeInfo{
+		Fields: make([]*FieldInfo, 0),
 	}
 
-	for i, field := range desc.GetField() {
-		info.Fields[i].Name = field.GetName()
-		info.Fields[i].Number = int(field.GetNumber())
-		info.Fields[i].Label = field.GetLabel()
-		info.Fields[i].Options = field.GetOptions()
-
-		fieldType := field.GetType()
-		fieldTypeName := field.GetTypeName()
-
-		if fieldTypeName != "" {
-			info.Fields[i].Type = GetTypeInfo(pool, fieldTypeName)
-			info.Fields[i].Type.Id = int(fieldType)
-		} else {
-			info.Fields[i].Type = TypeInfo{
-				Name: strings.ToLower(fieldType.String()[5:]),
-				Id:   int(fieldType),
-			}
-		}
-
-		if fieldType == descriptor.FieldDescriptorProto_TYPE_ENUM {
-			info.Fields[i].Type.Name = "enum"
-			if enumInfo := pool.getEnumDescriptor(fieldTypeName); enumInfo != nil {
-				info.Fields[i].Enum.Name = enumInfo.GetName()
-				for _, ee := range enumInfo.Value {
-					info.Fields[i].Enum.Values = append(info.Fields[i].Enum.Values, EnumValueInfo{
-						Name:   ee.GetName(),
-						Number: int(ee.GetNumber()),
-					})
-				}
-			}
-		}
+	for _, field := range desc.GetField() {
+		label := field.GetLabel()
+		info.Fields = append(info.Fields, &FieldInfo{
+			Name:       field.GetName(),
+			Number:     int(field.GetNumber()),
+			TypeName:   field.GetTypeName(),
+			TypeID:     int(field.GetType()),
+			IsRepeated: label == descriptor.FieldDescriptorProto_LABEL_REPEATED,
+			IsRequired: label == descriptor.FieldDescriptorProto_LABEL_REQUIRED,
+		})
 
 	}
 	return info

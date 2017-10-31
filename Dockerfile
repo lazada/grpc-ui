@@ -5,7 +5,7 @@ ENV GOPATH=/root
 
 RUN apt-get update && apt-get install -y golang-go golang-glide
 
-ADD reflection src/github.com/lazada/grpc-ui/reflection
+ADD reflection proto fixtures src/github.com/lazada/grpc-ui/reflection
 ADD static src/github.com/lazada/grpc-ui/static
 ADD main.go glide.yaml glide.lock src/github.com/lazada/grpc-ui/
 

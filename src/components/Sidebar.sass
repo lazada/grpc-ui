@@ -1,0 +1,19 @@
+@import mixins.sass
+@import vars.sass
+
+.sidebar
+    padding-top: 30px
+    width: 30%
+    float: left
+    &__link
+        +link-unstyled
+        &:hover
+            color: $primary
+    &__packages-list
+        list-style: none
+        margin: 0
+        padding: 0
+    &__services-list
+        margin: 0
+    &__methods-list
+        margin: 0
