@@ -2304,18 +2304,17 @@ selectorFactory) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__createStore__ = __webpack_require__(26);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__combineReducers__ = __webpack_require__(75);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__bindActionCreators__ = __webpack_require__(76);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__applyMiddleware__ = __webpack_require__(77);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__compose__ = __webpack_require__(30);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__utils_warning__ = __webpack_require__(29);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "createStore", function() { return __WEBPACK_IMPORTED_MODULE_0__createStore__["b"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "combineReducers", function() { return __WEBPACK_IMPORTED_MODULE_1__combineReducers__["a"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "bindActionCreators", function() { return __WEBPACK_IMPORTED_MODULE_2__bindActionCreators__["a"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "applyMiddleware", function() { return __WEBPACK_IMPORTED_MODULE_3__applyMiddleware__["a"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "compose", function() { return __WEBPACK_IMPORTED_MODULE_4__compose__["a"]; });
+/* unused harmony reexport createStore */
+/* unused harmony reexport combineReducers */
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_2__bindActionCreators__["a"]; });
+/* unused harmony reexport applyMiddleware */
+/* unused harmony reexport compose */
 
 
 
@@ -2342,7 +2341,7 @@ if (process.env.NODE_ENV !== 'production' && typeof isCrushed.name === 'string' 
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ActionTypes; });
-/* harmony export (immutable) */ __webpack_exports__["b"] = createStore;
+/* unused harmony export default */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_es_isPlainObject__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_symbol_observable__ = __webpack_require__(71);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_symbol_observable___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_symbol_observable__);
@@ -2799,83 +2798,7 @@ function verifyPlainObject(value, displayName, methodName) {
 }
 
 /***/ }),
-/* 33 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.invokeMethod = exports.loadPackages = exports.INVOKE_METHOD_ERROR = exports.INVOKE_METHOD_SUCCESS = exports.INVOKE_METHOD = exports.REQUEST_PACKAGES_AND_TYPES_SUCCESS = exports.REQUEST_PACKAGES_AND_TYPES = undefined;
-
-var _axios = __webpack_require__(89);
-
-var _axios2 = _interopRequireDefault(_axios);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var REQUEST_PACKAGES_AND_TYPES = exports.REQUEST_PACKAGES_AND_TYPES = 'REQUEST_PACKAGES_AND_TYPES';
-var REQUEST_PACKAGES_AND_TYPES_SUCCESS = exports.REQUEST_PACKAGES_AND_TYPES_SUCCESS = 'REQUEST_PACKAGES_AND_TYPES_SUCCESS';
-var INVOKE_METHOD = exports.INVOKE_METHOD = 'INVOKE_METHOD';
-var INVOKE_METHOD_SUCCESS = exports.INVOKE_METHOD_SUCCESS = 'INVOKE_METHOD_SUCCESS';
-var INVOKE_METHOD_ERROR = exports.INVOKE_METHOD_ERROR = 'INVOKE_METHOD_ERROR';
-
-var loadPackages = exports.loadPackages = function loadPackages() {
-    return function (dispatch) {
-        dispatch({
-            type: REQUEST_PACKAGES_AND_TYPES
-        });
-
-        _axios2.default.get('/api/info').then(function (_ref) {
-            var _ref$data = _ref.data,
-                packages = _ref$data.packages,
-                types = _ref$data.types;
-
-            dispatch({
-                type: REQUEST_PACKAGES_AND_TYPES_SUCCESS,
-                packages: packages,
-                types: types
-            });
-        });
-    };
-};
-
-var invokeMethod = exports.invokeMethod = function invokeMethod(package_name, service_name, method_name, args) {
-    return function (dispatch) {
-        dispatch({ type: INVOKE_METHOD, package_name: package_name, service_name: service_name, method_name: method_name, args: args });
-
-        _axios2.default.post('/api/invoke', {
-            package_name: package_name,
-            service_name: service_name,
-            method_name: method_name,
-            grpc_args: args
-        }).then(function (_ref2) {
-            var data = _ref2.data;
-
-            if (data.status === "ok") {
-                dispatch({
-                    type: INVOKE_METHOD_SUCCESS,
-                    service_name: service_name,
-                    package_name: package_name,
-                    method_name: method_name,
-                    result: data.data
-                });
-            } else {
-                dispatch({
-                    type: INVOKE_METHOD_ERROR,
-                    service_name: service_name,
-                    package_name: package_name,
-                    method_name: method_name,
-                    error: data.error
-                });
-            };
-        });
-    };
-};
-
-/***/ }),
+/* 33 */,
 /* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3164,27 +3087,9 @@ var _App = __webpack_require__(55);
 
 var _App2 = _interopRequireDefault(_App);
 
-var _redux = __webpack_require__(25);
-
-var _reduxThunk = __webpack_require__(110);
-
-var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
-
-var _reactRedux = __webpack_require__(12);
-
-var _reducers = __webpack_require__(111);
-
-var _reducers2 = _interopRequireDefault(_reducers);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var store = (0, _redux.createStore)(_reducers2.default, (0, _redux.applyMiddleware)(_reduxThunk2.default));
-
-_reactDom2.default.render(_react2.default.createElement(
-  _reactRedux.Provider,
-  { store: store },
-  _react2.default.createElement(_App2.default, null)
-), document.getElementById('root'));
+_reactDom2.default.render(_react2.default.createElement(_App2.default, null), document.getElementById('root'));
 
 /***/ }),
 /* 40 */
@@ -23369,8 +23274,6 @@ var _react = __webpack_require__(2);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactRedux = __webpack_require__(12);
-
 var _Sidebar = __webpack_require__(82);
 
 var _Sidebar2 = _interopRequireDefault(_Sidebar);
@@ -23379,9 +23282,11 @@ var _Method = __webpack_require__(86);
 
 var _Method2 = _interopRequireDefault(_Method);
 
-var _actions = __webpack_require__(33);
-
 __webpack_require__(108);
+
+var _axios = __webpack_require__(89);
+
+var _axios2 = _interopRequireDefault(_axios);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -23391,26 +23296,40 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var keys = Object.keys || __webpack_require__(112);
-
 var App = function (_Component) {
     _inherits(App, _Component);
 
     function App(props) {
         _classCallCheck(this, App);
 
-        return _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
+
+        _this.state = {
+            packages: [],
+            types: {}
+        };
+        return _this;
     }
 
     _createClass(App, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
-            this.props.loadPackages();
+            var _this2 = this;
+
+            _axios2.default.get('/api/info').then(function (_ref) {
+                var _ref$data = _ref.data,
+                    packages = _ref$data.packages,
+                    types = _ref$data.types;
+
+                _this2.setState({
+                    packages: packages, types: types
+                });
+            });
         }
     }, {
         key: 'render',
         value: function render() {
-            var _this2 = this;
+            var _this3 = this;
 
             return _react2.default.createElement(
                 'div',
@@ -23433,7 +23352,7 @@ var App = function (_Component) {
                         _react2.default.createElement(
                             'div',
                             { className: 'app__left' },
-                            _react2.default.createElement(_Sidebar2.default, { packages: this.props.packages })
+                            _react2.default.createElement(_Sidebar2.default, { packages: this.state.packages })
                         ),
                         _react2.default.createElement(
                             'div',
@@ -23441,8 +23360,8 @@ var App = function (_Component) {
                             _react2.default.createElement(
                                 'div',
                                 { className: 'packages-list' },
-                                keys(this.props.packages).map(function (package_name) {
-                                    return _this2.props.packages[package_name].map(function (service) {
+                                Object.keys(this.state.packages).map(function (package_name) {
+                                    return _this3.state.packages[package_name].map(function (service) {
                                         return _react2.default.createElement(
                                             'div',
                                             { className: 'package' },
@@ -23454,10 +23373,10 @@ var App = function (_Component) {
                                             service.methods.map(function (method) {
                                                 return _react2.default.createElement(_Method2.default, _extends({ key: method.name
                                                 }, method, {
-                                                    types: _this2.props.types,
-                                                    onInvokeMethod: function onInvokeMethod(args) {
-                                                        return _this2.props.invokeMethod(package_name, service.name, method.name, args);
-                                                    } }));
+                                                    service_name: service.name,
+                                                    package_name: package_name,
+                                                    types: _this3.state.types
+                                                }));
                                             })
                                         );
                                     });
@@ -23472,26 +23391,6 @@ var App = function (_Component) {
 
     return App;
 }(_react.Component);
-
-var mapStateToProps = function mapStateToProps(state) {
-    return {
-        packages: state.packages,
-        types: state.types
-    };
-};
-
-var mapDispatchToProps = function mapDispatchToProps(dispatch) {
-    return {
-        loadPackages: function loadPackages() {
-            dispatch((0, _actions.loadPackages)());
-        },
-        invokeMethod: function invokeMethod(package_name, service_name, method_name, args) {
-            dispatch((0, _actions.invokeMethod)(package_name, service_name, method_name, args));
-        }
-    };
-};
-
-App = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(App);
 
 exports.default = App;
 
@@ -23989,7 +23888,7 @@ function whenMapDispatchToPropsIsMissing(mapDispatchToProps) {
 
 function whenMapDispatchToPropsIsObject(mapDispatchToProps) {
   return mapDispatchToProps && typeof mapDispatchToProps === 'object' ? Object(__WEBPACK_IMPORTED_MODULE_1__wrapMapToProps__["a" /* wrapMapToPropsConstant */])(function (dispatch) {
-    return Object(__WEBPACK_IMPORTED_MODULE_0_redux__["bindActionCreators"])(mapDispatchToProps, dispatch);
+    return Object(__WEBPACK_IMPORTED_MODULE_0_redux__["a" /* bindActionCreators */])(mapDispatchToProps, dispatch);
   }) : undefined;
 }
 
@@ -24322,7 +24221,7 @@ function symbolObservablePonyfill(root) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/* harmony export (immutable) */ __webpack_exports__["a"] = combineReducers;
+/* WEBPACK VAR INJECTION */(function(process) {/* unused harmony export default */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__createStore__ = __webpack_require__(26);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_es_isPlainObject__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_warning__ = __webpack_require__(29);
@@ -24517,7 +24416,7 @@ function bindActionCreators(actionCreators, dispatch) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = applyMiddleware;
+/* unused harmony export default */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__compose__ = __webpack_require__(30);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -25011,6 +24910,10 @@ var _reactRedux = __webpack_require__(12);
 
 __webpack_require__(87);
 
+var _index = __webpack_require__(89);
+
+var _index2 = _interopRequireDefault(_index);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -25023,25 +24926,40 @@ var UnknownField = function UnknownField(props) {
     return _react2.default.createElement(
         'div',
         { className: 'field' },
-        _react2.default.createElement(
-            'label',
-            { className: 'field__label', htmlFor: props.name },
-            props.name,
-            ' = ',
-            props.number,
-            ' (string)'
-        ),
-        _react2.default.createElement('input', { className: 'field__input', name: props.name, id: props.name, type: 'text', value: props.val, onChange: props.onChange })
+        props.read_only ? _react2.default.createElement(
+            'div',
+            null,
+            _react2.default.createElement(
+                'label',
+                { className: 'field__label', htmlFor: props.name },
+                props.name,
+                ' = ',
+                props.number,
+                ' (string)'
+            )
+        ) : _react2.default.createElement(
+            'div',
+            null,
+            _react2.default.createElement(
+                'label',
+                { className: 'field__label', htmlFor: props.name },
+                props.name,
+                ' = ',
+                props.number,
+                ' (string)'
+            ),
+            _react2.default.createElement('input', { className: 'field__input', name: props.name, id: props.name, type: 'text', value: props.val, onChange: props.onChange })
+        )
     );
 };
 
-var Message = function (_Component) {
-    _inherits(Message, _Component);
+var Request = function (_Component) {
+    _inherits(Request, _Component);
 
-    function Message(props) {
-        _classCallCheck(this, Message);
+    function Request(props) {
+        _classCallCheck(this, Request);
 
-        var _this = _possibleConstructorReturn(this, (Message.__proto__ || Object.getPrototypeOf(Message)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (Request.__proto__ || Object.getPrototypeOf(Request)).call(this, props));
 
         _this.state = {
             fields: props.fields.map(function (f) {
@@ -25051,7 +24969,7 @@ var Message = function (_Component) {
         return _this;
     }
 
-    _createClass(Message, [{
+    _createClass(Request, [{
         key: 'handleInvokeMethod',
         value: function handleInvokeMethod(e) {
             var _this2 = this;
@@ -25083,7 +25001,12 @@ var Message = function (_Component) {
 
             return _react2.default.createElement(
                 'div',
-                { className: 'message ' + (this.props.in ? 'message--in' : '') },
+                { className: 'message message--in' },
+                _react2.default.createElement(
+                    'h4',
+                    { className: 'message__title' },
+                    'Request'
+                ),
                 _react2.default.createElement(
                     'form',
                     { onSubmit: this.handleInvokeMethod.bind(this) },
@@ -25107,8 +25030,23 @@ var Message = function (_Component) {
         }
     }]);
 
-    return Message;
+    return Request;
 }(_react.Component);
+
+var Response = function Response(props) {
+    return _react2.default.createElement(
+        'div',
+        { className: 'message' },
+        _react2.default.createElement(
+            'h4',
+            { className: 'message__title' },
+            'Response'
+        ),
+        props.fields.map(function (f) {
+            return _react2.default.createElement(UnknownField, _extends({}, f, { read_only: true }));
+        })
+    );
+};
 
 var Method = function (_Component2) {
     _inherits(Method, _Component2);
@@ -25119,7 +25057,10 @@ var Method = function (_Component2) {
         var _this4 = _possibleConstructorReturn(this, (Method.__proto__ || Object.getPrototypeOf(Method)).call(this, props));
 
         _this4.state = {
-            expanded: false
+            loading: false,
+            expanded: false,
+            result: '',
+            error: ''
         };
 
         return _this4;
@@ -25133,13 +25074,41 @@ var Method = function (_Component2) {
             });
         }
     }, {
-        key: 'render',
-        value: function render() {
+        key: 'handleInvokeMethod',
+        value: function handleInvokeMethod(args) {
             var _this5 = this;
 
+            this.setState({
+                error: '',
+                response: '',
+                loading: true
+            });
+
+            _index2.default.post('/api/invoke', {
+                package_name: this.props.package_name,
+                service_name: this.props.service_name,
+                method_name: this.props.name,
+                grpc_args: args
+            }).then(function (_ref) {
+                var data = _ref.data;
+
+                _this5.setState({
+                    result: data.data,
+                    loading: false
+                });
+            }).catch(function (error) {
+                _this5.setState({
+                    error: error.response.data.error,
+                    loading: false
+                });
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
             return _react2.default.createElement(
                 'div',
-                { className: 'method' },
+                { className: 'method ' + (this.state.loading ? 'method--loading' : '') },
                 _react2.default.createElement(
                     'div',
                     { className: 'method__heading', onClick: this.onHeadingClick.bind(this) },
@@ -25155,20 +25124,18 @@ var Method = function (_Component2) {
                 _react2.default.createElement(
                     'div',
                     { className: 'method__body', style: { display: this.state.expanded ? 'block' : 'none' } },
-                    _react2.default.createElement(Message, _extends({}, this.props.types[this.props.in], { types: this.props.types, 'in': true, onInvokeMethod: function onInvokeMethod(args) {
-                            return _this5.props.onInvokeMethod(args);
-                        } })),
-                    this.props.result ? _react2.default.createElement(
+                    _react2.default.createElement(Request, _extends({}, this.props.types[this.props.in], { types: this.props.types, 'in': true, onInvokeMethod: this.handleInvokeMethod.bind(this) })),
+                    this.state.result ? _react2.default.createElement(
                         'pre',
                         null,
-                        JSON.stringify(this.props.result)
+                        JSON.stringify(this.state.result)
                     ) : null,
-                    this.props.error ? _react2.default.createElement(
+                    this.state.error ? _react2.default.createElement(
                         'pre',
                         null,
-                        JSON.stringify(this.props.error)
+                        JSON.stringify(this.state.error)
                     ) : null,
-                    _react2.default.createElement(Message, _extends({}, this.props.types[this.props.out], { types: this.props.types }))
+                    _react2.default.createElement(Response, _extends({}, this.props.types[this.props.out], { types: this.props.types }))
                 )
             );
         }
@@ -25219,7 +25186,7 @@ exports = module.exports = __webpack_require__(15)(undefined);
 
 
 // module
-exports.push([module.i, ".method {\n  border: 1px solid #eee;\n  margin-bottom: 20px; }\n  .method__heading {\n    cursor: pointer;\n    padding: 15px;\n    background: #04acb4;\n    color: #fff;\n    font-wight: bold;\n    font-size: 20px; }\n  .method__name {\n    margin: 0; }\n\n.message {\n  padding: 40px 20px; }\n  .message--in {\n    border-bottom: 1px solid #eee; }\n  .message__controls {\n    text-align: right; }\n\n.button {\n  padding: 10px;\n  background: none;\n  outline: none;\n  border-radius: 10px;\n  cursor: pointer;\n  border: 2px solid #04acb4;\n  font-family: Roboto, sans-serif;\n  font-weight: bold;\n  font-size: 14px;\n  transition: all 150ms ease-in-out; }\n  .button:hover {\n    background: #04acb4;\n    border: 2px solid #05c4cd;\n    color: #fff; }\n", ""]);
+exports.push([module.i, ".method {\n  border: 1px solid #eee;\n  margin-bottom: 20px;\n  transition: all 200ms ease-in-out; }\n  .method__heading {\n    cursor: pointer;\n    padding: 15px;\n    background: #04acb4;\n    color: #fff;\n    font-wight: bold;\n    font-size: 20px; }\n  .method__name {\n    margin: 0; }\n  .method--loading .method__body {\n    position: relative; }\n    .method--loading .method__body:after {\n      background: rgba(255, 255, 255, 0.8);\n      content: '';\n      display: block;\n      position: absolute;\n      top: 0;\n      left: 0;\n      right: 0;\n      bottom: 0; }\n\n.message {\n  padding: 20px 20px 40px 20px; }\n  .message--in {\n    border-bottom: 1px solid #eee; }\n  .message__controls {\n    text-align: right; }\n  .message__title {\n    font-weight: bold;\n    font-size: 20px;\n    margin: 0;\n    padding: 0;\n    padding-bottom: 10px; }\n\n.button {\n  padding: 10px;\n  background: none;\n  outline: none;\n  border-radius: 10px;\n  cursor: pointer;\n  border: 2px solid #04acb4;\n  font-family: Roboto, sans-serif;\n  font-weight: bold;\n  font-size: 14px;\n  transition: all 150ms ease-in-out; }\n  .button:hover {\n    background: #04acb4;\n    border: 2px solid #05c4cd;\n    color: #fff; }\n", ""]);
 
 // exports
 
@@ -26157,292 +26124,6 @@ exports = module.exports = __webpack_require__(15)(undefined);
 exports.push([module.i, "html, body {\n  margin: 0;\n  padding: 0;\n  font-family: 'Roboto', sans-serif; }\n\n.navbar {\n  padding: 20px;\n  border-bottom: 1px solid #eee; }\n  .navbar__container {\n    width: 1080px;\n    margin: 0 auto; }\n\n.logo {\n  display: block;\n  width: 80px;\n  height: 28px;\n  background-image: url(\"/static/img/grpc.png\"); }\n\n.app__container {\n  width: 1080px;\n  margin: 0 auto; }\n\n.app__left {\n  width: 30%;\n  float: left; }\n\n.app__right {\n  width: 70%;\n  float: left; }\n\n.field {\n  margin-bottom: 20px; }\n  .field__label {\n    display: block; }\n  .field__input {\n    font-size: 14px;\n    box-sizing: border-box;\n    width: 100%;\n    padding: 10px; }\n\n.package__title {\n  font-size: 28px;\n  font-weight: bold; }\n", ""]);
 
 // exports
-
-
-/***/ }),
-/* 110 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-function createThunkMiddleware(extraArgument) {
-  return function (_ref) {
-    var dispatch = _ref.dispatch,
-        getState = _ref.getState;
-    return function (next) {
-      return function (action) {
-        if (typeof action === 'function') {
-          return action(dispatch, getState, extraArgument);
-        }
-
-        return next(action);
-      };
-    };
-  };
-}
-
-var thunk = createThunkMiddleware();
-thunk.withExtraArgument = createThunkMiddleware;
-
-exports['default'] = thunk;
-
-/***/ }),
-/* 111 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _actions = __webpack_require__(33);
-
-var initialState = {
-    types: {},
-    packages: [],
-    methods: []
-};
-
-exports.default = function (state, action) {
-    console.log(action);
-    switch (action.type) {
-        case _actions.REQUEST_PACKAGES_AND_TYPES:
-            return _extends({}, state, {
-                loading: true
-            });
-        case _actions.REQUEST_PACKAGES_AND_TYPES_SUCCESS:
-            return _extends({}, state, {
-                loading: false,
-                types: action.types,
-                packages: action.packages
-            });
-        case _actions.INVOKE_METHOD:
-            var new_packages = _extends({}, state.packages);
-            var services = state.packages[action.package_name];
-            for (var j = 0; j < services.length; j++) {
-                if (services[j].name === action.service_name) {
-                    for (var k = 0; k < services[j].methods.length; k++) {
-                        if (services[j].methods[k].name === action.method_name) {
-                            services[j].methods[k].loading = true;
-                        }
-                    }
-                }
-            }
-            return _extends({}, state, {
-                packages: new_packages
-            });
-        case _actions.INVOKE_METHOD_SUCCESS:
-            new_packages = _extends({}, state.packages);
-            services = state.packages[action.package_name];
-            for (var _j = 0; _j < services.length; _j++) {
-                if (services[_j].name === action.service_name) {
-                    for (var _k = 0; _k < services[_j].methods.length; _k++) {
-                        if (services[_j].methods[_k].name === action.method_name) {
-                            services[_j].methods[_k].loading = false;
-                            services[_j].methods[_k].result = action.result;
-                        }
-                    }
-                }
-            }
-            return _extends({}, state, {
-                packages: new_packages
-            });
-        case _actions.INVOKE_METHOD_ERROR:
-            new_packages = _extends({}, state.packages);
-            services = state.packages[action.package_name];
-            for (var _j2 = 0; _j2 < services.length; _j2++) {
-                if (services[_j2].name === action.service_name) {
-                    for (var _k2 = 0; _k2 < services[_j2].methods.length; _k2++) {
-                        if (services[_j2].methods[_k2].name === action.method_name) {
-                            services[_j2].methods[_k2].loading = false;
-                            services[_j2].methods[_k2].error = action.error;
-                        }
-                    }
-                }
-            }
-            return _extends({}, state, {
-                packages: new_packages
-            });
-        default:
-            return initialState;
-    }
-};
-
-/***/ }),
-/* 112 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-// modified from https://github.com/es-shims/es5-shim
-var has = Object.prototype.hasOwnProperty;
-var toStr = Object.prototype.toString;
-var slice = Array.prototype.slice;
-var isArgs = __webpack_require__(113);
-var isEnumerable = Object.prototype.propertyIsEnumerable;
-var hasDontEnumBug = !isEnumerable.call({ toString: null }, 'toString');
-var hasProtoEnumBug = isEnumerable.call(function () {}, 'prototype');
-var dontEnums = [
-	'toString',
-	'toLocaleString',
-	'valueOf',
-	'hasOwnProperty',
-	'isPrototypeOf',
-	'propertyIsEnumerable',
-	'constructor'
-];
-var equalsConstructorPrototype = function (o) {
-	var ctor = o.constructor;
-	return ctor && ctor.prototype === o;
-};
-var excludedKeys = {
-	$console: true,
-	$external: true,
-	$frame: true,
-	$frameElement: true,
-	$frames: true,
-	$innerHeight: true,
-	$innerWidth: true,
-	$outerHeight: true,
-	$outerWidth: true,
-	$pageXOffset: true,
-	$pageYOffset: true,
-	$parent: true,
-	$scrollLeft: true,
-	$scrollTop: true,
-	$scrollX: true,
-	$scrollY: true,
-	$self: true,
-	$webkitIndexedDB: true,
-	$webkitStorageInfo: true,
-	$window: true
-};
-var hasAutomationEqualityBug = (function () {
-	/* global window */
-	if (typeof window === 'undefined') { return false; }
-	for (var k in window) {
-		try {
-			if (!excludedKeys['$' + k] && has.call(window, k) && window[k] !== null && typeof window[k] === 'object') {
-				try {
-					equalsConstructorPrototype(window[k]);
-				} catch (e) {
-					return true;
-				}
-			}
-		} catch (e) {
-			return true;
-		}
-	}
-	return false;
-}());
-var equalsConstructorPrototypeIfNotBuggy = function (o) {
-	/* global window */
-	if (typeof window === 'undefined' || !hasAutomationEqualityBug) {
-		return equalsConstructorPrototype(o);
-	}
-	try {
-		return equalsConstructorPrototype(o);
-	} catch (e) {
-		return false;
-	}
-};
-
-var keysShim = function keys(object) {
-	var isObject = object !== null && typeof object === 'object';
-	var isFunction = toStr.call(object) === '[object Function]';
-	var isArguments = isArgs(object);
-	var isString = isObject && toStr.call(object) === '[object String]';
-	var theKeys = [];
-
-	if (!isObject && !isFunction && !isArguments) {
-		throw new TypeError('Object.keys called on a non-object');
-	}
-
-	var skipProto = hasProtoEnumBug && isFunction;
-	if (isString && object.length > 0 && !has.call(object, 0)) {
-		for (var i = 0; i < object.length; ++i) {
-			theKeys.push(String(i));
-		}
-	}
-
-	if (isArguments && object.length > 0) {
-		for (var j = 0; j < object.length; ++j) {
-			theKeys.push(String(j));
-		}
-	} else {
-		for (var name in object) {
-			if (!(skipProto && name === 'prototype') && has.call(object, name)) {
-				theKeys.push(String(name));
-			}
-		}
-	}
-
-	if (hasDontEnumBug) {
-		var skipConstructor = equalsConstructorPrototypeIfNotBuggy(object);
-
-		for (var k = 0; k < dontEnums.length; ++k) {
-			if (!(skipConstructor && dontEnums[k] === 'constructor') && has.call(object, dontEnums[k])) {
-				theKeys.push(dontEnums[k]);
-			}
-		}
-	}
-	return theKeys;
-};
-
-keysShim.shim = function shimObjectKeys() {
-	if (Object.keys) {
-		var keysWorksWithArguments = (function () {
-			// Safari 5.0 bug
-			return (Object.keys(arguments) || '').length === 2;
-		}(1, 2));
-		if (!keysWorksWithArguments) {
-			var originalKeys = Object.keys;
-			Object.keys = function keys(object) {
-				if (isArgs(object)) {
-					return originalKeys(slice.call(object));
-				} else {
-					return originalKeys(object);
-				}
-			};
-		}
-	} else {
-		Object.keys = keysShim;
-	}
-	return Object.keys || keysShim;
-};
-
-module.exports = keysShim;
-
-
-/***/ }),
-/* 113 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var toStr = Object.prototype.toString;
-
-module.exports = function isArguments(value) {
-	var str = toStr.call(value);
-	var isArgs = str === '[object Arguments]';
-	if (!isArgs) {
-		isArgs = str !== '[object Array]' &&
-			value !== null &&
-			typeof value === 'object' &&
-			typeof value.length === 'number' &&
-			value.length >= 0 &&
-			toStr.call(value.callee) === '[object Function]';
-	}
-	return isArgs;
-};
 
 
 /***/ })
