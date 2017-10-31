@@ -110,9 +110,9 @@ class Method extends Component {
             method_name: this.props.name,
             grpc_args: args,
         })
-            .then(({data}) => {
+            .then((resp) => {
                 this.setState({
-                    result: data.data,
+                    result: resp.data.data,
                     loading: false,
                 });
             })
@@ -132,8 +132,10 @@ class Method extends Component {
             <div className="method__body" style={{display: this.state.expanded ? 'block' : 'none'}}>
                 <Request {...this.props.types[this.props.in]} types={this.props.types} in={true} onInvokeMethod={this.handleInvokeMethod.bind(this)}/>
 
-                {this.state.result ? <pre>{JSON.stringify(this.state.result)}</pre> : null}
-                {this.state.error ? <pre>{JSON.stringify(this.state.error)}</pre> : null}
+                {this.state.error ?
+                    <div class="method__error">{this.state.error}</div> : null}
+                {this.state.result ?
+                    <div class="method__result">{JSON.stringify(this.state.result, null, 4)}</div> : null}
                 <Response {...this.props.types[this.props.out]} types={this.props.types}/>
             </div>
         </div>
