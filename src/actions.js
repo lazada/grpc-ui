@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 export const REQUEST_PACKAGES_AND_TYPES = 'REQUEST_PACKAGES_AND_TYPES';
 export const REQUEST_PACKAGES_AND_TYPES_SUCCESS = 'REQUEST_PACKAGES_AND_TYPES_SUCCESS';
 export const INVOKE_METHOD = 'INVOKE_METHOD';
@@ -11,9 +13,8 @@ export const loadPackages = () => {
             type: REQUEST_PACKAGES_AND_TYPES,
         });
 
-        fetch('/api/info?addr=' + addr)
-            .then(r => r.json())
-            .then(({packages, types}) => {
+        axios.get('/api/info?addr=' + addr)
+            .then(({data: {packages, types}}) => {
                 dispatch({
                     type: REQUEST_PACKAGES_AND_TYPES_SUCCESS,
                     packages,
@@ -30,18 +31,14 @@ export const invokeMethod = (package_name, service_name, method_name, args) => {
 
         const addr = '127.0.0.1:3001';
 
-        fetch('/api/invoke', {
-            method: 'POST',
-            body: JSON.stringify({
-                addr,
-                package_name,
-                service_name,
-                method_name,
-                grpc_args: args,
-            })
+        axios.post('/api/invoke', {
+            addr,
+            package_name,
+            service_name,
+            method_name,
+            grpc_args: args,
         })
-            .then(res => res.json())
-            .then(data => {
+            .then(({data}) => {
                 if (data.status === "ok") {
                     dispatch({
                         type: INVOKE_METHOD_SUCCESS,

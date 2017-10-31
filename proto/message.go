@@ -8,8 +8,8 @@ import (
 // Dynamic proto Message
 
 type FieldValue struct{
-	Number int
-	Value string
+	Number int `json:"number"`
+	Value string `json:"val"`
 }
 
 type Message struct {
@@ -32,7 +32,7 @@ func (m *Message) ProtoMessage() {}
 // Marshaler and Unarshaler interfaces
 
 func (m *Message) Marshal() ([]byte, error) {
-	return Encode(m.TypeInfo, m.TypeName, m.Data, nil)
+	return Encode(m.TypeInfo, m.TypeName, m.Data)
 }
 
 func (m *Message) Unmarshal(buf []byte) error {

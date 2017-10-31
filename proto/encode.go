@@ -13,13 +13,14 @@ import (
 	"github.com/lazada/grpc-ui/reflection"
 )
 
-func Encode(typeInfo map[string]*reflection.TypeInfo, typeName string, data []FieldValue, fieldPath []int) (resBuf []byte, err error) {
+func Encode(typeInfo map[string]*reflection.TypeInfo, typeName string, data []FieldValue) (resBuf []byte, err error) {
 	for _, field := range data {
 		// get field info
 
 		var fieldInfo *reflection.FieldInfo
 		for _, fi := range typeInfo[typeName].Fields {
 			if fi.Number == field.Number {
+				fieldInfo = fi
 				break
 			}
 		}
@@ -136,9 +137,8 @@ func Encode(typeInfo map[string]*reflection.TypeInfo, typeName string, data []Fi
 		}
 
 		if err != nil {
-			return
+			return nil, err
 		}
-
 		 // write encoded data to buffer
 
 		if len(fieldBuf) > 0 {

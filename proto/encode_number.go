@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"errors"
 )
 
 func _interfaceFloat64ToFloat64(value interface{}) (res float64, err error) {
@@ -267,10 +268,14 @@ func encodeInt(value interface{}, n int, wt int, repeated bool) (resultBuf []byt
 		resultBuf = append(resultBuf, EncodeTag(n, wt)...)
 		resultBuf = append(resultBuf, EncodeBytes(repBuf)...)
 	} else {
-		var _value float64
-		_value, err = _interfaceFloat64ToFloat64(value)
+		valStr, ok := value.(string)
+		if !ok {
+			return nil, errors.New("Should be a string")
+		}
+
+		_value, err := strconv.ParseInt(valStr, 10, 64)
 		if err != nil {
-			return
+			return nil, err
 		}
 		resultBuf = append(resultBuf, EncodeTag(n, wt)...)
 		resultBuf = append(resultBuf, EncodeVarint(uint64(_value))...)

@@ -34,9 +34,10 @@ func (i *impl) Test(ctx context.Context, req *pb.Req) (*pb.Res, error) {
 
 func (i *impl) GetUser(ctx context.Context, req *pb.GetUserReq) (*pb.UserResp, error) {
 	return &pb.UserResp{
-		FirstName: "TestUser",
-		LastName: "Test last name",
-		Active: true,
+		FirstName: req.FirstName + "[server]",
+		LastName: req.LastName + " [server]",
+		Active: len(req.FirstName) > 3,
+		Age: req.Age,
 	}, nil
 }
 

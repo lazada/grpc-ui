@@ -5,8 +5,8 @@ import './Method.sass';
 
 
 const UnknownField = (props) => <div className="field">
-    <label className="field__label" htmlFor={props.name}>{props.name}</label>
-    <input className="field__input" name={props.name} id={props.name} type="text" placeholder="string" value={props.val} onChange={props.onChange}/>
+    <label className="field__label" htmlFor={props.name}>{props.name} = {props.number} (string)</label>
+    <input className="field__input" name={props.name} id={props.name} type="text" value={props.val} onChange={props.onChange}/>
 </div>;
 
 
