@@ -43,8 +43,9 @@ class Message extends Component {
         return (
             <div className={`message ${this.props.in ? 'message--in' : ''}`}>
                 <form onSubmit={this.handleInvokeMethod.bind(this)}>
-                    {this.props.fields.map((f, i) => <UnknownField  {...f} val={this.state.fields[i].val}
-                                                  onChange={(e) => this.handleChange(i, e.target.value)}/>
+                    {this.props.fields.map((f, i) =>
+                        <UnknownField  {...f} val={this.state.fields[i].val}
+                                       onChange={(e) => this.handleChange(i, e.target.value)}/>
                     )}
 
                     {this.props.in ? <div className="message__controls">
@@ -75,8 +76,11 @@ class Method extends Component {
             <div className="method__heading" onClick={this.onHeadingClick.bind(this)}>
                 <h4 className="method__name"> {this.props.name} <i className={this.state.expanded ? '' : 'fa fa-angle-down'}/></h4>
             </div>
+
             <div className="method__body" style={{display: this.state.expanded ? 'block' : 'none'}}>
-                <Message {...this.props.types[this.props.in]} types={this.props.types} in={true} onInvokeMethod={(args) => this.props.onInvokeMethod(this.props.name, args)}/>
+                <Message {...this.props.types[this.props.in]} types={this.props.types} in={true} onInvokeMethod={(args) => this.props.onInvokeMethod(args)}/>
+                {this.props.result ? <pre>{JSON.stringify(this.props.result)}</pre> : null}
+                {this.props.error ? <pre>{JSON.stringify(this.props.error)}</pre> : null}
                 <Message {...this.props.types[this.props.out]} types={this.props.types}/>
             </div>
         </div>

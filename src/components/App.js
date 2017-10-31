@@ -2,11 +2,16 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 
 import Sidebar from './Sidebar';
-import Package from './Package';
+import Method from './Method';
 import {loadPackages, invokeMethod} from '../actions';
 
 import './app.sass';
 
+//
+// <Package key={package_name} name={package_name}
+//          service={service} types={this.props.types}
+//          onInvokeMethod={(method_name, args) =>
+//              this.props.invokeMethod(package_name, service.name, method_name, args)} />
 
 class App extends Component {
     constructor(props) {
@@ -32,10 +37,15 @@ class App extends Component {
                             <div className="packages-list">
                                 {Object.keys(this.props.packages).map(package_name => {
                                     return this.props.packages[package_name].map((service) => {
-                                        return <Package key={package_name} name={package_name}
-                                                        service={service} types={this.props.types}
-                                                        onInvokeMethod={(method_name, args) =>
-                                                            this.props.invokeMethod(package_name, service.name, method_name, args)} />
+                                        return <div className="package">
+                                            <h3 className="package__title">{package_name + ' / ' + service.name}</h3>
+                                            {service.methods.map((method) =>
+                                                    <Method key={method.name}
+                                                            {...method}
+                                                            types={this.props.types}
+                                                            onInvokeMethod={(args) => this.props.invokeMethod(package_name, service.name, method.name, args)}/>)}
+                                        </div>
+
                                     });
                                 })}
                             </div>
