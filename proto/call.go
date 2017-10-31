@@ -7,16 +7,13 @@ import (
 	"google.golang.org/grpc"
 )
 
-type FieldData []struct{
-	Val string `json:"val"`
-	Number int `json:"number"`
-}
 
-func Invoke(ctx context.Context, addr string, packageName, serviceName, methodName string, data FieldData) (interface{}, error){
+func Invoke(ctx context.Context, addr string, packageName, serviceName, methodName string, data []FieldValue) (interface{}, error){
 	info, err := reflection.GetInfo(ctx, addr)
 	if err != nil {
 		return nil, err
 	}
+
 	inType, outType, err := findInType(info, packageName, serviceName, methodName)
 	if err != nil {
 		return nil, err
@@ -27,14 +24,14 @@ func Invoke(ctx context.Context, addr string, packageName, serviceName, methodNa
 	for _, f := range data {
 		for _, pf := range info.Types[inType].Fields {
 			if f.Number == pf.Number {
-				valuesMap[pf.Name] = f.Val
+				valuesMap[pf.Name] = f.Value
 			}
 		}
 	}
 	in := &Message{
 		TypeInfo: info.Types,
 		TypeName: inType,
-		PB: valuesMap,
+		Data: data,
 	}
 
 	out := &Message{

@@ -13,51 +13,25 @@ import (
 	"github.com/lazada/grpc-ui/reflection"
 )
 
-func Encode(typeInfo map[string]*reflection.TypeInfo, typeName string, msg interface{}, fieldPath []int) (resBuf []byte, err error) {
-	// https://developers.google.com/protocol-buffers/docs/encoding
-	// Base on:
-	// github.com/golang/protobuf/proto/encode.go
-	// enc_struct
-
-	defer func() {
-		if r := recover(); r != nil {
-			err = fmt.Errorf("Panic in Encode: %v", r)
-		}
-	}()
-
-	_msg, ok := msg.(map[string]interface{})
-	if !ok {
-		err = fmt.Errorf("Encode: Conversion from interface{} to map[string]interface{} failed")
-		return
-	}
-
-	for fieldName, value := range _msg {
-
+func Encode(typeInfo map[string]*reflection.TypeInfo, typeName string, data []FieldValue, fieldPath []int) (resBuf []byte, err error) {
+	for _, field := range data {
 		// get field info
 
 		var fieldInfo *reflection.FieldInfo
-		fieldInfo, err = findFieldInfoByName(typeInfo, typeName, fieldName, fieldPath)
-		if err != nil {
-			return
+		for _, fi := range typeInfo[typeName].Fields {
+			if fi.Number == field.Number {
+				break
+			}
+		}
+		if fieldInfo == nil {
+			return nil, fmt.Errorf("no such field with number: %v", field.Number)
 		}
 
-		// set repeated flag
-
-		var repeatedField bool
-		var mapField bool
-
-		if fieldInfo.IsRepeated {
-			repeatedField = true
-		}
-
-		if fieldInfo.IsMap {
-			mapField = true
-		}
 
 		typeId := descriptor.FieldDescriptorProto_Type(fieldInfo.TypeID)
 
 		wireType := FieldTypeToWireType(typeId)
-		if repeatedField {
+		if fieldInfo.IsRepeated {
 			wireType = proto.WireBytes
 		}
 
@@ -68,53 +42,53 @@ func Encode(typeInfo map[string]*reflection.TypeInfo, typeName string, msg inter
 		switch typeId {
 		case descriptor.FieldDescriptorProto_TYPE_FLOAT:
 			fieldBuf, err = encodeFloat(
-				value,
+				field.Value,
 				fieldInfo.Number, wireType,
-				repeatedField,
+				fieldInfo.IsRepeated,
 			)
 
 		case descriptor.FieldDescriptorProto_TYPE_DOUBLE:
 			fieldBuf, err = encodeDouble(
-				value,
+				field.Value,
 				fieldInfo.Number, wireType,
-				repeatedField,
+				fieldInfo.IsRepeated,
 			)
 
 		case descriptor.FieldDescriptorProto_TYPE_SINT32:
 			fieldBuf, err = encodeSInt32(
-				value,
+				field.Value,
 				fieldInfo.Number, wireType,
-				repeatedField,
+				fieldInfo.IsRepeated,
 			)
 
 		case descriptor.FieldDescriptorProto_TYPE_SINT64:
 			fieldBuf, err = encodeSInt64(
-				value,
+				field.Value,
 				fieldInfo.Number, wireType,
-				repeatedField,
+				fieldInfo.IsRepeated,
 			)
 
 		case descriptor.FieldDescriptorProto_TYPE_FIXED32,
 			descriptor.FieldDescriptorProto_TYPE_SFIXED32:
 			fieldBuf, err = encodeFixed32(
-				value,
+				field.Value,
 				fieldInfo.Number, wireType,
-				repeatedField,
+				fieldInfo.IsRepeated,
 			)
 
 		case descriptor.FieldDescriptorProto_TYPE_FIXED64,
 			descriptor.FieldDescriptorProto_TYPE_SFIXED64:
 			fieldBuf, err = encodeFixed64(
-				value,
+				field.Value,
 				fieldInfo.Number, wireType,
-				repeatedField,
+				fieldInfo.IsRepeated,
 			)
 
 		case descriptor.FieldDescriptorProto_TYPE_BOOL:
 			fieldBuf, err = encodeBool(
-				value,
+				field.Value,
 				fieldInfo.Number, wireType,
-				repeatedField,
+				fieldInfo.IsRepeated,
 			)
 
 		case descriptor.FieldDescriptorProto_TYPE_INT32,
@@ -123,49 +97,49 @@ func Encode(typeInfo map[string]*reflection.TypeInfo, typeName string, msg inter
 			descriptor.FieldDescriptorProto_TYPE_UINT64,
 			descriptor.FieldDescriptorProto_TYPE_ENUM:
 			fieldBuf, err = encodeInt(
-				value,
+				field.Value,
 				fieldInfo.Number, wireType,
-				repeatedField,
+				fieldInfo.IsRepeated,
 			)
 
 		case descriptor.FieldDescriptorProto_TYPE_BYTES:
 			fieldBuf, err = encodeBytes(
-				value,
+				field.Value,
 				fieldInfo.Number, wireType,
-				repeatedField,
+				fieldInfo.IsRepeated,
 			)
 
 		case descriptor.FieldDescriptorProto_TYPE_STRING:
 			fieldBuf, err = encodeString(
-				value,
+				field.Value,
 				fieldInfo.Number, wireType,
-				repeatedField,
+				fieldInfo.IsRepeated,
 			)
 
-		case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
-			if mapField {
-				fieldBuf, err = encodeMap(
-					value,
-					fieldInfo.Number, wireType,
-					typeName,
-					typeInfo, fieldPath,
-				)
-			} else {
-				fieldBuf, err = encodeMessage(
-					value,
-					fieldInfo.Number, wireType,
-					typeInfo, typeName,fieldPath,
-					repeatedField,
-				)
-			}
-
+		//case descriptor.FieldDescriptorProto_TYPE_MESSAGE:
+		//	if fieldInfo.IsMap {
+		//		fieldBuf, err = encodeMap(
+		//			field.Value,
+		//			fieldInfo.Number, wireType,
+		//			typeName,
+		//			typeInfo, fieldPath,
+		//		)
+		//	} else {
+		//		fieldBuf, err = encodeMessage(
+		//			field.Value,
+		//			fieldInfo.Number, wireType,
+		//			typeInfo, typeName,fieldPath,
+		//			fieldInfo.IsRepeated,
+		//		)
+		//	}
+		//
 		}
 
 		if err != nil {
 			return
 		}
 
-		// write encoded data to buffer
+		 // write encoded data to buffer
 
 		if len(fieldBuf) > 0 {
 			resBuf = append(resBuf, fieldBuf...)

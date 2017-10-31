@@ -37,12 +37,14 @@ message DeleteUserResp {
 message GetUserReq {
     string firstName = 1;
     string lastName = 2;
+    int32 age = 3;
 }
 
 message UserResp {
     string firstName  = 1;
     string lastName = 2;
     bool active = 3;
+    int32 age = 4;
 }
 
 message Req {

@@ -1,53 +1,9 @@
-/*
-Dynamic proto.Message
-*/
-
 package proto
 
 import (
-	"fmt"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
-	"github.com/lazada/grpc-ui/reflection"
 )
-
-// Dynamic proto Message
-
-type Message struct {
-	TypeInfo map[string]*reflection.TypeInfo
-	TypeName string
-	PB       map[string]interface{}
-}
-
-// proto.Message interface
-
-func (m *Message) Reset() {
-	m.PB = map[string]interface{}{}
-}
-
-func (m *Message) String() string {
-	return fmt.Sprintf("%#v", m.PB)
-}
-
-func (m *Message) ProtoMessage() {
-}
-
-// Marshaler and Unarshaler interfaces
-
-func (m *Message) Marshal() ([]byte, error) {
-	return Encode(m.TypeInfo, m.TypeName, m.PB, nil)
-}
-
-func (m *Message) Unmarshal(buf []byte) error {
-	res, err := Decode(m.TypeInfo, m.TypeName, buf, nil)
-	_res, ok := res.(map[string]interface{})
-	if !ok {
-		err = fmt.Errorf("Invalid unmarshaled message, err: %v", err)
-	}
-	m.PB = _res
-	return err
-}
 
 func FieldTypeToWireType(typeId descriptor.FieldDescriptorProto_Type) (wireType int) {
 	switch typeId {

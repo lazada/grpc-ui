@@ -3,11 +3,12 @@ package http_server
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
+
 	"github.com/gorilla/websocket"
 	"github.com/lazada/grpc-ui/proto"
 	"github.com/lazada/grpc-ui/reflection"
-	"log"
-	"net/http"
 )
 
 
@@ -39,7 +40,7 @@ type InvokeReq struct {
 	ServiceName string `json:"service_name"`
 	PackageName string `json:"package_name"`
 	MethodName string `json:"method_name"`
-	GRPCArgs   proto.FieldData `json:"grpc_args"`
+	GRPCArgs   []proto.FieldValue `json:"grpc_args"`
 }
 
 type InvokeResp struct {
