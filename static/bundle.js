@@ -2824,12 +2824,11 @@ var INVOKE_METHOD_ERROR = exports.INVOKE_METHOD_ERROR = 'INVOKE_METHOD_ERROR';
 
 var loadPackages = exports.loadPackages = function loadPackages() {
     return function (dispatch) {
-        var addr = '127.0.0.1:3001';
         dispatch({
             type: REQUEST_PACKAGES_AND_TYPES
         });
 
-        _axios2.default.get('/api/info?addr=' + addr).then(function (_ref) {
+        _axios2.default.get('/api/info').then(function (_ref) {
             var _ref$data = _ref.data,
                 packages = _ref$data.packages,
                 types = _ref$data.types;
@@ -2847,10 +2846,7 @@ var invokeMethod = exports.invokeMethod = function invokeMethod(package_name, se
     return function (dispatch) {
         dispatch({ type: INVOKE_METHOD, package_name: package_name, service_name: service_name, method_name: method_name, args: args });
 
-        var addr = '127.0.0.1:3001';
-
         _axios2.default.post('/api/invoke', {
-            addr: addr,
             package_name: package_name,
             service_name: service_name,
             method_name: method_name,

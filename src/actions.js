@@ -8,12 +8,11 @@ export const INVOKE_METHOD_ERROR = 'INVOKE_METHOD_ERROR';
 
 export const loadPackages = () => {
     return dispatch => {
-        const addr = '127.0.0.1:3001';
         dispatch({
             type: REQUEST_PACKAGES_AND_TYPES,
         });
 
-        axios.get('/api/info?addr=' + addr)
+        axios.get('/api/info')
             .then(({data: {packages, types}}) => {
                 dispatch({
                     type: REQUEST_PACKAGES_AND_TYPES_SUCCESS,
@@ -29,10 +28,7 @@ export const invokeMethod = (package_name, service_name, method_name, args) => {
     return dispatch => {
         dispatch({ type: INVOKE_METHOD, package_name, service_name, method_name, args});
 
-        const addr = '127.0.0.1:3001';
-
         axios.post('/api/invoke', {
-            addr,
             package_name,
             service_name,
             method_name,
