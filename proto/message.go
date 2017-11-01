@@ -9,7 +9,7 @@ import (
 
 type FieldValue struct{
 	Number int `json:"number"`
-	Value string `json:"val"`
+	Value interface{} `json:"val"`
 }
 
 type Message struct {

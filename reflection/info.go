@@ -41,8 +41,8 @@ type FieldInfo struct {
 	Name       string `json:"name"`
 	Number     int    `json:"number"`
 	IsRepeated bool   `json:"is_repeated"`
-	IsRequired bool   `json:"is_required"`
 	IsMap     bool   `json:"is_map"` //TODO: implement
+	DefaultValue string `json:"default_value"`
 	TypeName   string `json:"type_name"`
 	TypeID     int    `json:"type_id"`
 }
@@ -114,8 +114,8 @@ func GetTypeInfo(pool *descPool, typeName string) *TypeInfo {
 			Number:     int(field.GetNumber()),
 			TypeName:   field.GetTypeName(),
 			TypeID:     int(field.GetType()),
+			DefaultValue: field.GetDefaultValue(),
 			IsRepeated: label == descriptor.FieldDescriptorProto_LABEL_REPEATED,
-			IsRequired: label == descriptor.FieldDescriptorProto_LABEL_REQUIRED,
 		})
 
 	}

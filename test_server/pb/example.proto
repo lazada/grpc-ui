@@ -37,7 +37,9 @@ message DeleteUserResp {
 message GetUserReq {
     string firstName = 1;
     string lastName = 2;
-    int32 age = 3;
+    repeated string skills = 3;
+    repeated int32 ids = 4;
+    int32 age = 5;
 }
 
 message UserResp {
@@ -45,6 +47,7 @@ message UserResp {
     string lastName = 2;
     bool active = 3;
     int32 age = 4;
+    string skills = 5;
 }
 
 message Req {

@@ -94,11 +94,17 @@ func (h *HTTPServer) handleUnary(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
+	enc := json.NewEncoder(w)
+
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, fmt.Sprintf("json.Unmarshal error: %v", err), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
+		enc.Encode(&InvokeResp{
+			Status: "error",
+			Error:  err.Error(),
+		})
+		log.Printf("Can't decode request body: %v", err)
 		return
 	}
-	enc := json.NewEncoder(w)
 	invokeRes, err := proto.Invoke(r.Context(), h.targetAddr, req.PackageName, req.ServiceName, req.MethodName, req.GRPCArgs)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

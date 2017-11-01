@@ -125,30 +125,35 @@ func encodeBool(value interface{}, n int, wt int, repeated bool) (resultBuf []by
 		}
 		var repBuf []byte
 		for _, v := range _value {
-			var vv bool
-			vv, ok = v.(bool)
+			vv, ok := v.(string)
 			if !ok {
-				err = fmt.Errorf("encodeBool: Conversion error (%T) %#v to bool", v, v)
+				err = fmt.Errorf("encodeBool: Conversion error (%T) %#v to string", v, v)
 			}
-			if vv {
+			if vv  == "true" {
 				repBuf = append(repBuf, EncodeVarint(uint64(1))...)
-			} else {
+			} else if vv == "false" {
 				repBuf = append(repBuf, EncodeVarint(uint64(0))...)
+			} else {
+				err = fmt.Errorf("encodeBool: Conversion error (%v) %#v to bool", vv, v)
 			}
+
 		}
 		resultBuf = append(resultBuf, EncodeTag(n, wt)...)
 		resultBuf = append(resultBuf, EncodeBytes(repBuf)...)
 	} else {
-		_value, ok := value.(bool)
+		_value, ok := value.(string)
 		if !ok {
-			err = fmt.Errorf("encodeBool: Conversion error (%T) %#v to bool", value, value)
+			err = fmt.Errorf("encodeBool: Conversion error (%T) %#v to string", value, value)
 			return
 		}
 		resultBuf = append(resultBuf, EncodeTag(n, wt)...)
-		if _value {
+
+		if _value  == "true" {
 			resultBuf = append(resultBuf, EncodeVarint(uint64(1))...)
-		} else {
+		} else if _value == "false" {
 			resultBuf = append(resultBuf, EncodeVarint(uint64(0))...)
+		} else {
+			err = fmt.Errorf("encodeBool: Conversion error (%v) to bool", _value)
 		}
 	}
 	return

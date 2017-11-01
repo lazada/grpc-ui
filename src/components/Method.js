@@ -1,81 +1,16 @@
 import React, {Component} from 'react';
-import {connect} from 'react-redux';
-
 import './Method.sass';
 import axios from 'axios/index';
+import Request from './request';
 
-
-const UnknownField = (props) => <div className="field">
-    {props.read_only ?
-        <div>
-            <label className="field__label" htmlFor={props.name}>{props.name} = {props.number} (string)</label>
-        </div>
-        :
-        <div>
-            <label className="field__label" htmlFor={props.name}>{props.name} = {props.number} (string)</label>
-            <input className="field__input" name={props.name} id={props.name} type="text" value={props.val} onChange={props.onChange}/>
-        </div>
-    }
-</div>;
-
-
-
-
-class Request extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            fields: props.fields.map(f => {
-                return {val: ''}
-            }),
-        };
-    }
-    handleInvokeMethod(e) {
-        e.preventDefault();
-        const args = this.props.fields.map((f, i) => {
-            return {
-                number: f.number,
-                val: this.state.fields[i].val,
-            };
-        });
-        this.props.onInvokeMethod(args);
-    }
-
-    handleChange(i, val) {
-        let fields = this.state.fields.slice();
-        fields[i] = {val:val};
-
-        this.setState({
-            fields: fields,
-        });
-        console.log(this.state.fields);
-    }
-    render() {
-        return (
-            <div className="message message--in">
-                <h4 className="message__title">Request</h4>
-
-                <form onSubmit={this.handleInvokeMethod.bind(this)}>
-                    {this.props.fields.map((f, i) =>
-                        <UnknownField  {...f} val={this.state.fields[i].val}
-                                       onChange={(e) => this.handleChange(i, e.target.value)}/>
-                    )}
-
-                    {this.props.in ? <div className="message__controls">
-                        <button type="submit" className="button">Invoke</button>
-                    </div> : null }
-                </form>
-            </div>
-        );
-    }
-}
 
 const Response = (props) => {
     return <div className="message">
         <h4 className="message__title">Response</h4>
 
         {props.fields.map((f) =>
-            <UnknownField  {...f} read_only={true}/>
+            <label className="field__label" htmlFor={f.name}>{f.name} = {f.number} (f.type_id)</label>
+
         )}
     </div>;
 };
@@ -130,12 +65,11 @@ class Method extends Component {
             </div>
 
             <div className="method__body" style={{display: this.state.expanded ? 'block' : 'none'}}>
-                <Request {...this.props.types[this.props.in]} types={this.props.types} in={true} onInvokeMethod={this.handleInvokeMethod.bind(this)}/>
-
+                <Request {...this.props.types[this.props.in]} types={this.props.types} onInvokeMethod={this.handleInvokeMethod.bind(this)}/>
                 {this.state.error ?
                     <div class="method__error">{this.state.error}</div> : null}
                 {this.state.result ?
-                    <div class="method__result">{JSON.stringify(this.state.result, null, 4)}</div> : null}
+                    <pre className="method__result">{JSON.stringify(this.state.result, null, 4)}</pre> : null}
                 <Response {...this.props.types[this.props.out]} types={this.props.types}/>
             </div>
         </div>

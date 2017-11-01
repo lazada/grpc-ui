@@ -6,6 +6,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"net"
+	"strings"
 )
 
 type impl struct {
@@ -38,6 +39,7 @@ func (i *impl) GetUser(ctx context.Context, req *pb.GetUserReq) (*pb.UserResp, e
 		LastName: req.LastName + " [server]",
 		Active: len(req.FirstName) > 3,
 		Age: req.Age,
+		Skills: strings.Join(req.Skills, ", "),
 	}, nil
 }
 
