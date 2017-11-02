@@ -23999,10 +23999,24 @@ var Field = exports.Field = function Field(props) {
             break;
         case 11:
             var type = props.types[props.type_name];
+            if (!type) {
+                return _react2.default.createElement(
+                    'div',
+                    null,
+                    '?????'
+                );
+            }
             input = _react2.default.createElement(Message, { fields: type.fields, types: props.types, val: props.val, enums: props.enums, onChange: props.onChange });
             break;
         case 14:
             var enum_ = props.enums[props.type_name];
+            if (!enum_) {
+                return _react2.default.createElement(
+                    'div',
+                    null,
+                    '?????'
+                );
+            }
             input = _react2.default.createElement(
                 'select',
                 { className: 'field__input', value: props.val, onChange: function onChange(e) {

@@ -11,10 +11,16 @@ export const Field = (props) => {
             break;
         case 11:
             const type = props.types[props.type_name];
+            if (!type) {
+                return <div>?????</div>;
+            }
             input = <Message fields={type.fields} types={props.types} val={props.val} enums={props.enums} onChange={props.onChange}/>
             break;
         case 14:
             const enum_ = props.enums[props.type_name];
+            if (!enum_) {
+                return <div>?????</div>;
+            }
             input = <select className="field__input" value={props.val} onChange={(e) => props.onChange(e.target.value)}>
                 {Object.keys(enum_.values).map(k => <option value={k}>{enum_.values[k]}</option>)}
             </select>;
