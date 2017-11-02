@@ -22885,7 +22885,7 @@ exports = module.exports = __webpack_require__(15)(undefined);
 
 
 // module
-exports.push([module.i, ".method {\n  border: 1px solid #eee;\n  margin-bottom: 20px;\n  transition: all 200ms ease-in-out; }\n  .method__heading {\n    cursor: pointer;\n    padding: 15px;\n    background: #04acb4;\n    color: #fff;\n    font-wight: bold;\n    font-size: 20px; }\n  .method__name {\n    margin: 0; }\n  .method--loading .method__body {\n    position: relative; }\n    .method--loading .method__body:after {\n      background: rgba(255, 255, 255, 0.8);\n      content: '';\n      display: block;\n      position: absolute;\n      top: 0;\n      left: 0;\n      right: 0;\n      bottom: 0; }\n  .method__result {\n    padding: 20px;\n    background: #c9ffd5; }\n  .method__error {\n    padding: 20px;\n    background: #fb8156; }\n\n.message {\n  padding: 20px 20px 40px 20px; }\n  .message--in {\n    border-bottom: 1px solid #eee; }\n  .message__controls {\n    text-align: right; }\n  .message__title {\n    font-weight: bold;\n    font-size: 20px;\n    margin: 0;\n    padding: 0;\n    padding-bottom: 10px; }\n  .message__table {\n    border-collapse: collapse;\n    width: 100%; }\n  .message__cell {\n    padding: 10px;\n    border: 1px solid #eee; }\n\n.button {\n  padding: 10px;\n  background: none;\n  outline: none;\n  border-radius: 10px;\n  cursor: pointer;\n  border: 2px solid #04acb4;\n  font-family: Roboto, sans-serif;\n  font-weight: bold;\n  font-size: 14px;\n  transition: all 150ms ease-in-out; }\n  .button--small {\n    padding: 6px 10px;\n    font-size: 14px; }\n  .button:hover {\n    background: #04acb4;\n    border: 2px solid #05c4cd;\n    color: #fff; }\n", ""]);
+exports.push([module.i, ".method {\n  border: 1px solid #eee;\n  margin-bottom: 20px;\n  transition: all 200ms ease-in-out; }\n  .method__heading {\n    cursor: pointer;\n    padding: 15px;\n    background: #04acb4;\n    color: #fff;\n    font-wight: bold;\n    font-size: 20px; }\n  .method__name {\n    margin: 0; }\n  .method--loading .method__body {\n    position: relative; }\n    .method--loading .method__body:after {\n      background: rgba(255, 255, 255, 0.8);\n      content: '';\n      display: block;\n      position: absolute;\n      top: 0;\n      left: 0;\n      right: 0;\n      bottom: 0; }\n  .method__result {\n    padding: 20px;\n    background: #c9ffd5; }\n  .method__error {\n    padding: 20px;\n    background: #fb8156; }\n\n.form {\n  padding: 20px 20px 40px 20px; }\n  .form__controls {\n    padding-top: 10px;\n    text-align: right; }\n  .form__title {\n    font-weight: bold;\n    font-size: 20px;\n    margin: 0;\n    padding: 0;\n    padding-bottom: 10px; }\n\n.message {\n  border-collapse: collapse;\n  width: 100%; }\n  .message--in {\n    border-bottom: 1px solid #eee; }\n  .message__cell {\n    padding: 10px;\n    border: 1px solid #eee; }\n    .message__cell--first {\n      width: 100px; }\n    .message__cell--last {\n      text-align: right;\n      width: 100px; }\n\n.button {\n  padding: 10px;\n  background: none;\n  outline: none;\n  border-radius: 10px;\n  cursor: pointer;\n  border: 2px solid #04acb4;\n  font-family: Roboto, sans-serif;\n  font-weight: bold;\n  font-size: 14px;\n  transition: all 150ms ease-in-out; }\n  .button--small {\n    padding: 6px 10px;\n    font-size: 14px; }\n  .button:hover {\n    background: #04acb4;\n    border: 2px solid #05c4cd;\n    color: #fff; }\n", ""]);
 
 // exports
 
@@ -23837,6 +23837,7 @@ exports.push([module.i, "html, body {\n  margin: 0;\n  padding: 0;\n  font-famil
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.getDefaultValue = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -23863,8 +23864,8 @@ var Request = function (_Component) {
         var _this = _possibleConstructorReturn(this, (Request.__proto__ || Object.getPrototypeOf(Request)).call(this, props));
 
         _this.state = {
-            data: props.fields.map(function (f) {
-                return f.is_repeated ? [] : f.default_value || getDefaultValue(f.type_id);
+            val: props.fields.map(function (f) {
+                return getDefaultValue(f.type_id, f.is_repeated);
             })
         };
         return _this;
@@ -23879,94 +23880,28 @@ var Request = function (_Component) {
             var args = this.props.fields.map(function (f, i) {
                 return {
                     number: f.number,
-                    val: _this2.state.data[i]
+                    val: _this2.state.val[i]
                 };
             });
             this.props.onInvokeMethod(args);
         }
     }, {
         key: 'handleChange',
-        value: function handleChange(i, val) {
-            var data = this.state.data.slice();
-            data[i] = val;
+        value: function handleChange(val) {
             this.setState({
-                data: data
+                val: val
             });
         }
     }, {
         key: 'render',
         value: function render() {
-            var _this3 = this;
-
-            return _react2.default.createElement(
-                'div',
-                { className: 'message message--in' },
-                _react2.default.createElement(
-                    'h4',
-                    { className: 'message__title' },
-                    'Request'
-                ),
-                _react2.default.createElement(
-                    'form',
-                    { onSubmit: this.handleInvokeMethod.bind(this) },
-                    _react2.default.createElement(
-                        'table',
-                        { className: 'message__table' },
-                        this.props.fields.map(function (f, i) {
-                            return _react2.default.createElement(
-                                'tr',
-                                { className: 'field' },
-                                _react2.default.createElement(
-                                    'td',
-                                    { style: { 'width': '100px' }, className: 'message__cell' },
-                                    _react2.default.createElement(
-                                        'label',
-                                        { className: 'field__label', htmlFor: f.name },
-                                        _react2.default.createElement(
-                                            'b',
-                                            null,
-                                            f.name
-                                        )
-                                    )
-                                ),
-                                _react2.default.createElement(
-                                    'td',
-                                    { className: 'message__cell' },
-                                    f.is_repeated ? _react2.default.createElement(_fields.RepeatedField, { name: f.name,
-                                        number: f.number,
-                                        val: _this3.state.data[i],
-                                        type_id: f.type_id,
-                                        onChange: function onChange(val) {
-                                            return _this3.handleChange(i, val);
-                                        } }) : _react2.default.createElement(_fields.Field, { name: f.name,
-                                        number: f.number,
-                                        val: _this3.state.data[i],
-                                        type_id: f.type_id,
-                                        onChange: function onChange(val) {
-                                            return _this3.handleChange(i, val);
-                                        } })
-                                ),
-                                _react2.default.createElement(
-                                    'td',
-                                    { style: { 'text-align': 'right', 'width': '100px' }, className: 'message__cell' },
-                                    getTypeName(f.type_id),
-                                    ' ',
-                                    f.is_repeated ? '(+)' : ''
-                                )
-                            );
-                        })
-                    ),
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'message__controls' },
-                        _react2.default.createElement(
-                            'button',
-                            { type: 'submit', className: 'button' },
-                            'Invoke'
-                        )
-                    )
-                )
-            );
+            return _react2.default.createElement(Form, {
+                fields: this.props.fields,
+                val: this.state.val,
+                types: this.props.types,
+                onChange: this.handleChange.bind(this),
+                onInvoke: this.handleInvokeMethod.bind(this)
+            });
         }
     }]);
 
@@ -23976,13 +23911,188 @@ var Request = function (_Component) {
 exports.default = Request;
 
 
-var getDefaultValue = function getDefaultValue(type_id) {
+var Form = function Form(_ref) {
+    var fields = _ref.fields,
+        val = _ref.val,
+        onChange = _ref.onChange,
+        onInvoke = _ref.onInvoke,
+        types = _ref.types;
+    return _react2.default.createElement(
+        'div',
+        { className: 'form' },
+        _react2.default.createElement(
+            'h4',
+            { className: 'form__title' },
+            'Request'
+        ),
+        _react2.default.createElement(
+            'form',
+            { onSubmit: onInvoke },
+            _react2.default.createElement(_fields.Message, { fields: fields, val: val, onChange: onChange, types: types }),
+            _react2.default.createElement(
+                'div',
+                { className: 'form__controls' },
+                _react2.default.createElement(
+                    'button',
+                    { type: 'submit', className: 'button' },
+                    'Invoke'
+                )
+            )
+        )
+    );
+};
+
+var getDefaultValue = exports.getDefaultValue = function getDefaultValue(type_id, repeated) {
+    if (repeated) {
+        return [];
+    }
     switch (type_id) {
         case 8:
+            //bool
             return 'false';
+        case 11:
+            //msg
+            return [];
         default:
             return '';
     }
+};
+
+/***/ }),
+/* 113 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.Message = exports.RepeatedField = exports.Field = undefined;
+
+var _react = __webpack_require__(2);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _Request = __webpack_require__(114);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Field = exports.Field = function Field(props) {
+    var input = null;
+
+    switch (props.type_id) {
+        case 8:
+            input = _react2.default.createElement('input', { className: 'field__input', name: props.name, id: props.name, type: 'checkbox', checked: props.val === 'true', onChange: function onChange(e) {
+                    return props.onChange(e.target.checked ? 'true' : 'false');
+                } });
+            break;
+        case 11:
+            var type = props.types[props.type_name];
+            input = _react2.default.createElement(Message, { fields: type.fields, types: props.types, val: props.val, onChange: props.onChange });
+            break;
+        default:
+            input = _react2.default.createElement('input', { className: 'field__input field__input--text', name: props.name, id: props.name, type: 'text', value: props.val, onChange: function onChange(e) {
+                    return props.onChange(e.target.value);
+                } });
+            break;
+    }
+
+    return _react2.default.createElement(
+        'div',
+        { className: 'field__group' },
+        input
+    );
+};
+
+var RepeatedField = exports.RepeatedField = function RepeatedField(props) {
+    return _react2.default.createElement(
+        'div',
+        { className: 'field__group' },
+        props.val.map(function (v, i) {
+            return _react2.default.createElement(Field, {
+                name: props.name,
+                number: props.number,
+                type_id: props.type_id,
+                type_name: props.type_name,
+                types: props.types,
+                val: v,
+                onChange: function onChange(val) {
+                    var newVal = props.val.slice();
+                    newVal[i] = val;
+                    props.onChange(newVal);
+                } });
+        }),
+        _react2.default.createElement(
+            'div',
+            { className: 'field__controls' },
+            _react2.default.createElement(
+                'button',
+                { type: 'button', className: 'button button--small', onClick: function onClick() {
+                        props.onChange(props.val.concat([(0, _Request.getDefaultValue)(props.type_id, false)]));
+                    } },
+                '+'
+            )
+        )
+    );
+};
+
+var Message = exports.Message = function Message(props) {
+    return _react2.default.createElement(
+        'table',
+        { className: 'message' },
+        props.fields.map(function (f, i) {
+            return _react2.default.createElement(
+                'tr',
+                { className: 'field' },
+                _react2.default.createElement(
+                    'td',
+                    { className: 'message__cell message__cell--first' },
+                    _react2.default.createElement(
+                        'label',
+                        { className: 'field__label', htmlFor: f.name },
+                        _react2.default.createElement(
+                            'b',
+                            null,
+                            f.name
+                        )
+                    )
+                ),
+                _react2.default.createElement(
+                    'td',
+                    { className: 'message__cell' },
+                    f.is_repeated ? _react2.default.createElement(RepeatedField, { name: f.name,
+                        number: f.number,
+                        val: props.val[i],
+                        type_id: f.type_id,
+                        type_name: f.type_name,
+                        types: props.types,
+                        onChange: function onChange(val) {
+                            var newVal = props.val.slice();
+                            newVal[i] = val;
+                            props.onChange(newVal);
+                        } }) : _react2.default.createElement(Field, { name: f.name,
+                        number: f.number,
+                        val: props.val[i],
+                        type_id: f.type_id,
+                        type_name: f.type_name,
+                        types: props.types,
+                        onChange: function onChange(val) {
+                            var newVal = props.val.slice();
+                            newVal[i] = val;
+                            props.onChange(newVal);
+                        } })
+                ),
+                _react2.default.createElement(
+                    'td',
+                    { className: 'message__cell message__cell--last' },
+                    getTypeName(f.type_id),
+                    ' ',
+                    f.is_repeated ? '(+)' : ''
+                )
+            );
+        })
+    );
 };
 
 var getTypeName = function getTypeName(type_id) {
@@ -24029,7 +24139,7 @@ var getTypeName = function getTypeName(type_id) {
 };
 
 /***/ }),
-/* 113 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24038,65 +24148,125 @@ var getTypeName = function getTypeName(type_id) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.RepeatedField = exports.Field = undefined;
+exports.getDefaultValue = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(2);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _fields = __webpack_require__(113);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var Field = exports.Field = function Field(props) {
-    var input = null;
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-    switch (props.type_id) {
-        case 8:
-            input = _react2.default.createElement("input", { className: "field__input", name: props.name, id: props.name, type: "checkbox", checked: props.val === 'true', onChange: function onChange(e) {
-                    return props.onChange(e.target.checked ? 'true' : 'false');
-                } });
-            break;
-        default:
-            input = _react2.default.createElement("input", { className: "field__input field__input--text", name: props.name, id: props.name, type: "text", value: props.val, onChange: function onChange(e) {
-                    return props.onChange(e.target.value);
-                } });
-            break;
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Request = function (_Component) {
+    _inherits(Request, _Component);
+
+    function Request(props) {
+        _classCallCheck(this, Request);
+
+        var _this = _possibleConstructorReturn(this, (Request.__proto__ || Object.getPrototypeOf(Request)).call(this, props));
+
+        _this.state = {
+            val: props.fields.map(function (f) {
+                return getDefaultValue(f.type_id, f.is_repeated);
+            })
+        };
+        return _this;
     }
 
-    return _react2.default.createElement(
-        "div",
-        { className: "field__group" },
-        input
-    );
-};
+    _createClass(Request, [{
+        key: 'handleInvokeMethod',
+        value: function handleInvokeMethod(e) {
+            var _this2 = this;
 
-var RepeatedField = exports.RepeatedField = function RepeatedField(props) {
+            e.preventDefault();
+            var args = this.props.fields.map(function (f, i) {
+                return {
+                    number: f.number,
+                    val: _this2.state.val[i]
+                };
+            });
+            this.props.onInvokeMethod(args);
+        }
+    }, {
+        key: 'handleChange',
+        value: function handleChange(val) {
+            this.setState({
+                val: val
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(Form, {
+                fields: this.props.fields,
+                val: this.state.val,
+                types: this.props.types,
+                onChange: this.handleChange.bind(this),
+                onInvoke: this.handleInvokeMethod.bind(this)
+            });
+        }
+    }]);
+
+    return Request;
+}(_react.Component);
+
+exports.default = Request;
+
+
+var Form = function Form(_ref) {
+    var fields = _ref.fields,
+        val = _ref.val,
+        onChange = _ref.onChange,
+        onInvoke = _ref.onInvoke,
+        types = _ref.types;
     return _react2.default.createElement(
-        "div",
-        { className: "field__group" },
-        props.val.map(function (v, i) {
-            return _react2.default.createElement(Field, {
-                name: props.name,
-                number: props.number,
-                type_id: props.type_id,
-                val: v,
-                onChange: function onChange(val) {
-                    var newVal = props.val.slice();
-                    newVal[i] = val;
-                    props.onChange(newVal);
-                } });
-        }),
+        'div',
+        { className: 'form' },
         _react2.default.createElement(
-            "div",
-            { className: "field__controls" },
+            'h4',
+            { className: 'form__title' },
+            'Request'
+        ),
+        _react2.default.createElement(
+            'form',
+            { onSubmit: onInvoke },
+            _react2.default.createElement(_fields.Message, { fields: fields, val: val, onChange: onChange, types: types }),
             _react2.default.createElement(
-                "button",
-                { type: "button", className: "button button--small", onClick: function onClick() {
-                        props.onChange(props.val.concat(['']));
-                    } },
-                "+"
+                'div',
+                { className: 'form__controls' },
+                _react2.default.createElement(
+                    'button',
+                    { type: 'submit', className: 'button' },
+                    'Invoke'
+                )
             )
         )
     );
+};
+
+var getDefaultValue = exports.getDefaultValue = function getDefaultValue(type_id, repeated) {
+    if (repeated) {
+        return [];
+    }
+    switch (type_id) {
+        case 8:
+            //bool
+            return 'false';
+        case 11:
+            //msg
+            return [];
+        default:
+            return '';
+    }
 };
 
 /***/ })

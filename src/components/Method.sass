@@ -33,11 +33,10 @@
         padding: 20px
         background: $danger
 
-.message
-    &--in
-        border-bottom: 1px solid #eee
+.form
     padding: 20px 20px 40px 20px
     &__controls
+        padding-top: 10px
         text-align: right
     &__title
         font:
@@ -46,12 +45,21 @@
         margin: 0
         padding: 0
         padding-bottom: 10px
-    &__table
-        border-collapse: collapse
-        width: 100%
+
+
+.message
+    border-collapse: collapse
+    width: 100%
+    &--in
+        border-bottom: 1px solid #eee
     &__cell
         padding: 10px
         border: 1px solid #eee
+        &--first
+            width: 100px
+        &--last
+            text-align: right
+            width: 100px
 
 .button
     padding: 10px
