@@ -23,8 +23,20 @@ func New(addr, staticDir, targetAddr string) *HTTPServer {
 
 	mux.HandleFunc("/api/info", s.infoHandler)
 	mux.HandleFunc("/api/invoke", s.invokeHandler)
-	mux.HandleFunc("/", s.indexHandler)
-	mux.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir(staticDir))))
+	staticHandler := NewHTTPHandler()
+
+	if staticDir != "" {
+		mux.HandleFunc("/", s.indexHandler)
+	} else {
+		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			staticHandler.ServeFile(w, r, "/index.html")
+		})
+	}
+	if staticDir != "" {
+		mux.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir(staticDir))))
+	} else {
+		mux.Handle("/static/", http.StripPrefix("/static",  staticHandler))
+	}
 
 	return s
 }

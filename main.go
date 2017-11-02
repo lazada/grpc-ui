@@ -9,7 +9,7 @@ import (
 
 func main() {
 	cfg := config.MustFromFlags(&config.Config{
-		StaticDir: "static",
+		StaticDir: "",
 	})
 
 	srv := http_server.New(cfg.HttpAddr, cfg.StaticDir, cfg.TargetAddr)
