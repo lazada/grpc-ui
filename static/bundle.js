@@ -22885,7 +22885,7 @@ exports = module.exports = __webpack_require__(15)(undefined);
 
 
 // module
-exports.push([module.i, ".method {\n  border: 1px solid #eee;\n  margin-bottom: 20px;\n  transition: all 200ms ease-in-out; }\n  .method__heading {\n    cursor: pointer;\n    padding: 15px;\n    background: #04acb4;\n    color: #fff;\n    font-wight: bold;\n    font-size: 20px; }\n  .method__name {\n    margin: 0; }\n  .method--loading .method__body {\n    position: relative; }\n    .method--loading .method__body:after {\n      background: rgba(255, 255, 255, 0.8);\n      content: '';\n      display: block;\n      position: absolute;\n      top: 0;\n      left: 0;\n      right: 0;\n      bottom: 0; }\n  .method__result {\n    padding: 20px;\n    background: #c9ffd5; }\n  .method__error {\n    padding: 20px;\n    background: #fb8156; }\n\n.message {\n  padding: 20px 20px 40px 20px; }\n  .message--in {\n    border-bottom: 1px solid #eee; }\n  .message__controls {\n    text-align: right; }\n  .message__title {\n    font-weight: bold;\n    font-size: 20px;\n    margin: 0;\n    padding: 0;\n    padding-bottom: 10px; }\n\n.button {\n  padding: 10px;\n  background: none;\n  outline: none;\n  border-radius: 10px;\n  cursor: pointer;\n  border: 2px solid #04acb4;\n  font-family: Roboto, sans-serif;\n  font-weight: bold;\n  font-size: 14px;\n  transition: all 150ms ease-in-out; }\n  .button--small {\n    padding: 6px 10px;\n    font-size: 14px; }\n  .button:hover {\n    background: #04acb4;\n    border: 2px solid #05c4cd;\n    color: #fff; }\n", ""]);
+exports.push([module.i, ".method {\n  border: 1px solid #eee;\n  margin-bottom: 20px;\n  transition: all 200ms ease-in-out; }\n  .method__heading {\n    cursor: pointer;\n    padding: 15px;\n    background: #04acb4;\n    color: #fff;\n    font-wight: bold;\n    font-size: 20px; }\n  .method__name {\n    margin: 0; }\n  .method--loading .method__body {\n    position: relative; }\n    .method--loading .method__body:after {\n      background: rgba(255, 255, 255, 0.8);\n      content: '';\n      display: block;\n      position: absolute;\n      top: 0;\n      left: 0;\n      right: 0;\n      bottom: 0; }\n  .method__result {\n    padding: 20px;\n    background: #c9ffd5; }\n  .method__error {\n    padding: 20px;\n    background: #fb8156; }\n\n.message {\n  padding: 20px 20px 40px 20px; }\n  .message--in {\n    border-bottom: 1px solid #eee; }\n  .message__controls {\n    text-align: right; }\n  .message__title {\n    font-weight: bold;\n    font-size: 20px;\n    margin: 0;\n    padding: 0;\n    padding-bottom: 10px; }\n  .message__table {\n    border-collapse: collapse;\n    width: 100%; }\n  .message__cell {\n    padding: 10px;\n    border: 1px solid #eee; }\n\n.button {\n  padding: 10px;\n  background: none;\n  outline: none;\n  border-radius: 10px;\n  cursor: pointer;\n  border: 2px solid #04acb4;\n  font-family: Roboto, sans-serif;\n  font-weight: bold;\n  font-size: 14px;\n  transition: all 150ms ease-in-out; }\n  .button--small {\n    padding: 6px 10px;\n    font-size: 14px; }\n  .button:hover {\n    background: #04acb4;\n    border: 2px solid #05c4cd;\n    color: #fff; }\n", ""]);
 
 // exports
 
@@ -23820,7 +23820,7 @@ exports = module.exports = __webpack_require__(15)(undefined);
 
 
 // module
-exports.push([module.i, "html, body {\n  margin: 0;\n  padding: 0;\n  font-family: 'Roboto', sans-serif; }\n\n.navbar {\n  padding: 20px;\n  border-bottom: 1px solid #eee; }\n  .navbar__container {\n    width: 1080px;\n    margin: 0 auto; }\n\n.logo {\n  display: block;\n  width: 80px;\n  height: 28px;\n  background-image: url(\"/static/img/grpc.png\"); }\n\n.app__container {\n  width: 1080px;\n  margin: 0 auto; }\n\n.app__left {\n  width: 30%;\n  float: left; }\n\n.app__right {\n  width: 70%;\n  float: left; }\n\n.field {\n  border-bottom: 1px solid #eee;\n  padding-bottom: 20px;\n  margin-bottom: 10px; }\n  .field__label {\n    display: block; }\n  .field__input {\n    font-size: 14px;\n    box-sizing: border-box;\n    width: 100%;\n    padding: 10px;\n    margin-bottom: 10px; }\n  .field__controls {\n    text-align: right; }\n\n.package__title {\n  font-size: 28px;\n  font-weight: bold; }\n", ""]);
+exports.push([module.i, "html, body {\n  margin: 0;\n  padding: 0;\n  font-family: 'Roboto', sans-serif; }\n\n.navbar {\n  padding: 20px;\n  border-bottom: 1px solid #eee; }\n  .navbar__container {\n    width: 1080px;\n    margin: 0 auto; }\n\n.logo {\n  display: block;\n  width: 80px;\n  height: 28px;\n  background-image: url(\"/static/img/grpc.png\"); }\n\n.app__container {\n  width: 1080px;\n  margin: 0 auto; }\n\n.app__left {\n  width: 30%;\n  float: left; }\n\n.app__right {\n  width: 70%;\n  float: left; }\n\n.field {\n  border-bottom: 1px solid #eee;\n  padding-bottom: 20px;\n  margin-bottom: 10px; }\n  .field__label {\n    padding: 10px 0;\n    display: block; }\n  .field__input {\n    font-size: 14px;\n    box-sizing: border-box;\n    padding: 10px;\n    margin-bottom: 10px; }\n    .field__input--text {\n      width: 100%; }\n  .field__controls {\n    text-align: right; }\n  .field__group {\n    text-align: right; }\n\n.package__title {\n  font-size: 28px;\n  font-weight: bold; }\n", ""]);
 
 // exports
 
@@ -23844,6 +23844,8 @@ var _react = __webpack_require__(2);
 
 var _react2 = _interopRequireDefault(_react);
 
+var _fields = __webpack_require__(113);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -23851,52 +23853,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Field = function Field(props) {
-    switch (props.type_id) {
-        case 8:
-            console.log(props);
-
-            return _react2.default.createElement("input", { className: "field__input", name: props.name, id: props.name, type: "checkbox", checked: props.val === 'true', onChange: function onChange(e) {
-                    return props.onChange(e.target.checked ? 'true' : 'false');
-                } });
-        default:
-            return _react2.default.createElement("input", { className: "field__input", name: props.name, id: props.name, type: "text", value: props.val, onChange: function onChange(e) {
-                    return props.onChange(e.target.value);
-                } });
-
-    }
-};
-
-var RepeatedField = function RepeatedField(props) {
-    return _react2.default.createElement(
-        "div",
-        null,
-        props.val.map(function (v, i) {
-            return _react2.default.createElement(Field, {
-                name: props.name,
-                number: props.number,
-                type_id: props.type_id,
-                val: v,
-                onChange: function onChange(val) {
-                    var newVal = props.val.slice();
-                    newVal[i] = val;
-                    props.onChange(newVal);
-                } });
-        }),
-        _react2.default.createElement(
-            "div",
-            { className: "field__controls" },
-            _react2.default.createElement(
-                "button",
-                { type: "button", className: "button button--small", onClick: function onClick() {
-                        props.onChange(props.val.concat(['']));
-                    } },
-                "+"
-            )
-        )
-    );
-};
 
 var Request = function (_Component) {
     _inherits(Request, _Component);
@@ -23915,7 +23871,7 @@ var Request = function (_Component) {
     }
 
     _createClass(Request, [{
-        key: "handleInvokeMethod",
+        key: 'handleInvokeMethod',
         value: function handleInvokeMethod(e) {
             var _this2 = this;
 
@@ -23929,7 +23885,7 @@ var Request = function (_Component) {
             this.props.onInvokeMethod(args);
         }
     }, {
-        key: "handleChange",
+        key: 'handleChange',
         value: function handleChange(i, val) {
             var data = this.state.data.slice();
             data[i] = val;
@@ -23938,59 +23894,75 @@ var Request = function (_Component) {
             });
         }
     }, {
-        key: "render",
+        key: 'render',
         value: function render() {
             var _this3 = this;
 
             return _react2.default.createElement(
-                "div",
-                { className: "message message--in" },
+                'div',
+                { className: 'message message--in' },
                 _react2.default.createElement(
-                    "h4",
-                    { className: "message__title" },
-                    "Request"
+                    'h4',
+                    { className: 'message__title' },
+                    'Request'
                 ),
                 _react2.default.createElement(
-                    "form",
+                    'form',
                     { onSubmit: this.handleInvokeMethod.bind(this) },
-                    this.props.fields.map(function (f, i) {
-                        return _react2.default.createElement(
-                            "div",
-                            { className: "field" },
-                            _react2.default.createElement(
-                                "label",
-                                { className: "field__label", htmlFor: f.name },
-                                f.name,
-                                " ",
-                                getTypeName(f.type_id),
-                                " ",
-                                f.is_repeated ? '(repeated)' : '',
-                                " = ",
-                                f.number,
-                                " "
-                            ),
-                            f.is_repeated ? _react2.default.createElement(RepeatedField, { name: f.name,
-                                number: f.number,
-                                val: _this3.state.data[i],
-                                type_id: f.type_id,
-                                onChange: function onChange(val) {
-                                    return _this3.handleChange(i, val);
-                                } }) : _react2.default.createElement(Field, { name: f.name,
-                                number: f.number,
-                                val: _this3.state.data[i],
-                                type_id: f.type_id,
-                                onChange: function onChange(val) {
-                                    return _this3.handleChange(i, val);
-                                } })
-                        );
-                    }),
                     _react2.default.createElement(
-                        "div",
-                        { className: "message__controls" },
+                        'table',
+                        { className: 'message__table' },
+                        this.props.fields.map(function (f, i) {
+                            return _react2.default.createElement(
+                                'tr',
+                                { className: 'field' },
+                                _react2.default.createElement(
+                                    'td',
+                                    { style: { 'width': '100px' }, className: 'message__cell' },
+                                    _react2.default.createElement(
+                                        'label',
+                                        { className: 'field__label', htmlFor: f.name },
+                                        _react2.default.createElement(
+                                            'b',
+                                            null,
+                                            f.name
+                                        )
+                                    )
+                                ),
+                                _react2.default.createElement(
+                                    'td',
+                                    { className: 'message__cell' },
+                                    f.is_repeated ? _react2.default.createElement(_fields.RepeatedField, { name: f.name,
+                                        number: f.number,
+                                        val: _this3.state.data[i],
+                                        type_id: f.type_id,
+                                        onChange: function onChange(val) {
+                                            return _this3.handleChange(i, val);
+                                        } }) : _react2.default.createElement(_fields.Field, { name: f.name,
+                                        number: f.number,
+                                        val: _this3.state.data[i],
+                                        type_id: f.type_id,
+                                        onChange: function onChange(val) {
+                                            return _this3.handleChange(i, val);
+                                        } })
+                                ),
+                                _react2.default.createElement(
+                                    'td',
+                                    { style: { 'text-align': 'right', 'width': '100px' }, className: 'message__cell' },
+                                    getTypeName(f.type_id),
+                                    ' ',
+                                    f.is_repeated ? '(+)' : ''
+                                )
+                            );
+                        })
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'message__controls' },
                         _react2.default.createElement(
-                            "button",
-                            { type: "submit", className: "button" },
-                            "Invoke"
+                            'button',
+                            { type: 'submit', className: 'button' },
+                            'Invoke'
                         )
                     )
                 )
@@ -24016,44 +23988,115 @@ var getDefaultValue = function getDefaultValue(type_id) {
 var getTypeName = function getTypeName(type_id) {
     switch (type_id) {
         case 1:
-            return "TYPE_DOUBLE";
+            return "double";
         case 2:
-            return "TYPE_FLOAT";
+            return "float";
         case 3:
-            return "TYPE_INT64";
+            return "int64";
         case 4:
-            return "TYPE_UINT64";
+            return "uint64";
         case 5:
-            return "TYPE_INT32";
+            return "int32";
         case 6:
-            return "TYPE_FIXED64";
+            return "fixed64";
         case 7:
-            return "TYPE_FIXED32";
+            return "fixed32";
         case 8:
-            return "TYPE_BOOL";
+            return "bool";
         case 9:
-            return "TYPE_STRING";
+            return "string";
         case 10:
-            return "TYPE_GROUP";
+            return "group";
         case 11:
-            return "TYPE_MESSAGE";
+            return "message";
         case 12:
-            return "TYPE_BYTES";
+            return "bytes";
         case 13:
-            return "TYPE_UINT32";
+            return "uint32";
         case 14:
-            return "TYPE_ENUM";
+            return "enum";
         case 15:
-            return "TYPE_SFIXED32";
+            return "sfixed32";
         case 16:
-            return "TYPE_SFIXED64";
+            return "sfixed32";
         case 17:
-            return "TYPE_SINT32";
+            return "sint32";
         case 18:
-            return "TYPE_SINT64";
+            return "sint64";
         default:
             return '???';
     }
+};
+
+/***/ }),
+/* 113 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.RepeatedField = exports.Field = undefined;
+
+var _react = __webpack_require__(2);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Field = exports.Field = function Field(props) {
+    var input = null;
+
+    switch (props.type_id) {
+        case 8:
+            input = _react2.default.createElement("input", { className: "field__input", name: props.name, id: props.name, type: "checkbox", checked: props.val === 'true', onChange: function onChange(e) {
+                    return props.onChange(e.target.checked ? 'true' : 'false');
+                } });
+            break;
+        default:
+            input = _react2.default.createElement("input", { className: "field__input field__input--text", name: props.name, id: props.name, type: "text", value: props.val, onChange: function onChange(e) {
+                    return props.onChange(e.target.value);
+                } });
+            break;
+    }
+
+    return _react2.default.createElement(
+        "div",
+        { className: "field__group" },
+        input
+    );
+};
+
+var RepeatedField = exports.RepeatedField = function RepeatedField(props) {
+    return _react2.default.createElement(
+        "div",
+        { className: "field__group" },
+        props.val.map(function (v, i) {
+            return _react2.default.createElement(Field, {
+                name: props.name,
+                number: props.number,
+                type_id: props.type_id,
+                val: v,
+                onChange: function onChange(val) {
+                    var newVal = props.val.slice();
+                    newVal[i] = val;
+                    props.onChange(newVal);
+                } });
+        }),
+        _react2.default.createElement(
+            "div",
+            { className: "field__controls" },
+            _react2.default.createElement(
+                "button",
+                { type: "button", className: "button button--small", onClick: function onClick() {
+                        props.onChange(props.val.concat(['']));
+                    } },
+                "+"
+            )
+        )
+    );
 };
 
 /***/ })
