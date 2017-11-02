@@ -6,7 +6,7 @@ export default class Request extends Component {
         super(props);
         this.state = {
             val: props.fields.map((f) => {
-                return getDefaultValue(f.type_id, f.is_repeated);
+                return getDefaultValue(f.type_id, f.is_repeated, f.type_name, props.enums);
             })
         };
     }
@@ -23,6 +23,7 @@ export default class Request extends Component {
     }
 
     handleChange(val) {
+        console.log(val);
         this.setState({
             val,
         });
@@ -34,6 +35,7 @@ export default class Request extends Component {
                 fields={this.props.fields}
                 val={this.state.val}
                 types={this.props.types}
+                enums={this.props.enums}
                 onChange={this.handleChange.bind(this)}
                 onInvoke={this.handleInvokeMethod.bind(this)}
             />
@@ -41,18 +43,18 @@ export default class Request extends Component {
     }
 }
 
-const Form = ({fields, val, onChange, onInvoke, types}) =>
+const Form = ({fields, val, onChange, onInvoke, types, enums}) =>
     <div className="form">
         <h4 className="form__title">Request</h4>
         <form onSubmit={onInvoke}>
-            <Message {...{fields, val, onChange, types}}/>
+            <Message {...{fields, val, onChange, types, enums}}/>
             <div className="form__controls">
                 <button type="submit" className="button">Invoke</button>
             </div>
         </form>
     </div>;
 
-export const getDefaultValue = (type_id, repeated) => {
+export const getDefaultValue = (type_id, repeated, type_name, enums) => {
     if (repeated) {
         return [];
     }
@@ -61,6 +63,10 @@ export const getDefaultValue = (type_id, repeated) => {
             return 'false';
         case 11: //msg
             return [];
+        case 14:
+            const e = enums[type_name].values;
+            const keys = Object.keys(e);
+            return  keys[0];
         default:
             return '';
     }

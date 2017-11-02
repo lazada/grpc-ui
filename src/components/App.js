@@ -13,13 +13,14 @@ class App extends Component {
         this.state = {
             packages: [],
             types: {},
+            enums: {},
         }
     }
     componentDidMount() {
         axios.get('/api/info')
-            .then(({data: {packages, types}}) => {
+            .then(({data: {packages, types, enums}}) => {
                this.setState({
-                   packages, types,
+                   packages, types, enums,
                })
             });
     }
@@ -48,6 +49,7 @@ class App extends Component {
                                                             service_name={service.name}
                                                             package_name={package_name}
                                                             types={this.state.types}
+                                                            enums={this.state.enums}
                                                 />
                                             )}
                                         </div>

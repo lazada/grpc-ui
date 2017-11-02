@@ -169,3 +169,7 @@ func (p *descPool) getEnumDescriptor(name string) *descriptor.EnumDescriptorProt
 func (p *descPool) getTypes() map[string]*descriptor.DescriptorProto {
 	return p.types
 }
+
+func (p *descPool) getEnums() map[string]*descriptor.EnumDescriptorProto {
+	return  p.enum_types
+}

@@ -9,7 +9,14 @@ import (
 
 type InfoResp struct {
 	Types    map[string]*TypeInfo  `json:"types"`
+	Enums    map[string]*EnumInfo  `json:"enums"`
 	Packages map[string][]*Service `json:"packages"`
+}
+
+type EnumInfo struct {
+	Id int `json:"id"`
+	Name     string     `json:"name"`
+	Values map[int32]string `json:"values"`
 }
 
 type Package struct {
@@ -94,6 +101,11 @@ func GetInfo(ctx context.Context, addr string) (*InfoResp, error) {
 		res.Types[k] = GetTypeInfo(pool, k)
 	}
 
+	res.Enums = make(map[string]*EnumInfo)
+	for k := range pool.getEnums() {
+		res.Enums[k] = GetEnumInfo(pool, k)
+	}
+
 	return res, nil
 }
 
@@ -119,5 +131,24 @@ func GetTypeInfo(pool *descPool, typeName string) *TypeInfo {
 		})
 
 	}
+	return info
+}
+
+func GetEnumInfo(pool *descPool, enumName string) *EnumInfo {
+	desc := pool.getEnumDescriptor(enumName)
+	if desc == nil {
+		return nil
+	}
+
+
+	info := &EnumInfo{
+		Name: desc.GetName(),
+		Values: make(map[int32]string),
+	}
+
+	for _, d := range desc.Value {
+		info.Values[d.GetNumber()] = d.GetName()
+	}
+
 	return info
 }

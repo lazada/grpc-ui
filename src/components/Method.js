@@ -65,12 +65,12 @@ class Method extends Component {
             </div>
 
             <div className="method__body" style={{display: this.state.expanded ? 'block' : 'none'}}>
-                <Request {...this.props.types[this.props.in]} types={this.props.types} onInvokeMethod={this.handleInvokeMethod.bind(this)}/>
+                <Request {...this.props.types[this.props.in]} types={this.props.types} enums={this.props.enums} onInvokeMethod={this.handleInvokeMethod.bind(this)}/>
                 {this.state.error ?
                     <div class="method__error">{this.state.error}</div> : null}
                 {this.state.result ?
                     <pre className="method__result">{JSON.stringify(this.state.result, null, 4)}</pre> : null}
-                <Response {...this.props.types[this.props.out]} types={this.props.types}/>
+                <Response {...this.props.types[this.props.out]} types={this.props.types} enums={this.props.enums}/>
             </div>
         </div>
     }

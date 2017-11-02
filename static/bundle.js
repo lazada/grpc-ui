@@ -22373,7 +22373,8 @@ var App = function (_Component) {
 
         _this.state = {
             packages: [],
-            types: {}
+            types: {},
+            enums: {}
         };
         return _this;
     }
@@ -22386,10 +22387,11 @@ var App = function (_Component) {
             _axios2.default.get('/api/info').then(function (_ref) {
                 var _ref$data = _ref.data,
                     packages = _ref$data.packages,
-                    types = _ref$data.types;
+                    types = _ref$data.types,
+                    enums = _ref$data.enums;
 
                 _this2.setState({
-                    packages: packages, types: types
+                    packages: packages, types: types, enums: enums
                 });
             });
         }
@@ -22442,7 +22444,8 @@ var App = function (_Component) {
                                                 }, method, {
                                                     service_name: service.name,
                                                     package_name: package_name,
-                                                    types: _this3.state.types
+                                                    types: _this3.state.types,
+                                                    enums: _this3.state.enums
                                                 }));
                                             })
                                         );
@@ -22823,7 +22826,7 @@ var Method = function (_Component) {
                 _react2.default.createElement(
                     'div',
                     { className: 'method__body', style: { display: this.state.expanded ? 'block' : 'none' } },
-                    _react2.default.createElement(_request2.default, _extends({}, this.props.types[this.props.in], { types: this.props.types, onInvokeMethod: this.handleInvokeMethod.bind(this) })),
+                    _react2.default.createElement(_request2.default, _extends({}, this.props.types[this.props.in], { types: this.props.types, enums: this.props.enums, onInvokeMethod: this.handleInvokeMethod.bind(this) })),
                     this.state.error ? _react2.default.createElement(
                         'div',
                         { 'class': 'method__error' },
@@ -22834,7 +22837,7 @@ var Method = function (_Component) {
                         { className: 'method__result' },
                         JSON.stringify(this.state.result, null, 4)
                     ) : null,
-                    _react2.default.createElement(Response, _extends({}, this.props.types[this.props.out], { types: this.props.types }))
+                    _react2.default.createElement(Response, _extends({}, this.props.types[this.props.out], { types: this.props.types, enums: this.props.enums }))
                 )
             );
         }
@@ -23820,7 +23823,7 @@ exports = module.exports = __webpack_require__(15)(undefined);
 
 
 // module
-exports.push([module.i, "html, body {\n  margin: 0;\n  padding: 0;\n  font-family: 'Roboto', sans-serif; }\n\n.navbar {\n  padding: 20px;\n  border-bottom: 1px solid #eee; }\n  .navbar__container {\n    width: 1080px;\n    margin: 0 auto; }\n\n.logo {\n  display: block;\n  width: 80px;\n  height: 28px;\n  background-image: url(\"/static/img/grpc.png\"); }\n\n.app__container {\n  width: 1080px;\n  margin: 0 auto; }\n\n.app__left {\n  width: 30%;\n  float: left; }\n\n.app__right {\n  width: 70%;\n  float: left; }\n\n.field {\n  border-bottom: 1px solid #eee;\n  padding-bottom: 20px;\n  margin-bottom: 10px; }\n  .field__label {\n    padding: 10px 0;\n    display: block; }\n  .field__input {\n    font-size: 14px;\n    box-sizing: border-box;\n    padding: 10px;\n    margin-bottom: 10px; }\n    .field__input--text {\n      width: 100%; }\n  .field__controls {\n    text-align: right; }\n  .field__group {\n    text-align: right; }\n\n.package__title {\n  font-size: 28px;\n  font-weight: bold; }\n", ""]);
+exports.push([module.i, "html, body {\n  margin: 0;\n  padding: 0;\n  font-family: 'Roboto', sans-serif; }\n\n.navbar {\n  padding: 20px;\n  border-bottom: 1px solid #eee; }\n  .navbar__container {\n    width: 1080px;\n    margin: 0 auto; }\n\n.logo {\n  display: block;\n  width: 80px;\n  height: 28px;\n  background-image: url(\"/static/img/grpc.png\"); }\n\n.app__container {\n  width: 1080px;\n  margin: 0 auto; }\n\n.app__left {\n  width: 30%;\n  float: left; }\n\n.app__right {\n  width: 70%;\n  float: left; }\n\n.field {\n  border-bottom: 1px solid #eee;\n  padding-bottom: 20px;\n  margin-bottom: 10px; }\n  .field__label {\n    padding: 10px 0;\n    display: block; }\n  .field__input {\n    font-size: 14px;\n    box-sizing: border-box;\n    padding: 10px;\n    margin-bottom: 10px; }\n    .field__input--text {\n      width: 100%; }\n  .field__controls {\n    text-align: right; }\n  .field__group {\n    text-align: right;\n    margin: 5px 0; }\n\n.package__title {\n  font-size: 28px;\n  font-weight: bold; }\n", ""]);
 
 // exports
 
@@ -23865,7 +23868,7 @@ var Request = function (_Component) {
 
         _this.state = {
             val: props.fields.map(function (f) {
-                return getDefaultValue(f.type_id, f.is_repeated);
+                return getDefaultValue(f.type_id, f.is_repeated, f.type_name, props.enums);
             })
         };
         return _this;
@@ -23888,6 +23891,7 @@ var Request = function (_Component) {
     }, {
         key: 'handleChange',
         value: function handleChange(val) {
+            console.log(val);
             this.setState({
                 val: val
             });
@@ -23899,6 +23903,7 @@ var Request = function (_Component) {
                 fields: this.props.fields,
                 val: this.state.val,
                 types: this.props.types,
+                enums: this.props.enums,
                 onChange: this.handleChange.bind(this),
                 onInvoke: this.handleInvokeMethod.bind(this)
             });
@@ -23916,7 +23921,8 @@ var Form = function Form(_ref) {
         val = _ref.val,
         onChange = _ref.onChange,
         onInvoke = _ref.onInvoke,
-        types = _ref.types;
+        types = _ref.types,
+        enums = _ref.enums;
     return _react2.default.createElement(
         'div',
         { className: 'form' },
@@ -23928,7 +23934,7 @@ var Form = function Form(_ref) {
         _react2.default.createElement(
             'form',
             { onSubmit: onInvoke },
-            _react2.default.createElement(_fields.Message, { fields: fields, val: val, onChange: onChange, types: types }),
+            _react2.default.createElement(_fields.Message, { fields: fields, val: val, onChange: onChange, types: types, enums: enums }),
             _react2.default.createElement(
                 'div',
                 { className: 'form__controls' },
@@ -23942,7 +23948,7 @@ var Form = function Form(_ref) {
     );
 };
 
-var getDefaultValue = exports.getDefaultValue = function getDefaultValue(type_id, repeated) {
+var getDefaultValue = exports.getDefaultValue = function getDefaultValue(type_id, repeated, type_name, enums) {
     if (repeated) {
         return [];
     }
@@ -23953,6 +23959,10 @@ var getDefaultValue = exports.getDefaultValue = function getDefaultValue(type_id
         case 11:
             //msg
             return [];
+        case 14:
+            var e = enums[type_name].values;
+            var keys = Object.keys(e);
+            return keys[0];
         default:
             return '';
     }
@@ -23989,7 +23999,23 @@ var Field = exports.Field = function Field(props) {
             break;
         case 11:
             var type = props.types[props.type_name];
-            input = _react2.default.createElement(Message, { fields: type.fields, types: props.types, val: props.val, onChange: props.onChange });
+            input = _react2.default.createElement(Message, { fields: type.fields, types: props.types, val: props.val, enums: props.enums, onChange: props.onChange });
+            break;
+        case 14:
+            var enum_ = props.enums[props.type_name];
+            input = _react2.default.createElement(
+                'select',
+                { className: 'field__input', value: props.val, onChange: function onChange(e) {
+                        return props.onChange(e.target.value);
+                    } },
+                Object.keys(enum_.values).map(function (k) {
+                    return _react2.default.createElement(
+                        'option',
+                        { value: k },
+                        enum_.values[k]
+                    );
+                })
+            );
             break;
         default:
             input = _react2.default.createElement('input', { className: 'field__input field__input--text', name: props.name, id: props.name, type: 'text', value: props.val, onChange: function onChange(e) {
@@ -24016,6 +24042,7 @@ var RepeatedField = exports.RepeatedField = function RepeatedField(props) {
                 type_id: props.type_id,
                 type_name: props.type_name,
                 types: props.types,
+                enums: props.enums,
                 val: v,
                 onChange: function onChange(val) {
                     var newVal = props.val.slice();
@@ -24029,7 +24056,7 @@ var RepeatedField = exports.RepeatedField = function RepeatedField(props) {
             _react2.default.createElement(
                 'button',
                 { type: 'button', className: 'button button--small', onClick: function onClick() {
-                        props.onChange(props.val.concat([(0, _Request.getDefaultValue)(props.type_id, false)]));
+                        props.onChange(props.val.concat([(0, _Request.getDefaultValue)(props.type_id, false, props.type_name, props.enums)]));
                     } },
                 '+'
             )
@@ -24067,6 +24094,7 @@ var Message = exports.Message = function Message(props) {
                         type_id: f.type_id,
                         type_name: f.type_name,
                         types: props.types,
+                        enums: props.enums,
                         onChange: function onChange(val) {
                             var newVal = props.val.slice();
                             newVal[i] = val;
@@ -24077,6 +24105,7 @@ var Message = exports.Message = function Message(props) {
                         type_id: f.type_id,
                         type_name: f.type_name,
                         types: props.types,
+                        enums: props.enums,
                         onChange: function onChange(val) {
                             var newVal = props.val.slice();
                             newVal[i] = val;
@@ -24176,7 +24205,7 @@ var Request = function (_Component) {
 
         _this.state = {
             val: props.fields.map(function (f) {
-                return getDefaultValue(f.type_id, f.is_repeated);
+                return getDefaultValue(f.type_id, f.is_repeated, f.type_name, props.enums);
             })
         };
         return _this;
@@ -24199,6 +24228,7 @@ var Request = function (_Component) {
     }, {
         key: 'handleChange',
         value: function handleChange(val) {
+            console.log(val);
             this.setState({
                 val: val
             });
@@ -24210,6 +24240,7 @@ var Request = function (_Component) {
                 fields: this.props.fields,
                 val: this.state.val,
                 types: this.props.types,
+                enums: this.props.enums,
                 onChange: this.handleChange.bind(this),
                 onInvoke: this.handleInvokeMethod.bind(this)
             });
@@ -24227,7 +24258,8 @@ var Form = function Form(_ref) {
         val = _ref.val,
         onChange = _ref.onChange,
         onInvoke = _ref.onInvoke,
-        types = _ref.types;
+        types = _ref.types,
+        enums = _ref.enums;
     return _react2.default.createElement(
         'div',
         { className: 'form' },
@@ -24239,7 +24271,7 @@ var Form = function Form(_ref) {
         _react2.default.createElement(
             'form',
             { onSubmit: onInvoke },
-            _react2.default.createElement(_fields.Message, { fields: fields, val: val, onChange: onChange, types: types }),
+            _react2.default.createElement(_fields.Message, { fields: fields, val: val, onChange: onChange, types: types, enums: enums }),
             _react2.default.createElement(
                 'div',
                 { className: 'form__controls' },
@@ -24253,7 +24285,7 @@ var Form = function Form(_ref) {
     );
 };
 
-var getDefaultValue = exports.getDefaultValue = function getDefaultValue(type_id, repeated) {
+var getDefaultValue = exports.getDefaultValue = function getDefaultValue(type_id, repeated, type_name, enums) {
     if (repeated) {
         return [];
     }
@@ -24264,6 +24296,10 @@ var getDefaultValue = exports.getDefaultValue = function getDefaultValue(type_id
         case 11:
             //msg
             return [];
+        case 14:
+            var e = enums[type_name].values;
+            var keys = Object.keys(e);
+            return keys[0];
         default:
             return '';
     }

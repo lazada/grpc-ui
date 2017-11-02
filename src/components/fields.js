@@ -11,7 +11,13 @@ export const Field = (props) => {
             break;
         case 11:
             const type = props.types[props.type_name];
-            input = <Message fields={type.fields} types={props.types} val={props.val} onChange={props.onChange}/>
+            input = <Message fields={type.fields} types={props.types} val={props.val} enums={props.enums} onChange={props.onChange}/>
+            break;
+        case 14:
+            const enum_ = props.enums[props.type_name];
+            input = <select className="field__input" value={props.val} onChange={(e) => props.onChange(e.target.value)}>
+                {Object.keys(enum_.values).map(k => <option value={k}>{enum_.values[k]}</option>)}
+            </select>;
             break;
         default:
             input = <input className="field__input field__input--text" name={props.name} id={props.name} type="text" value={props.val} onChange={(e) => props.onChange(e.target.value)}/>
@@ -31,6 +37,7 @@ export const RepeatedField = (props) =>
             type_id={props.type_id}
             type_name={props.type_name}
             types={props.types}
+            enums={props.enums}
             val={v}
             onChange={(val) => {
                 const newVal = props.val.slice();
@@ -38,7 +45,7 @@ export const RepeatedField = (props) =>
                 props.onChange(newVal);
             }}/> )}
         <div className="field__controls">
-            <button type="button" className="button button--small" onClick={() => {props.onChange(props.val.concat([getDefaultValue(props.type_id, false)])); }}>+</button>
+            <button type="button" className="button button--small" onClick={() => {props.onChange(props.val.concat([getDefaultValue(props.type_id, false, props.type_name, props.enums)])); }}>+</button>
         </div>
     </div>;
 
@@ -57,6 +64,7 @@ export const Message = (props) =>
                                        type_id={f.type_id}
                                        type_name={f.type_name}
                                        types={props.types}
+                                       enums={props.enums}
                                        onChange={(val) => {
                                            const newVal = props.val.slice();
                                            newVal[i] = val;
@@ -69,6 +77,7 @@ export const Message = (props) =>
                                type_id={f.type_id}
                                type_name={f.type_name}
                                types={props.types}
+                               enums={props.enums}
                                onChange={(val) => {
                                    const newVal = props.val.slice();
                                    newVal[i] = val;
