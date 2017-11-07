@@ -1,15 +1,12 @@
 package http_server
 
 import (
-	"encoding/json"
-	"fmt"
-	"log"
+	"io/ioutil"
 	"net/http"
 
-	protobuf "github.com/golang/protobuf/proto"
-	"github.com/gorilla/websocket"
-	"github.com/lazada/grpc-ui/proto"
+	proto "github.com/golang/protobuf/proto"
 	"github.com/lazada/grpc-ui/reflection"
+	"google.golang.org/grpc/status"
 )
 
 func New(addr, staticDir, targetAddr string) *HTTPServer {
@@ -21,7 +18,6 @@ func New(addr, staticDir, targetAddr string) *HTTPServer {
 		mux:        mux,
 	}
 
-	mux.HandleFunc("/api/info", s.infoHandler)
 	mux.HandleFunc("/api/invoke", s.invokeHandler)
 	mux.HandleFunc("/api/reflection", s.reflectionHandler)
 
@@ -49,116 +45,88 @@ type HTTPServer struct {
 	mux        *http.ServeMux
 }
 
-type InvokeReq struct {
-	ServiceName string             `json:"service_name"`
-	PackageName string             `json:"package_name"`
-	MethodName  string             `json:"method_name"`
-	GRPCArgs    []proto.FieldValue `json:"grpc_args"`
+func httpError(w http.ResponseWriter, code int) {
+	http.Error(w, http.StatusText(code), code)
 }
 
-type InvokeResp struct {
-	Status string      `json:"status"`
-	Data   interface{} `json:"data"`
-	Error  string      `json:"error"`
-}
-
-type InvokeStreamReq struct {
-	GRPCMethod string `json:"grpc_method"`
-	GRPCArgs   string `json:"grpc_args"`
-}
-
-type InvokeStreamResp struct {
-	Status string      `json:"status"`
-	Data   interface{} `json:"data"`
-	Error  string      `json:"error"`
-}
-
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  2048,
-	WriteBufferSize: 2048,
-}
-
-func (h *HTTPServer) infoHandler(w http.ResponseWriter, r *http.Request) {
-	info, err := reflection.GetInfo(r.Context(), h.targetAddr)
+func respondWithProto(w http.ResponseWriter, msg proto.Message) {
+	marshalled, err := proto.Marshal(msg)
 
 	if err != nil {
-		log.Printf("Can't get grpc info: %v", err)
-		http.Error(w, fmt.Sprintf("Can't get grpc info: %v", err), http.StatusInternalServerError)
+		httpError(w, http.StatusInternalServerError)
 		return
 	}
 
-	if err := json.NewEncoder(w).Encode(info); err != nil {
-		log.Printf("Can't encode json: %v", err)
-		return
+	w.Write(marshalled)
+}
+
+func checkMethod(w http.ResponseWriter, r *http.Request, method string) bool {
+	if r.Method != http.MethodPost {
+		httpError(w, http.StatusMethodNotAllowed)
+		return true
 	}
+
+	return false
 }
 
 func (h *HTTPServer) invokeHandler(w http.ResponseWriter, r *http.Request) {
-	if r.FormValue("stream") == "" {
-		h.handleUnary(w, r)
+	if checkMethod(w, r, http.MethodPost) {
 		return
 	}
-	h.handleStream(w, r)
-}
-
-func (h *HTTPServer) handleUnary(w http.ResponseWriter, r *http.Request) {
-	req := InvokeReq{}
 
 	defer r.Body.Close()
 
-	enc := json.NewEncoder(w)
+	buff, err := ioutil.ReadAll(r.Body)
 
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		enc.Encode(&InvokeResp{
-			Status: "error",
-			Error:  err.Error(),
-		})
-		log.Printf("Can't decode request body: %v", err)
-		return
-	}
-	invokeRes, err := proto.Invoke(r.Context(), h.targetAddr, req.PackageName, req.ServiceName, req.MethodName, req.GRPCArgs)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		enc.Encode(&InvokeResp{
-			Status: "error",
-			Error:  err.Error(),
-		})
 		return
 	}
-	enc.Encode(&InvokeResp{
-		Status: "ok",
-		Data:   invokeRes,
-	})
-}
 
-func (h *HTTPServer) handleStream(w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil)
+	req := &InvokeRequest{}
+
+	err = proto.Unmarshal(buff, req)
+
 	if err != nil {
-		log.Printf("Can't upgrade connection: %v", err)
+		httpError(w, http.StatusBadRequest)
 		return
 	}
-	defer conn.Close()
 
-	log.Print("WebSocket connected")
-	defer log.Print("WebSocket disconnected")
-	//
-	//ctx, cancel := context.WithCancel(r.Context())
-	//defer cancel()
-	//
-	//for {
-	//	req := InvokeStreamReq{}
-	//	if err := conn.ReadJSON(&req); err != nil {
-	//		if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseNormalClosure) {
-	//			log.Printf("ReadJSON error: %v", err)
-	//		}
-	//		return
-	//	}
-	//}
+	result, err := reflection.Invoke(r.Context(), h.targetAddr, req.Method, req.Payload)
 
+	resp := &InvokeResponse{}
+
+	if err != nil {
+		s, _ := status.FromError(err)
+
+		if s != nil {
+			resp.Response = &InvokeResponse_Error{
+				Error: &Error{
+					Message: s.Message(),
+				},
+			}
+		} else {
+			{
+				resp.Response = &InvokeResponse_Error{
+					Error: &Error{
+						Message: err.Error(),
+					},
+				}
+			}
+		}
+	} else {
+		resp.Response = &InvokeResponse_Payload{
+			Payload: result,
+		}
+	}
+
+	respondWithProto(w, resp)
 }
 
 func (h *HTTPServer) reflectionHandler(w http.ResponseWriter, r *http.Request) {
+	if checkMethod(w, r, http.MethodGet) {
+		return
+	}
+
 	data, err := reflection.GetReflection(r.Context(), h.targetAddr)
 
 	resp := &ReflectionResponse{}
@@ -178,14 +146,7 @@ func (h *HTTPServer) reflectionHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	marshalled, err := protobuf.Marshal(resp)
-
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	w.Write(marshalled)
+	respondWithProto(w, resp)
 }
 
 func (h *HTTPServer) indexHandler(w http.ResponseWriter, r *http.Request) {

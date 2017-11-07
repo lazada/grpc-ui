@@ -17,3 +17,15 @@ message Reflection {
 message Error {
   string message = 1;
 }
+
+message InvokeRequest {
+  string method = 1;
+  bytes payload = 2;
+}
+
+message InvokeResponse {
+  oneof response {
+    bytes payload = 1;
+    Error error = 2;
+  }
+}

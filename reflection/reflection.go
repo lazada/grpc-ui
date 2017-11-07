@@ -122,3 +122,28 @@ func getFileDescriptors(stream pb.ServerReflection_ServerReflectionInfoClient, s
 
 	return r, nil
 }
+
+func Invoke(
+	ctx context.Context,
+	addr string,
+	method string,
+	payload []byte,
+) ([]byte, error) {
+	conn, err := grpc.DialContext(ctx, addr, grpc.WithInsecure())
+	if err != nil {
+		return nil, err
+	}
+
+	defer conn.Close()
+
+	req := &Message{Payload: payload}
+	res := &Message{}
+
+	err = grpc.Invoke(ctx, method, req, res, conn)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Payload, nil
+}
