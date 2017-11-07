@@ -5,7 +5,9 @@ import Method from './Method';
 
 import './app.sass';
 import axios from 'axios';
-
+import proto from '../proto.js';
+import protobuf from 'protobufjs';
+import { convertFileDescriptor } from 'proto-descriptor';
 
 class App extends Component {
     constructor(props) {
@@ -19,9 +21,21 @@ class App extends Component {
     componentDidMount() {
         axios.get('/api/info')
             .then(({data: {packages, types, enums}}) => {
+                console.log({packages, types, enums})
                this.setState({
                    packages, types, enums,
                })
+            });
+
+
+        axios.get('/api/reflection', { responseType: 'arraybuffer' })
+            .then(res => {
+                const msg = proto.ReflectionResponse.decode(new Uint8Array(res.data));
+                const fd = msg.reflection.fileDescriptor[0];
+                const root = convertFileDescriptor(fd);
+
+
+                console.log(root.toJSON());
             });
     }
     render() {
