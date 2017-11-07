@@ -6,23 +6,25 @@ import (
 	"log"
 	"net/http"
 
+	protobuf "github.com/golang/protobuf/proto"
 	"github.com/gorilla/websocket"
 	"github.com/lazada/grpc-ui/proto"
 	"github.com/lazada/grpc-ui/reflection"
 )
 
-
 func New(addr, staticDir, targetAddr string) *HTTPServer {
 	mux := http.NewServeMux()
 
 	s := &HTTPServer{
-		addr: addr,
+		addr:       addr,
 		targetAddr: targetAddr,
-		mux: mux,
+		mux:        mux,
 	}
 
 	mux.HandleFunc("/api/info", s.infoHandler)
 	mux.HandleFunc("/api/invoke", s.invokeHandler)
+	mux.HandleFunc("/api/reflection", s.reflectionHandler)
+
 	staticHandler := NewHTTPHandler()
 
 	if staticDir != "" {
@@ -35,24 +37,23 @@ func New(addr, staticDir, targetAddr string) *HTTPServer {
 	if staticDir != "" {
 		mux.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir(staticDir))))
 	} else {
-		mux.Handle("/static/", http.StripPrefix("/static",  staticHandler))
+		mux.Handle("/static/", http.StripPrefix("/static", staticHandler))
 	}
 
 	return s
 }
 
-
-type HTTPServer struct{
-	addr string
+type HTTPServer struct {
+	addr       string
 	targetAddr string
-	mux *http.ServeMux
+	mux        *http.ServeMux
 }
 
 type InvokeReq struct {
-	ServiceName string `json:"service_name"`
-	PackageName string `json:"package_name"`
-	MethodName string `json:"method_name"`
-	GRPCArgs   []proto.FieldValue `json:"grpc_args"`
+	ServiceName string             `json:"service_name"`
+	PackageName string             `json:"package_name"`
+	MethodName  string             `json:"method_name"`
+	GRPCArgs    []proto.FieldValue `json:"grpc_args"`
 }
 
 type InvokeResp struct {
@@ -85,7 +86,6 @@ func (h *HTTPServer) infoHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("Can't get grpc info: %v", err), http.StatusInternalServerError)
 		return
 	}
-
 
 	if err := json.NewEncoder(w).Encode(info); err != nil {
 		log.Printf("Can't encode json: %v", err)
@@ -158,6 +158,35 @@ func (h *HTTPServer) handleStream(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func (h *HTTPServer) reflectionHandler(w http.ResponseWriter, r *http.Request) {
+	data, err := reflection.GetReflection(r.Context(), h.targetAddr)
+
+	resp := &ReflectionResponse{}
+
+	if err != nil {
+		resp.Response = &ReflectionResponse_Error{
+			Error: &Error{
+				Message: err.Error(),
+			},
+		}
+	} else {
+		resp.Response = &ReflectionResponse_Reflection{
+			Reflection: &Reflection{
+				Service:        data.Services,
+				FileDescriptor: data.FileDescriptors,
+			},
+		}
+	}
+
+	marshalled, err := protobuf.Marshal(resp)
+
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(marshalled)
+}
 
 func (h *HTTPServer) indexHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "static/index.html")

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option go_package = "http_server";
+
+message ReflectionResponse {
+  oneof response {
+    Reflection reflection = 1;
+    Error error = 2;
+  }
+}
+
+message Reflection {
+  repeated string service = 1;
+  repeated bytes file_descriptor = 2;
+}
+
+message Error {
+  string message = 1;
+}
