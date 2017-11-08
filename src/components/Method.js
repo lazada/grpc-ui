@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import './Method.sass';
 import axios from 'axios/index';
 import Request from './request';
+import JSONTree from 'react-json-tree'
 
 
 const Response = (props) => {
@@ -10,7 +11,6 @@ const Response = (props) => {
 
         {props.fields.map((f) =>
             <label className="field__label" htmlFor={f.name}>{f.name} = {f.number} (f.type_id)</label>
-
         )}
     </div>;
 };
@@ -59,6 +59,26 @@ class Method extends Component {
             })
     }
     render() {
+        const theme =  {
+            scheme: 'bright',
+            author: 'chris kempson (http://chriskempson.com)',
+            base00: '#000000',
+            base01: '#303030',
+            base02: '#505050',
+            base03: '#b0b0b0',
+            base04: '#d0d0d0',
+            base05: '#e0e0e0',
+            base06: '#f5f5f5',
+            base07: '#ffffff',
+            base08: '#fb0120',
+            base09: '#fc6d24',
+            base0A: '#fda331',
+            base0B: '#a1c659',
+            base0C: '#76c7b7',
+            base0D: '#04acb4',
+            base0E: '#d381c3',
+            base0F: '#be643c'
+        };
         return <div className={`method ${this.state.loading ? 'method--loading' : ''}`}>
             <div className="method__heading" onClick={this.onHeadingClick.bind(this)}>
                 <h4 className="method__name"> {this.props.name} <i className={this.state.expanded ? '' : 'fa fa-angle-down'}/></h4>
@@ -67,9 +87,9 @@ class Method extends Component {
             <div className="method__body" style={{display: this.state.expanded ? 'block' : 'none'}}>
                 <Request {...this.props.types[this.props.in]} types={this.props.types} enums={this.props.enums} onInvokeMethod={this.handleInvokeMethod.bind(this)}/>
                 {this.state.error ?
-                    <div class="method__error">{this.state.error}</div> : null}
+                    <div className="method__error">{this.state.error}</div> : null}
                 {this.state.result ?
-                    <pre className="method__result">{JSON.stringify(this.state.result, null, 4)}</pre> : null}
+                    <div className="method__result"><JSONTree data={this.state.result} theme={theme} /></div> : null}
                 <Response {...this.props.types[this.props.out]} types={this.props.types} enums={this.props.enums}/>
             </div>
         </div>

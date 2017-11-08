@@ -51,7 +51,8 @@ export const RepeatedField = (props) =>
                 props.onChange(newVal);
             }}/> )}
         <div className="field__controls">
-            <button type="button" className="button button--small" onClick={() => {props.onChange(props.val.concat([getDefaultValue(props.type_id, false, props.type_name, props.enums)])); }}>+</button>
+            {props.val.length ? <button type="button" className="button button--small" onClick={() => {props.onChange(props.val.slice(0, props.val.length - 1)); }}>-</button>: null}
+            <button type="button" className="button button--small" onClick={() => {props.onChange(props.val.concat([getDefaultValue(props.type_id, false, props.type_name, props.enums, props.types)])); }}>+</button>
         </div>
     </div>;
 
@@ -72,9 +73,9 @@ export const Message = (props) =>
                                        types={props.types}
                                        enums={props.enums}
                                        onChange={(val) => {
-                                           const newVal = props.val.slice();
-                                           newVal[i] = val;
-                                           props.onChange(newVal)
+                                           const newArr = props.val.slice();
+                                           newArr[i] = val;
+                                           props.onChange(newArr);
                                        }}/>
                         :
                         <Field name={f.name}
@@ -85,9 +86,9 @@ export const Message = (props) =>
                                types={props.types}
                                enums={props.enums}
                                onChange={(val) => {
-                                   const newVal = props.val.slice();
-                                   newVal[i] = val;
-                                   props.onChange(newVal)
+                                   const newArr = props.val.slice();
+                                   newArr[i] = val;
+                                   props.onChange(newArr);
                                }} />
                     }
                 </td>

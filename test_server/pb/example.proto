@@ -34,12 +34,18 @@ message DeleteUserResp {
 
 };
 
+message Inner {
+    int32 a = 1;
+    string b = 2;
+};
+
 message GetUserReq {
     string firstName = 1;
     string lastName = 2;
     repeated string skills = 3;
     repeated int32 ids = 4;
     int32 age = 5;
+    Inner in = 6;
 }
 
 message UserResp {
