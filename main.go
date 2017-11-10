@@ -12,7 +12,7 @@ func main() {
 		StaticDir: "",
 	})
 
-	srv := http_server.New(cfg.HttpAddr, cfg.StaticDir, cfg.TargetAddr)
+	srv := http_server.New(cfg.HttpAddr, cfg.StaticDir)
 	if err := srv.Start(); err != nil {
 		log.Printf("http server error: %v", err)
 		os.Exit(1)

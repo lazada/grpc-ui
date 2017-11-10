@@ -1,0 +1,120 @@
+@import "vars.scss";
+
+.method {
+  border: 1px solid #eee;
+  margin-bottom: 20px;
+  transition: all 200ms ease-in-out;
+
+  &__heading {
+    cursor: pointer;
+    padding: 15px;
+    background: $primary;
+    color: #fff;
+    font: {
+      wight: bold;
+      size: 20px;
+    };
+  }
+
+  &__name {
+    margin: 0;
+  }
+
+  &--loading {
+    .method__body {
+      position: relative;
+
+      &:after {
+        background: rgba(white, 0.8);
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+    }
+  }
+
+  &__result {
+    padding: 20px;
+    background: $success;
+  }
+
+  &__error {
+    padding: 20px;
+    background: $danger;
+  }
+}
+
+.form {
+  padding: 20px 20px 40px 20px;
+
+  &__controls {
+    padding-top: 10px;
+    text-align: right;
+  }
+
+  &__title {
+    font: {
+      weight: bold;
+      size: 20px;
+    };
+    margin: 0;
+    padding: 0;
+    padding-bottom: 10px;
+  }
+}
+
+.message {
+  border-collapse: collapse;
+  width: 100%;
+
+  &--in {
+    border-bottom: 1px solid #eee;
+  }
+
+  &__cell {
+    padding: 10px;
+    border: 1px solid #eee;
+
+    &--first {
+      width: 100px;
+    }
+
+    &--last {
+      text-align: right;
+      width: 100px;
+    }
+  }
+}
+
+.button {
+  padding: 10px;
+  background: none;
+  outline: none;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 2px solid $primary;
+  font: {
+    family: Roboto, sans-serif;
+    weight: bold;
+    size: 14px;
+  };
+  transition: all 150ms ease-in-out;
+
+  &--small {
+    margin-right: 5px;
+    padding: 6px 10px;
+    font: {
+      size: 14px;
+    };
+  }
+
+  &:hover {
+    background: $primary;
+    border: 2px solid $primary-light;
+    color: #fff;
+  }
+}
