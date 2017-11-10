@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Message} from './fields';
+import {getDefaultValue} from './types';
 
 function fieldsToVal(fields, val, types) {
     return fields.map((f, i) => {
@@ -61,22 +62,3 @@ const Form = ({fields, val, onChange, onInvoke, types, enums}) =>
             </div>
         </form>
     </div>;
-
-export const getDefaultValue = (type_id, repeated, type_name, enums, types) => {
-    if (repeated) {
-        return [];
-    }
-    switch (type_id) {
-        case 8: //bool
-            return 'false';
-        case 11: //msg
-            const type = types[type_name];
-            return type.fields.map(f => getDefaultValue(f.type_id, f.is_repeated, f.type_name, enums, types));
-        case 14:
-            const e = enums[type_name].values;
-            const keys = Object.keys(e);
-            return  keys[0];
-        default:
-            return '';
-    }
-};

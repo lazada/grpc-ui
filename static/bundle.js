@@ -3052,7 +3052,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Request = __webpack_require__(134);
+var _types = __webpack_require__(245);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3060,12 +3060,17 @@ var Field = exports.Field = function Field(props) {
     var input = null;
 
     switch (props.type_id) {
-        case 8:
+        case _types.TYPE_BOOL:
             input = _react2.default.createElement('input', { className: 'field__input', name: props.name, id: props.name, type: 'checkbox', checked: props.val === 'true', onChange: function onChange(e) {
                     return props.onChange(e.target.checked ? 'true' : 'false');
                 } });
             break;
-        case 11:
+        case _types.TYPE_INT32:
+            input = _react2.default.createElement('input', { className: 'field__input', name: props.name, id: props.name, type: 'number', value: props.val, onChange: function onChange(e) {
+                    return props.onChange(e.target.value);
+                } });
+            break;
+        case _types.TYPE_MESSAGE:
             var type = props.types[props.type_name];
             if (!type) {
                 return _react2.default.createElement(
@@ -3076,7 +3081,7 @@ var Field = exports.Field = function Field(props) {
             }
             input = _react2.default.createElement(Message, { fields: type.fields, types: props.types, val: props.val, enums: props.enums, onChange: props.onChange });
             break;
-        case 14:
+        case _types.TYPE_ENUM:
             var enum_ = props.enums[props.type_name];
             if (!enum_) {
                 return _react2.default.createElement(
@@ -3145,7 +3150,7 @@ var RepeatedField = exports.RepeatedField = function RepeatedField(props) {
             _react2.default.createElement(
                 'button',
                 { type: 'button', className: 'button button--small', onClick: function onClick() {
-                        props.onChange(props.val.concat([(0, _Request.getDefaultValue)(props.type_id, false, props.type_name, props.enums, props.types)]));
+                        props.onChange(props.val.concat([(0, _types.getDefaultValue)(props.type_id, false, props.type_name, props.enums, props.types)]));
                     } },
                 '+'
             )
@@ -3204,56 +3209,13 @@ var Message = exports.Message = function Message(props) {
                 _react2.default.createElement(
                     'td',
                     { className: 'message__cell message__cell--last' },
-                    getTypeName(f.type_id),
+                    (0, _types.getTypeName)(f.type_id),
                     ' ',
                     f.is_repeated ? '(+)' : ''
                 )
             );
         })
     );
-};
-
-var getTypeName = function getTypeName(type_id) {
-    switch (type_id) {
-        case 1:
-            return "double";
-        case 2:
-            return "float";
-        case 3:
-            return "int64";
-        case 4:
-            return "uint64";
-        case 5:
-            return "int32";
-        case 6:
-            return "fixed64";
-        case 7:
-            return "fixed32";
-        case 8:
-            return "bool";
-        case 9:
-            return "string";
-        case 10:
-            return "group";
-        case 11:
-            return "message";
-        case 12:
-            return "bytes";
-        case 13:
-            return "uint32";
-        case 14:
-            return "enum";
-        case 15:
-            return "sfixed32";
-        case 16:
-            return "sfixed32";
-        case 17:
-            return "sint32";
-        case 18:
-            return "sint64";
-        default:
-            return '???';
-    }
 };
 
 /***/ }),
@@ -25961,7 +25923,6 @@ module.exports = function spread(callback) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.getDefaultValue = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -25970,6 +25931,8 @@ var _react = __webpack_require__(0);
 var _react2 = _interopRequireDefault(_react);
 
 var _fields = __webpack_require__(69);
+
+var _types = __webpack_require__(245);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -26004,7 +25967,7 @@ var Request = function (_Component) {
 
         _this.state = {
             val: props.fields.map(function (f) {
-                return getDefaultValue(f.type_id, f.is_repeated, f.type_name, props.enums, props.types);
+                return (0, _types.getDefaultValue)(f.type_id, f.is_repeated, f.type_name, props.enums, props.types);
             })
         };
         return _this;
@@ -26076,178 +26039,8 @@ var Form = function Form(_ref) {
     );
 };
 
-var getDefaultValue = exports.getDefaultValue = function getDefaultValue(type_id, repeated, type_name, enums, types) {
-    if (repeated) {
-        return [];
-    }
-    switch (type_id) {
-        case 8:
-            //bool
-            return 'false';
-        case 11:
-            //msg
-            var type = types[type_name];
-            return type.fields.map(function (f) {
-                return getDefaultValue(f.type_id, f.is_repeated, f.type_name, enums, types);
-            });
-        case 14:
-            var e = enums[type_name].values;
-            var keys = Object.keys(e);
-            return keys[0];
-        default:
-            return '';
-    }
-};
-
 /***/ }),
-/* 134 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.getDefaultValue = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _fields = __webpack_require__(69);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-function fieldsToVal(fields, val, types) {
-    return fields.map(function (f, i) {
-        var exportedVal = val[i];
-        switch (f.type_id) {
-            case 11:
-                var type = types[f.type_name];
-                exportedVal = fieldsToVal(type.fields, val[i], types);
-        }
-        return {
-            number: f.number,
-            val: exportedVal
-        };
-    });
-}
-
-var Request = function (_Component) {
-    _inherits(Request, _Component);
-
-    function Request(props) {
-        _classCallCheck(this, Request);
-
-        var _this = _possibleConstructorReturn(this, (Request.__proto__ || Object.getPrototypeOf(Request)).call(this, props));
-
-        _this.state = {
-            val: props.fields.map(function (f) {
-                return getDefaultValue(f.type_id, f.is_repeated, f.type_name, props.enums, props.types);
-            })
-        };
-        return _this;
-    }
-
-    _createClass(Request, [{
-        key: 'handleInvokeMethod',
-        value: function handleInvokeMethod(e) {
-            e.preventDefault();
-            this.props.onInvokeMethod(fieldsToVal(this.props.fields, this.state.val, this.props.types));
-        }
-    }, {
-        key: 'handleChange',
-        value: function handleChange(val) {
-            console.log(val);
-            this.setState({
-                val: val
-            });
-        }
-    }, {
-        key: 'render',
-        value: function render() {
-            return _react2.default.createElement(Form, {
-                fields: this.props.fields,
-                val: this.state.val,
-                types: this.props.types,
-                enums: this.props.enums,
-                onChange: this.handleChange.bind(this),
-                onInvoke: this.handleInvokeMethod.bind(this)
-            });
-        }
-    }]);
-
-    return Request;
-}(_react.Component);
-
-exports.default = Request;
-
-
-var Form = function Form(_ref) {
-    var fields = _ref.fields,
-        val = _ref.val,
-        onChange = _ref.onChange,
-        onInvoke = _ref.onInvoke,
-        types = _ref.types,
-        enums = _ref.enums;
-    return _react2.default.createElement(
-        'div',
-        { className: 'form' },
-        _react2.default.createElement(
-            'h4',
-            { className: 'form__title' },
-            'Request'
-        ),
-        _react2.default.createElement(
-            'form',
-            { onSubmit: onInvoke },
-            _react2.default.createElement(_fields.Message, { fields: fields, val: val, onChange: onChange, types: types, enums: enums }),
-            _react2.default.createElement(
-                'div',
-                { className: 'form__controls' },
-                _react2.default.createElement(
-                    'button',
-                    { type: 'submit', className: 'button' },
-                    'Invoke'
-                )
-            )
-        )
-    );
-};
-
-var getDefaultValue = exports.getDefaultValue = function getDefaultValue(type_id, repeated, type_name, enums, types) {
-    if (repeated) {
-        return [];
-    }
-    switch (type_id) {
-        case 8:
-            //bool
-            return 'false';
-        case 11:
-            //msg
-            var type = types[type_name];
-            return type.fields.map(function (f) {
-                return getDefaultValue(f.type_id, f.is_repeated, f.type_name, enums, types);
-            });
-        case 14:
-            var e = enums[type_name].values;
-            var keys = Object.keys(e);
-            return keys[0];
-        default:
-            return '';
-    }
-};
-
-/***/ }),
+/* 134 */,
 /* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -31882,6 +31675,112 @@ module.exports = function (str, opts) {
     return utils.compact(obj);
 };
 
+
+/***/ }),
+/* 245 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var TYPE_DOUBLE = exports.TYPE_DOUBLE = 1;
+var TYPE_FLOAT = exports.TYPE_FLOAT = 2;
+var TYPE_INT64 = exports.TYPE_INT64 = 3;
+var TYPE_UINT64 = exports.TYPE_UINT64 = 4;
+var TYPE_INT32 = exports.TYPE_INT32 = 5;
+var TYPE_FIXED64 = exports.TYPE_FIXED64 = 6;
+var TYPE_FIXED32 = exports.TYPE_FIXED32 = 7;
+var TYPE_BOOL = exports.TYPE_BOOL = 8;
+var TYPE_STRING = exports.TYPE_STRING = 9;
+var TYPE_GROUP = exports.TYPE_GROUP = 10;
+var TYPE_MESSAGE = exports.TYPE_MESSAGE = 11;
+var TYPE_BYTES = exports.TYPE_BYTES = 12;
+var TYPE_UINT32 = exports.TYPE_UINT32 = 13;
+var TYPE_ENUM = exports.TYPE_ENUM = 14;
+var TYPE_SFIXED32 = exports.TYPE_SFIXED32 = 15;
+var TYPE_SFIXED64 = exports.TYPE_SFIXED64 = 16;
+var TYPE_SINT32 = exports.TYPE_SINT32 = 17;
+var TYPE_SINT64 = exports.TYPE_SINT64 = 18;
+
+var INT_TYPES = exports.INT_TYPES = {};
+
+var ints = [TYPE_DOUBLE, TYPE_FLOAT, TYPE_INT64, TYPE_UINT64, TYPE_INT32, TYPE_FIXED64, TYPE_FIXED32, TYPE_UINT32, TYPE_SFIXED32, TYPE_SFIXED64, TYPE_SINT32, TYPE_SINT64];
+for (var i = 0; i < ints.length; i++) {
+    INT_TYPES[ints[i]] = i;
+}
+
+var getTypeName = exports.getTypeName = function getTypeName(type_id) {
+    switch (type_id) {
+        case TYPE_DOUBLE:
+            return "double";
+        case TYPE_FLOAT:
+            return "float";
+        case TYPE_INT64:
+            return "int64";
+        case TYPE_UINT64:
+            return "uint64";
+        case TYPE_INT32:
+            return "int32";
+        case TYPE_FIXED64:
+            return "fixed64";
+        case TYPE_FIXED32:
+            return "fixed32";
+        case TYPE_BOOL:
+            return "bool";
+        case TYPE_STRING:
+            return "string";
+        case TYPE_GROUP:
+            return "group";
+        case TYPE_MESSAGE:
+            return "message";
+        case TYPE_BYTES:
+            return "bytes";
+        case TYPE_UINT32:
+            return "uint32";
+        case TYPE_ENUM:
+            return "enum";
+        case TYPE_SFIXED32:
+            return "sfixed32";
+        case TYPE_SFIXED64:
+            return "sfixed64";
+        case TYPE_SINT32:
+            return "sint32";
+        case TYPE_SINT64:
+            return "sint64";
+        default:
+            return '???';
+    }
+};
+
+var getDefaultValue = exports.getDefaultValue = function getDefaultValue(type_id, repeated, type_name, enums, types) {
+    if (repeated) {
+        return [];
+    }
+
+    if (type_id in INT_TYPES) {
+        return '0';
+    }
+    switch (type_id) {
+        case TYPE_BOOL:
+            //bool
+            return 'false';
+        case 11:
+            //msg
+            var type = types[type_name];
+            return type.fields.map(function (f) {
+                return getDefaultValue(f.type_id, f.is_repeated, f.type_name, enums, types);
+            });
+        case 14:
+            var e = enums[type_name].values;
+            var keys = Object.keys(e);
+            return keys[0];
+        default:
+            return '';
+    }
+};
 
 /***/ })
 /******/ ]);
