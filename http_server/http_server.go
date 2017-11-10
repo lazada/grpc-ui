@@ -61,7 +61,7 @@ func respondWithProto(w http.ResponseWriter, msg proto.Message) {
 }
 
 func checkMethod(w http.ResponseWriter, r *http.Request, method string) bool {
-	if r.Method != http.MethodPost {
+	if r.Method != method {
 		httpError(w, http.StatusMethodNotAllowed)
 		return true
 	}

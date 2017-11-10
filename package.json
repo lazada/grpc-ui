@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "axios": "^0.17.0",
-    "proto-descriptor": "0.0.1",
+    "proto-descriptor": "0.0.4",
     "protobufjs": "^6.8.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",

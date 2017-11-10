@@ -1,42 +1,29 @@
 import React, {Component} from 'react';
 
 import Sidebar from './Sidebar';
-import Method from './Method';
+import Obj from './Object.js';
 
 import './app.sass';
-import axios from 'axios';
-import proto from '../proto.js';
-import protobuf from 'protobufjs';
-import { convertFileDescriptor } from 'proto-descriptor';
+
+import Adapter from '../Adapter.js';
+
 
 class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            packages: [],
-            types: {},
-            enums: {},
+            reflection: null,
+            selected: null,
         }
     }
     componentDidMount() {
-        axios.get('/api/info')
-            .then(({data: {packages, types, enums}}) => {
-                console.log({packages, types, enums})
-               this.setState({
-                   packages, types, enums,
-               })
+        const adapter = new Adapter();
+       
+        adapter.fetchReflection()
+            .then(reflection => {
+                this.setState({ reflection });
             });
-
-
-        axios.get('/api/reflection', { responseType: 'arraybuffer' })
-            .then(res => {
-                const msg = proto.ReflectionResponse.decode(new Uint8Array(res.data));
-                const fd = msg.reflection.fileDescriptor[0];
-                const root = convertFileDescriptor(fd);
-
-
-                console.log(root.toJSON());
-            });
+        // TODO handle errors
     }
     render() {
         return (
@@ -49,33 +36,18 @@ class App extends Component {
                 <div className="app">
                     <div className="app__container">
                         <div className="app__left">
-                            <Sidebar packages={this.state.packages}/>
+                            <Sidebar
+                                reflection={this.state.reflection}
+                                onSelect={obj => {
+                                    this.setState({ selected: obj });
+                                }}
+                            />
                         </div>
                         <div className="app__right">
-                            <div className="packages-list">
-                                {Object.keys(this.state.packages).map(package_name => {
-                                    return this.state.packages[package_name].map((service) => {
-                                        return <div className="package">
-                                            <h3 className="package__title">{package_name + ' / ' + service.name}</h3>
-                                            {service.methods.map((method) =>
-                                                    <Method key={method.name}
-                                                            {...method}
-                                                            service_name={service.name}
-                                                            package_name={package_name}
-                                                            types={this.state.types}
-                                                            enums={this.state.enums}
-                                                />
-                                            )}
-                                        </div>
-
-                                    });
-                                })}
-                            </div>
+                            {this.state.selected ? <Obj obj={this.state.selected}/> : null}
                         </div>
-
                     </div>
                 </div>
-
             </div>
         );
     }
