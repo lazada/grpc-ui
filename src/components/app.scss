@@ -71,6 +71,7 @@ html, body {
     padding: 10px;
     width: 200px;
     margin-right: 5px;
+    font-size: 14px;
     @include placeholder {
       @include font-stack;
       font-size: 14px;

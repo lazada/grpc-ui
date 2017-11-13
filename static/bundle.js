@@ -3046,176 +3046,100 @@ module.exports = Cancel;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.Message = exports.RepeatedField = exports.Field = undefined;
+var TYPE_DOUBLE = exports.TYPE_DOUBLE = 1;
+var TYPE_FLOAT = exports.TYPE_FLOAT = 2;
+var TYPE_INT64 = exports.TYPE_INT64 = 3;
+var TYPE_UINT64 = exports.TYPE_UINT64 = 4;
+var TYPE_INT32 = exports.TYPE_INT32 = 5;
+var TYPE_FIXED64 = exports.TYPE_FIXED64 = 6;
+var TYPE_FIXED32 = exports.TYPE_FIXED32 = 7;
+var TYPE_BOOL = exports.TYPE_BOOL = 8;
+var TYPE_STRING = exports.TYPE_STRING = 9;
+var TYPE_GROUP = exports.TYPE_GROUP = 10;
+var TYPE_MESSAGE = exports.TYPE_MESSAGE = 11;
+var TYPE_BYTES = exports.TYPE_BYTES = 12;
+var TYPE_UINT32 = exports.TYPE_UINT32 = 13;
+var TYPE_ENUM = exports.TYPE_ENUM = 14;
+var TYPE_SFIXED32 = exports.TYPE_SFIXED32 = 15;
+var TYPE_SFIXED64 = exports.TYPE_SFIXED64 = 16;
+var TYPE_SINT32 = exports.TYPE_SINT32 = 17;
+var TYPE_SINT64 = exports.TYPE_SINT64 = 18;
 
-var _react = __webpack_require__(0);
+var INT_TYPES = exports.INT_TYPES = {};
 
-var _react2 = _interopRequireDefault(_react);
+var ints = [TYPE_DOUBLE, TYPE_FLOAT, TYPE_INT64, TYPE_UINT64, TYPE_INT32, TYPE_FIXED64, TYPE_FIXED32, TYPE_UINT32, TYPE_SFIXED32, TYPE_SFIXED64, TYPE_SINT32, TYPE_SINT64];
+for (var i = 0; i < ints.length; i++) {
+    INT_TYPES[ints[i]] = i;
+}
 
-var _types = __webpack_require__(245);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Field = exports.Field = function Field(props) {
-    var input = null;
-
-    switch (props.type_id) {
-        case _types.TYPE_BOOL:
-            input = _react2.default.createElement('input', { className: 'field__input', name: props.name, id: props.name, type: 'checkbox', checked: props.val === 'true', onChange: function onChange(e) {
-                    return props.onChange(e.target.checked ? 'true' : 'false');
-                } });
-            break;
-        case _types.TYPE_INT32:
-            input = _react2.default.createElement('input', { className: 'field__input', name: props.name, id: props.name, type: 'number', value: props.val, onChange: function onChange(e) {
-                    return props.onChange(e.target.value);
-                } });
-            break;
-        case _types.TYPE_MESSAGE:
-            var type = props.types[props.type_name];
-            if (!type) {
-                return _react2.default.createElement(
-                    'div',
-                    null,
-                    '?????'
-                );
-            }
-            input = _react2.default.createElement(Message, { fields: type.fields, types: props.types, val: props.val, enums: props.enums, onChange: props.onChange });
-            break;
-        case _types.TYPE_ENUM:
-            var enum_ = props.enums[props.type_name];
-            if (!enum_) {
-                return _react2.default.createElement(
-                    'div',
-                    null,
-                    '?????'
-                );
-            }
-            input = _react2.default.createElement(
-                'select',
-                { className: 'field__input', value: props.val, onChange: function onChange(e) {
-                        return props.onChange(e.target.value);
-                    } },
-                Object.keys(enum_.values).map(function (k) {
-                    return _react2.default.createElement(
-                        'option',
-                        { value: k },
-                        enum_.values[k]
-                    );
-                })
-            );
-            break;
+var getTypeName = exports.getTypeName = function getTypeName(type_id) {
+    switch (type_id) {
+        case TYPE_DOUBLE:
+            return "double";
+        case TYPE_FLOAT:
+            return "float";
+        case TYPE_INT64:
+            return "int64";
+        case TYPE_UINT64:
+            return "uint64";
+        case TYPE_INT32:
+            return "int32";
+        case TYPE_FIXED64:
+            return "fixed64";
+        case TYPE_FIXED32:
+            return "fixed32";
+        case TYPE_BOOL:
+            return "bool";
+        case TYPE_STRING:
+            return "string";
+        case TYPE_GROUP:
+            return "group";
+        case TYPE_MESSAGE:
+            return "message";
+        case TYPE_BYTES:
+            return "bytes";
+        case TYPE_UINT32:
+            return "uint32";
+        case TYPE_ENUM:
+            return "enum";
+        case TYPE_SFIXED32:
+            return "sfixed32";
+        case TYPE_SFIXED64:
+            return "sfixed64";
+        case TYPE_SINT32:
+            return "sint32";
+        case TYPE_SINT64:
+            return "sint64";
         default:
-            input = _react2.default.createElement('input', { className: 'field__input field__input--text', name: props.name, id: props.name, type: 'text', value: props.val, onChange: function onChange(e) {
-                    return props.onChange(e.target.value);
-                } });
-            break;
+            return '???';
+    }
+};
+
+var getDefaultValue = exports.getDefaultValue = function getDefaultValue(type_id, repeated, type_name, enums, types) {
+    if (repeated) {
+        return [];
     }
 
-    return _react2.default.createElement(
-        'div',
-        { className: 'field__group' },
-        input
-    );
-};
-
-var RepeatedField = exports.RepeatedField = function RepeatedField(props) {
-    return _react2.default.createElement(
-        'div',
-        { className: 'field__group' },
-        props.val.map(function (v, i) {
-            return _react2.default.createElement(Field, {
-                name: props.name,
-                number: props.number,
-                type_id: props.type_id,
-                type_name: props.type_name,
-                types: props.types,
-                enums: props.enums,
-                val: v,
-                onChange: function onChange(val) {
-                    var newVal = props.val.slice();
-                    newVal[i] = val;
-                    props.onChange(newVal);
-                } });
-        }),
-        _react2.default.createElement(
-            'div',
-            { className: 'field__controls' },
-            props.val.length ? _react2.default.createElement(
-                'button',
-                { type: 'button', className: 'button button--small', onClick: function onClick() {
-                        props.onChange(props.val.slice(0, props.val.length - 1));
-                    } },
-                '-'
-            ) : null,
-            _react2.default.createElement(
-                'button',
-                { type: 'button', className: 'button button--small', onClick: function onClick() {
-                        props.onChange(props.val.concat([(0, _types.getDefaultValue)(props.type_id, false, props.type_name, props.enums, props.types)]));
-                    } },
-                '+'
-            )
-        )
-    );
-};
-
-var Message = exports.Message = function Message(props) {
-    return _react2.default.createElement(
-        'table',
-        { className: 'message' },
-        props.fields.map(function (f, i) {
-            return _react2.default.createElement(
-                'tr',
-                { className: 'field' },
-                _react2.default.createElement(
-                    'td',
-                    { className: 'message__cell message__cell--first' },
-                    _react2.default.createElement(
-                        'label',
-                        { className: 'field__label', htmlFor: f.name },
-                        _react2.default.createElement(
-                            'b',
-                            null,
-                            f.name
-                        )
-                    )
-                ),
-                _react2.default.createElement(
-                    'td',
-                    { className: 'message__cell' },
-                    f.is_repeated ? _react2.default.createElement(RepeatedField, { name: f.name,
-                        number: f.number,
-                        val: props.val[i],
-                        type_id: f.type_id,
-                        type_name: f.type_name,
-                        types: props.types,
-                        enums: props.enums,
-                        onChange: function onChange(val) {
-                            var newArr = props.val.slice();
-                            newArr[i] = val;
-                            props.onChange(newArr);
-                        } }) : _react2.default.createElement(Field, { name: f.name,
-                        number: f.number,
-                        val: props.val[i],
-                        type_id: f.type_id,
-                        type_name: f.type_name,
-                        types: props.types,
-                        enums: props.enums,
-                        onChange: function onChange(val) {
-                            var newArr = props.val.slice();
-                            newArr[i] = val;
-                            props.onChange(newArr);
-                        } })
-                ),
-                _react2.default.createElement(
-                    'td',
-                    { className: 'message__cell message__cell--last' },
-                    (0, _types.getTypeName)(f.type_id),
-                    ' ',
-                    f.is_repeated ? '(+)' : ''
-                )
-            );
-        })
-    );
+    if (type_id in INT_TYPES) {
+        return '0';
+    }
+    switch (type_id) {
+        case TYPE_BOOL:
+            //bool
+            return 'false';
+        case 11:
+            //msg
+            var type = types[type_name];
+            return type.fields.map(function (f) {
+                return getDefaultValue(f.type_id, f.is_repeated, f.type_name, enums, types);
+            });
+        case 14:
+            var e = enums[type_name].values;
+            var keys = Object.keys(e);
+            return keys[0];
+        default:
+            return '';
+    }
 };
 
 /***/ }),
@@ -25930,9 +25854,9 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _fields = __webpack_require__(69);
+var _fields = __webpack_require__(134);
 
-var _types = __webpack_require__(245);
+var _types = __webpack_require__(69);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -26040,7 +25964,188 @@ var Form = function Form(_ref) {
 };
 
 /***/ }),
-/* 134 */,
+/* 134 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.Message = exports.RepeatedField = exports.Field = undefined;
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _types = __webpack_require__(69);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Field = exports.Field = function Field(props) {
+    var input = null;
+
+    switch (props.type_id) {
+        case _types.TYPE_BOOL:
+            input = _react2.default.createElement('input', { className: 'field__input', name: props.name, id: props.name, type: 'checkbox', checked: props.val === 'true', onChange: function onChange(e) {
+                    return props.onChange(e.target.checked ? 'true' : 'false');
+                } });
+            break;
+        case _types.TYPE_INT32:
+            input = _react2.default.createElement('input', { className: 'field__input', name: props.name, id: props.name, type: 'number', value: props.val, onChange: function onChange(e) {
+                    return props.onChange(e.target.value);
+                } });
+            break;
+        case _types.TYPE_MESSAGE:
+            var type = props.types[props.type_name];
+            if (!type) {
+                return _react2.default.createElement(
+                    'div',
+                    null,
+                    '?????'
+                );
+            }
+            input = _react2.default.createElement(Message, { fields: type.fields, types: props.types, val: props.val, enums: props.enums, onChange: props.onChange });
+            break;
+        case _types.TYPE_ENUM:
+            var enum_ = props.enums[props.type_name];
+            if (!enum_) {
+                return _react2.default.createElement(
+                    'div',
+                    null,
+                    '?????'
+                );
+            }
+            input = _react2.default.createElement(
+                'select',
+                { className: 'field__input', value: props.val, onChange: function onChange(e) {
+                        return props.onChange(e.target.value);
+                    } },
+                Object.keys(enum_.values).map(function (k) {
+                    return _react2.default.createElement(
+                        'option',
+                        { value: k },
+                        enum_.values[k]
+                    );
+                })
+            );
+            break;
+        default:
+            input = _react2.default.createElement('input', { className: 'field__input field__input--text', name: props.name, id: props.name, type: 'text', value: props.val, onChange: function onChange(e) {
+                    return props.onChange(e.target.value);
+                } });
+            break;
+    }
+
+    return _react2.default.createElement(
+        'div',
+        { className: 'field__group' },
+        input
+    );
+};
+
+var RepeatedField = exports.RepeatedField = function RepeatedField(props) {
+    return _react2.default.createElement(
+        'div',
+        { className: 'field__group' },
+        props.val.map(function (v, i) {
+            return _react2.default.createElement(Field, {
+                name: props.name,
+                number: props.number,
+                type_id: props.type_id,
+                type_name: props.type_name,
+                types: props.types,
+                enums: props.enums,
+                val: v,
+                onChange: function onChange(val) {
+                    var newVal = props.val.slice();
+                    newVal[i] = val;
+                    props.onChange(newVal);
+                } });
+        }),
+        _react2.default.createElement(
+            'div',
+            { className: 'field__controls' },
+            props.val.length ? _react2.default.createElement(
+                'button',
+                { type: 'button', className: 'button button--small', onClick: function onClick() {
+                        props.onChange(props.val.slice(0, props.val.length - 1));
+                    } },
+                '-'
+            ) : null,
+            _react2.default.createElement(
+                'button',
+                { type: 'button', className: 'button button--small', onClick: function onClick() {
+                        props.onChange(props.val.concat([(0, _types.getDefaultValue)(props.type_id, false, props.type_name, props.enums, props.types)]));
+                    } },
+                '+'
+            )
+        )
+    );
+};
+
+var Message = exports.Message = function Message(props) {
+    return _react2.default.createElement(
+        'table',
+        { className: 'message' },
+        props.fields.map(function (f, i) {
+            return _react2.default.createElement(
+                'tr',
+                { className: 'field' },
+                _react2.default.createElement(
+                    'td',
+                    { className: 'message__cell message__cell--first' },
+                    _react2.default.createElement(
+                        'label',
+                        { className: 'field__label', htmlFor: f.name },
+                        _react2.default.createElement(
+                            'b',
+                            null,
+                            f.name
+                        )
+                    )
+                ),
+                _react2.default.createElement(
+                    'td',
+                    { className: 'message__cell' },
+                    f.is_repeated ? _react2.default.createElement(RepeatedField, { name: f.name,
+                        number: f.number,
+                        val: props.val[i],
+                        type_id: f.type_id,
+                        type_name: f.type_name,
+                        types: props.types,
+                        enums: props.enums,
+                        onChange: function onChange(val) {
+                            var newArr = props.val.slice();
+                            newArr[i] = val;
+                            props.onChange(newArr);
+                        } }) : _react2.default.createElement(Field, { name: f.name,
+                        number: f.number,
+                        val: props.val[i],
+                        type_id: f.type_id,
+                        type_name: f.type_name,
+                        types: props.types,
+                        enums: props.enums,
+                        onChange: function onChange(val) {
+                            var newArr = props.val.slice();
+                            newArr[i] = val;
+                            props.onChange(newArr);
+                        } })
+                ),
+                _react2.default.createElement(
+                    'td',
+                    { className: 'message__cell message__cell--last' },
+                    (0, _types.getTypeName)(f.type_id),
+                    ' ',
+                    f.is_repeated ? '(+)' : ''
+                )
+            );
+        })
+    );
+};
+
+/***/ }),
 /* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -31255,7 +31360,7 @@ exports = module.exports = __webpack_require__(32)(undefined);
 
 
 // module
-exports.push([module.i, "html, body {\n  margin: 0;\n  padding: 0;\n  font-family: \"Roboto\", sans-serif; }\n\n.navbar {\n  padding: 20px;\n  border-bottom: 1px solid #eee; }\n  .navbar__container {\n    width: 1080px;\n    margin: 0 auto; }\n  .navbar__container:after {\n    content: \"\";\n    display: table;\n    clear: both; }\n  .navbar__logo {\n    float: left; }\n  .navbar__host-form {\n    float: right; }\n\n.logo {\n  display: inline-block;\n  width: 80px;\n  height: 28px;\n  background-image: url(\"/static/img/grpc.png\"); }\n\n.host-form {\n  display: inline-block; }\n  .host-form__input {\n    padding: 10px;\n    width: 200px;\n    margin-right: 5px; }\n    .host-form__input::placeholder {\n      font-family: \"Roboto\", sans-serif;\n      font-size: 14px; }\n    .host-form__input::-webkit-input-placeholder {\n      font-family: \"Roboto\", sans-serif;\n      font-size: 14px; }\n    .host-form__input::-moz-placeholder {\n      font-family: \"Roboto\", sans-serif;\n      font-size: 14px; }\n    .host-form__input::-ms-input-placeholder {\n      font-family: \"Roboto\", sans-serif;\n      font-size: 14px; }\n    .host-form__input::-moz-placeholder {\n      font-family: \"Roboto\", sans-serif;\n      font-size: 14px; }\n\n.app__container {\n  width: 1080px;\n  margin: 0 auto; }\n\n.app__sidebar {\n  width: 30%;\n  float: left; }\n\n.app__packages-list {\n  width: 70%;\n  float: left; }\n\n.field {\n  border-bottom: 1px solid #eee;\n  padding-bottom: 20px;\n  margin-bottom: 10px; }\n  .field__label {\n    padding: 10px 0;\n    display: block; }\n  .field__input {\n    font-size: 14px;\n    box-sizing: border-box;\n    padding: 10px;\n    margin-bottom: 10px; }\n    .field__input--text {\n      width: 100%; }\n  .field__controls {\n    text-align: right; }\n  .field__group {\n    text-align: right;\n    margin: 5px 0; }\n\n.package__title {\n  font-size: 28px;\n  font-weight: bold; }\n", ""]);
+exports.push([module.i, "html, body {\n  margin: 0;\n  padding: 0;\n  font-family: \"Roboto\", sans-serif; }\n\n.navbar {\n  padding: 20px;\n  border-bottom: 1px solid #eee; }\n  .navbar__container {\n    width: 1080px;\n    margin: 0 auto; }\n  .navbar__container:after {\n    content: \"\";\n    display: table;\n    clear: both; }\n  .navbar__logo {\n    float: left; }\n  .navbar__host-form {\n    float: right; }\n\n.logo {\n  display: inline-block;\n  width: 80px;\n  height: 28px;\n  background-image: url(\"/static/img/grpc.png\"); }\n\n.host-form {\n  display: inline-block; }\n  .host-form__input {\n    padding: 10px;\n    width: 200px;\n    margin-right: 5px;\n    font-size: 14px; }\n    .host-form__input::placeholder {\n      font-family: \"Roboto\", sans-serif;\n      font-size: 14px; }\n    .host-form__input::-webkit-input-placeholder {\n      font-family: \"Roboto\", sans-serif;\n      font-size: 14px; }\n    .host-form__input::-moz-placeholder {\n      font-family: \"Roboto\", sans-serif;\n      font-size: 14px; }\n    .host-form__input::-ms-input-placeholder {\n      font-family: \"Roboto\", sans-serif;\n      font-size: 14px; }\n    .host-form__input::-moz-placeholder {\n      font-family: \"Roboto\", sans-serif;\n      font-size: 14px; }\n\n.app__container {\n  width: 1080px;\n  margin: 0 auto; }\n\n.app__sidebar {\n  width: 30%;\n  float: left; }\n\n.app__packages-list {\n  width: 70%;\n  float: left; }\n\n.field {\n  border-bottom: 1px solid #eee;\n  padding-bottom: 20px;\n  margin-bottom: 10px; }\n  .field__label {\n    padding: 10px 0;\n    display: block; }\n  .field__input {\n    font-size: 14px;\n    box-sizing: border-box;\n    padding: 10px;\n    margin-bottom: 10px; }\n    .field__input--text {\n      width: 100%; }\n  .field__controls {\n    text-align: right; }\n  .field__group {\n    text-align: right;\n    margin: 5px 0; }\n\n.package__title {\n  font-size: 28px;\n  font-weight: bold; }\n", ""]);
 
 // exports
 
@@ -31675,112 +31780,6 @@ module.exports = function (str, opts) {
     return utils.compact(obj);
 };
 
-
-/***/ }),
-/* 245 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-var TYPE_DOUBLE = exports.TYPE_DOUBLE = 1;
-var TYPE_FLOAT = exports.TYPE_FLOAT = 2;
-var TYPE_INT64 = exports.TYPE_INT64 = 3;
-var TYPE_UINT64 = exports.TYPE_UINT64 = 4;
-var TYPE_INT32 = exports.TYPE_INT32 = 5;
-var TYPE_FIXED64 = exports.TYPE_FIXED64 = 6;
-var TYPE_FIXED32 = exports.TYPE_FIXED32 = 7;
-var TYPE_BOOL = exports.TYPE_BOOL = 8;
-var TYPE_STRING = exports.TYPE_STRING = 9;
-var TYPE_GROUP = exports.TYPE_GROUP = 10;
-var TYPE_MESSAGE = exports.TYPE_MESSAGE = 11;
-var TYPE_BYTES = exports.TYPE_BYTES = 12;
-var TYPE_UINT32 = exports.TYPE_UINT32 = 13;
-var TYPE_ENUM = exports.TYPE_ENUM = 14;
-var TYPE_SFIXED32 = exports.TYPE_SFIXED32 = 15;
-var TYPE_SFIXED64 = exports.TYPE_SFIXED64 = 16;
-var TYPE_SINT32 = exports.TYPE_SINT32 = 17;
-var TYPE_SINT64 = exports.TYPE_SINT64 = 18;
-
-var INT_TYPES = exports.INT_TYPES = {};
-
-var ints = [TYPE_DOUBLE, TYPE_FLOAT, TYPE_INT64, TYPE_UINT64, TYPE_INT32, TYPE_FIXED64, TYPE_FIXED32, TYPE_UINT32, TYPE_SFIXED32, TYPE_SFIXED64, TYPE_SINT32, TYPE_SINT64];
-for (var i = 0; i < ints.length; i++) {
-    INT_TYPES[ints[i]] = i;
-}
-
-var getTypeName = exports.getTypeName = function getTypeName(type_id) {
-    switch (type_id) {
-        case TYPE_DOUBLE:
-            return "double";
-        case TYPE_FLOAT:
-            return "float";
-        case TYPE_INT64:
-            return "int64";
-        case TYPE_UINT64:
-            return "uint64";
-        case TYPE_INT32:
-            return "int32";
-        case TYPE_FIXED64:
-            return "fixed64";
-        case TYPE_FIXED32:
-            return "fixed32";
-        case TYPE_BOOL:
-            return "bool";
-        case TYPE_STRING:
-            return "string";
-        case TYPE_GROUP:
-            return "group";
-        case TYPE_MESSAGE:
-            return "message";
-        case TYPE_BYTES:
-            return "bytes";
-        case TYPE_UINT32:
-            return "uint32";
-        case TYPE_ENUM:
-            return "enum";
-        case TYPE_SFIXED32:
-            return "sfixed32";
-        case TYPE_SFIXED64:
-            return "sfixed64";
-        case TYPE_SINT32:
-            return "sint32";
-        case TYPE_SINT64:
-            return "sint64";
-        default:
-            return '???';
-    }
-};
-
-var getDefaultValue = exports.getDefaultValue = function getDefaultValue(type_id, repeated, type_name, enums, types) {
-    if (repeated) {
-        return [];
-    }
-
-    if (type_id in INT_TYPES) {
-        return '0';
-    }
-    switch (type_id) {
-        case TYPE_BOOL:
-            //bool
-            return 'false';
-        case 11:
-            //msg
-            var type = types[type_name];
-            return type.fields.map(function (f) {
-                return getDefaultValue(f.type_id, f.is_repeated, f.type_name, enums, types);
-            });
-        case 14:
-            var e = enums[type_name].values;
-            var keys = Object.keys(e);
-            return keys[0];
-        default:
-            return '';
-    }
-};
 
 /***/ })
 /******/ ]);
