@@ -16,7 +16,7 @@ module.exports = {
                 loader: "babel-loader"
             },
             {
-                test: /\.sass$/,
+                test: /\.scss$/,
                 use: [{
                     loader: "style-loader" // creates style nodes from JS strings
                 }, {
@@ -24,7 +24,6 @@ module.exports = {
                 }, {
                     loader: "sass-loader", // compiles Sass to CSS
                     options: {
-                        indented_syntax: 'on',
                         includePaths: [
                             path.resolve(__dirname + "/src/sass"),
                         ]

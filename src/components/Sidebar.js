@@ -1,5 +1,5 @@
 import React from 'react';
-import './Sidebar.sass';
+import './Sidebar.scss';
 
 export default (props) => {
     return (

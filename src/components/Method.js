@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import './Method.sass';
+import './Method.scss';
 import axios from 'axios/index';
 import Request from './request';
 import JSONTree from 'react-json-tree'
@@ -43,6 +43,7 @@ class Method extends Component {
             package_name: this.props.package_name,
             service_name: this.props.service_name,
             method_name: this.props.name,
+            addr: this.props.addr,
             grpc_args: args,
         })
             .then((resp) => {

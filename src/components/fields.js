@@ -1,22 +1,24 @@
 import React from 'react';
-import {getDefaultValue} from './Request';
-
+import {TYPE_BOOL, TYPE_ENUM, TYPE_INT32, TYPE_MESSAGE, getTypeName, getDefaultValue} from './types';
 
 export const Field = (props) => {
     let input = null;
 
     switch(props.type_id) {
-        case 8:
+        case TYPE_BOOL:
             input =  <input className="field__input" name={props.name} id={props.name} type="checkbox" checked={props.val === 'true'} onChange={(e) => props.onChange(e.target.checked ? 'true' : 'false')}/>
             break;
-        case 11:
+        case TYPE_INT32:
+            input =  <input className="field__input" name={props.name} id={props.name} type="number" value={props.val} onChange={(e) => props.onChange(e.target.value)}/>
+            break;
+        case TYPE_MESSAGE:
             const type = props.types[props.type_name];
             if (!type) {
                 return <div>?????</div>;
             }
             input = <Message fields={type.fields} types={props.types} val={props.val} enums={props.enums} onChange={props.onChange}/>
             break;
-        case 14:
+        case TYPE_ENUM:
             const enum_ = props.enums[props.type_name];
             if (!enum_) {
                 return <div>?????</div>;
@@ -98,28 +100,3 @@ export const Message = (props) =>
             </tr>
         )}
     </table>;
-
-const getTypeName = (type_id) => {
-    switch (type_id) {
-        case 1:  return "double";
-        case 2:  return "float";
-        case 3:  return "int64";
-        case 4:  return "uint64";
-        case 5:  return "int32";
-        case 6:  return "fixed64";
-        case 7:  return "fixed32";
-        case 8:  return "bool";
-        case 9:  return "string";
-        case 10: return "group";
-        case 11: return "message";
-        case 12: return "bytes";
-        case 13: return "uint32";
-        case 14: return "enum";
-        case 15: return "sfixed32";
-        case 16: return "sfixed32";
-        case 17: return "sint32";
-        case 18: return "sint64";
-        default:
-            return '???';
-    }
-};

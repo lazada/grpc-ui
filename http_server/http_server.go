@@ -12,12 +12,11 @@ import (
 )
 
 
-func New(addr, staticDir, targetAddr string) *HTTPServer {
+func New(addr, staticDir string) *HTTPServer {
 	mux := http.NewServeMux()
 
 	s := &HTTPServer{
 		addr: addr,
-		targetAddr: targetAddr,
 		mux: mux,
 	}
 
@@ -49,6 +48,7 @@ type HTTPServer struct{
 }
 
 type InvokeReq struct {
+	Addr string `json:"addr"`
 	ServiceName string `json:"service_name"`
 	PackageName string `json:"package_name"`
 	MethodName string `json:"method_name"`
@@ -78,7 +78,7 @@ var upgrader = websocket.Upgrader{
 }
 
 func (h *HTTPServer) infoHandler(w http.ResponseWriter, r *http.Request) {
-	info, err := reflection.GetInfo(r.Context(), h.targetAddr)
+	info, err := reflection.GetInfo(r.Context(), r.FormValue("addr"))
 
 	if err != nil {
 		log.Printf("Can't get grpc info: %v", err)
@@ -117,7 +117,7 @@ func (h *HTTPServer) handleUnary(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Can't decode request body: %v", err)
 		return
 	}
-	invokeRes, err := proto.Invoke(r.Context(), h.targetAddr, req.PackageName, req.ServiceName, req.MethodName, req.GRPCArgs)
+	invokeRes, err := proto.Invoke(r.Context(), req.Addr, req.PackageName, req.ServiceName, req.MethodName, req.GRPCArgs)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		enc.Encode(&InvokeResp{

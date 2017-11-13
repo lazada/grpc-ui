@@ -1,0 +1,134 @@
+@import "mixins.scss";
+@import "vars.scss";
+
+@mixin font-stack {
+  font-family: "Roboto", sans-serif;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+
+  @include font-stack;
+}
+
+@mixin placeholder {
+  &::placeholder {
+    @content;
+  }
+   &::-webkit-input-placeholder {
+    @content;
+   }
+   &::-moz-placeholder {
+    @content;
+   }
+   &::-ms-input-placeholder {
+    @content;
+   }
+   &::-moz-placeholder {
+    @content;
+   }
+}
+
+@mixin clearfix {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
+
+.navbar {
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+
+  @include container;
+
+  &__container {
+    @include clearfix;
+  }
+
+  &__logo {
+    float: left;
+  }
+
+  &__host-form {
+    float: right;
+  }
+}
+
+.logo {
+  display: inline-block;
+  width: 80px;
+  height: 28px;
+  background-image: url("/static/img/grpc.png");
+}
+
+.host-form {
+  display: inline-block;
+
+  &__input {
+    padding: 10px;
+    width: 200px;
+    margin-right: 5px;
+    @include placeholder {
+      @include font-stack;
+      font-size: 14px;
+    }
+  }
+}
+
+
+.app {
+  @include container;
+
+  &__sidebar {
+    width: 30%;
+    float: left;
+  }
+
+  &__packages-list {
+    width: 70%;
+    float: left;
+  }
+}
+
+.field {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 20px;
+  margin-bottom: 10px;
+
+  &__label {
+    padding: 10px 0;
+    display: block;
+  }
+
+  &__input {
+    font-size: 14px;
+    box-sizing: border-box;
+    padding: 10px;
+    margin-bottom: 10px;
+
+    &--text {
+      width: 100%;
+    }
+  }
+
+  &__controls {
+    text-align: right;
+  }
+
+  &__group {
+    text-align: right;
+    margin: 5px 0;
+  }
+}
+
+.package {
+  &__title {
+    font: {
+      size: 28px;
+      weight: bold;
+    };
+  }
+}
