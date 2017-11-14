@@ -24868,6 +24868,8 @@ var Method = function (_Component) {
                 base0E: '#d381c3',
                 base0F: '#be643c'
             };
+            var type = this.props.types[this.props.in];
+
             return _react2.default.createElement(
                 'div',
                 { className: 'method ' + (this.state.loading ? 'method--loading' : '') },
@@ -24886,7 +24888,7 @@ var Method = function (_Component) {
                 _react2.default.createElement(
                     'div',
                     { className: 'method__body', style: { display: this.state.expanded ? 'block' : 'none' } },
-                    _react2.default.createElement(_request2.default, _extends({}, this.props.types[this.props.in], { types: this.props.types, enums: this.props.enums, onInvokeMethod: this.handleInvokeMethod.bind(this) })),
+                    _react2.default.createElement(_request2.default, { type: type, types: this.props.types, enums: this.props.enums, onInvokeMethod: this.handleInvokeMethod.bind(this) }),
                     this.state.error ? _react2.default.createElement(
                         'div',
                         { className: 'method__error' },
@@ -25890,7 +25892,7 @@ var Request = function (_Component) {
         var _this = _possibleConstructorReturn(this, (Request.__proto__ || Object.getPrototypeOf(Request)).call(this, props));
 
         _this.state = {
-            val: props.fields.map(function (f) {
+            val: props.type.fields.map(function (f) {
                 return (0, _types.getDefaultValue)(f.type_id, f.is_repeated, f.type_name, props.enums, props.types);
             })
         };
@@ -25901,7 +25903,7 @@ var Request = function (_Component) {
         key: 'handleInvokeMethod',
         value: function handleInvokeMethod(e) {
             e.preventDefault();
-            this.props.onInvokeMethod(fieldsToVal(this.props.fields, this.state.val, this.props.types));
+            this.props.onInvokeMethod(fieldsToVal(this.props.type.fields, this.state.val, this.props.types));
         }
     }, {
         key: 'handleChange',
@@ -25915,7 +25917,7 @@ var Request = function (_Component) {
         key: 'render',
         value: function render() {
             return _react2.default.createElement(Form, {
-                fields: this.props.fields,
+                type: this.props.type,
                 val: this.state.val,
                 types: this.props.types,
                 enums: this.props.enums,
@@ -25932,7 +25934,7 @@ exports.default = Request;
 
 
 var Form = function Form(_ref) {
-    var fields = _ref.fields,
+    var type = _ref.type,
         val = _ref.val,
         onChange = _ref.onChange,
         onInvoke = _ref.onInvoke,
@@ -25949,7 +25951,7 @@ var Form = function Form(_ref) {
         _react2.default.createElement(
             'form',
             { onSubmit: onInvoke },
-            _react2.default.createElement(_fields.Message, { fields: fields, val: val, onChange: onChange, types: types, enums: enums }),
+            _react2.default.createElement(_fields.Message, { type: type, val: val, onChange: onChange, types: types, enums: enums }),
             _react2.default.createElement(
                 'div',
                 { className: 'form__controls' },
@@ -26089,7 +26091,7 @@ var Message = exports.Message = function Message(props) {
     return _react2.default.createElement(
         'table',
         { className: 'message' },
-        props.fields.map(function (f, i) {
+        props.type.fields.map(function (f, i) {
             return _react2.default.createElement(
                 'tr',
                 { className: 'field' },

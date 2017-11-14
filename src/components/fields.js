@@ -60,7 +60,7 @@ export const RepeatedField = (props) =>
 
 export const Message = (props) =>
     <table className="message">
-        {props.fields.map((f, i) =>
+        {props.type.fields.map((f, i) =>
             <tr className="field">
                 <td className="message__cell message__cell--first">
                     <label className="field__label" htmlFor={f.name}><b>{f.name}</b></label>

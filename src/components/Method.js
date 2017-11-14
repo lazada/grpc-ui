@@ -80,13 +80,15 @@ class Method extends Component {
             base0E: '#d381c3',
             base0F: '#be643c'
         };
+        const type = this.props.types[this.props.in];
+
         return <div className={`method ${this.state.loading ? 'method--loading' : ''}`}>
             <div className="method__heading" onClick={this.onHeadingClick.bind(this)}>
                 <h4 className="method__name"> {this.props.name} <i className={this.state.expanded ? '' : 'fa fa-angle-down'}/></h4>
             </div>
 
             <div className="method__body" style={{display: this.state.expanded ? 'block' : 'none'}}>
-                <Request {...this.props.types[this.props.in]} types={this.props.types} enums={this.props.enums} onInvokeMethod={this.handleInvokeMethod.bind(this)}/>
+                <Request type={type} types={this.props.types} enums={this.props.enums} onInvokeMethod={this.handleInvokeMethod.bind(this)}/>
                 {this.state.error ?
                     <div className="method__error">{this.state.error}</div> : null}
                 {this.state.result ?

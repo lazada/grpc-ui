@@ -116,7 +116,13 @@ func (p *descPool) parseFileDescriptor(data []byte) error {
 		p.enum_types = make(map[string]*descriptor.EnumDescriptorProto)
 	}
 
-	fullName := "."+d.GetPackage()
+	fullName := ""
+
+	pack := d.GetPackage()
+	if pack != "" {
+		fullName = "."+d.GetPackage()
+
+	}
 	p.processEnumDescriptors(fullName, d.EnumType)
 
 	p.processTypeDescriptors(fullName, d.MessageType)

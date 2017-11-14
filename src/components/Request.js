@@ -22,13 +22,13 @@ export default class Request extends Component {
         super(props);
 
         this.state = {
-            val: props.fields.map((f) => getDefaultValue(f.type_id, f.is_repeated, f.type_name, props.enums, props.types)),
+            val: props.type.fields.map((f) => getDefaultValue(f.type_id, f.is_repeated, f.type_name, props.enums, props.types)),
         };
     }
 
     handleInvokeMethod(e) {
         e.preventDefault();
-        this.props.onInvokeMethod(fieldsToVal(this.props.fields, this.state.val, this.props.types));
+        this.props.onInvokeMethod(fieldsToVal(this.props.type.fields, this.state.val, this.props.types));
     }
 
     handleChange(val) {
@@ -41,7 +41,7 @@ export default class Request extends Component {
     render() {
         return (
             <Form
-                fields={this.props.fields}
+                type={this.props.type}
                 val={this.state.val}
                 types={this.props.types}
                 enums={this.props.enums}
@@ -52,11 +52,11 @@ export default class Request extends Component {
     }
 }
 
-const Form = ({fields, val, onChange, onInvoke, types, enums}) =>
+const Form = ({type, val, onChange, onInvoke, types, enums}) =>
     <div className="form">
         <h4 className="form__title">Request</h4>
         <form onSubmit={onInvoke}>
-            <Message {...{fields, val, onChange, types, enums}}/>
+            <Message {...{type, val, onChange, types, enums}}/>
             <div className="form__controls">
                 <button type="submit" className="button">Invoke</button>
             </div>
