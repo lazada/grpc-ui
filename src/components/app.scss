@@ -83,6 +83,10 @@ html, body {
 .app {
   @include container;
 
+  &__container {
+    padding-top: 20px;
+  }
+
   &__sidebar {
     width: 30%;
     float: left;

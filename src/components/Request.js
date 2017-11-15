@@ -21,14 +21,19 @@ export default class Request extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            val: props.type.fields.map((f) => getDefaultValue(f.type_id, f.is_repeated, f.type_name, props.enums, props.types)),
+        const type = props.types[props.type_name];
+
+        this.state = !type ? {} : {
+            val: type.fields.map((f) => getDefaultValue(f.type_id, f.is_repeated, f.type_name, props.enums, props.types)),
         };
     }
 
+
     handleInvokeMethod(e) {
         e.preventDefault();
-        this.props.onInvokeMethod(fieldsToVal(this.props.type.fields, this.state.val, this.props.types));
+        const type = this.props.types[this.props.type_name];
+
+        this.props.onInvokeMethod(fieldsToVal(type.fields, this.state.val, this.props.types));
     }
 
     handleChange(val) {
@@ -39,26 +44,19 @@ export default class Request extends Component {
     }
 
     render() {
-        return (
-            <Form
-                type={this.props.type}
-                val={this.state.val}
-                types={this.props.types}
-                enums={this.props.enums}
-                onChange={this.handleChange.bind(this)}
-                onInvoke={this.handleInvokeMethod.bind(this)}
-            />
-        );
+        const type = this.props.types[this.props.type_name];
+        return type ?
+            <div className="form">
+                <h4 className="form__title">{this.props.type_name}</h4>
+                <form onSubmit={this.handleInvokeMethod.bind(this)}>
+                    <Message type={type} val={this.state.val} onChange={this.handleChange.bind(this)}
+                             types={this.props.types} enums={this.props.enums}
+                    />
+                    <div className="form__controls">
+                        <button type="submit" className="button">Invoke</button>
+                    </div>
+                </form>
+            </div>
+            : <div>Unknown type: {this.props.type_name}</div>;
     }
 }
-
-const Form = ({type, val, onChange, onInvoke, types, enums}) =>
-    <div className="form">
-        <h4 className="form__title">Request</h4>
-        <form onSubmit={onInvoke}>
-            <Message {...{type, val, onChange, types, enums}}/>
-            <div className="form__controls">
-                <button type="submit" className="button">Invoke</button>
-            </div>
-        </form>
-    </div>;

@@ -67,6 +67,9 @@ export const getDefaultValue = (type_id, repeated, type_name, enums, types) => {
             return 'false';
         case 11: //msg
             const type = types[type_name];
+            if (!type) { //TODO: hack for unknown types
+                return [];
+            }
             return type.fields.map(f => getDefaultValue(f.type_id, f.is_repeated, f.type_name, enums, types));
         case 14:
             const e = enums[type_name].values;

@@ -72,6 +72,12 @@ type InvokeStreamResp struct {
 	Error  string      `json:"error"`
 }
 
+type InfoResp struct {
+	Status string      `json:"status"`
+	Data   interface{} `json:"data"`
+	Error  string      `json:"error"`
+}
+
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  2048,
 	WriteBufferSize: 2048,
@@ -79,17 +85,30 @@ var upgrader = websocket.Upgrader{
 
 func (h *HTTPServer) infoHandler(w http.ResponseWriter, r *http.Request) {
 	info, err := reflection.GetInfo(r.Context(), r.FormValue("addr"))
-
+	enc := json.NewEncoder(w)
 	if err != nil {
 		log.Printf("Can't get grpc info: %v", err)
-		http.Error(w, fmt.Sprintf("Can't get grpc info: %v", err), http.StatusInternalServerError)
+
+		w.WriteHeader(http.StatusInternalServerError)
+		resp := &InfoResp{
+			Status: "error",
+			Error: fmt.Sprintf("Can't get grpc info: %v", err),
+		}
+		if err := enc.Encode(resp); err != nil {
+			log.Printf("Can't encode json response: %v", err)
+
+		}
 		return
 	}
 
 
-	if err := json.NewEncoder(w).Encode(info); err != nil {
-		log.Printf("Can't encode json: %v", err)
-		return
+	resp := &InfoResp{
+		Status: "ok",
+		Data: info,
+	}
+	if err := enc.Encode(resp); err != nil {
+		log.Printf("Can't encode json response: %v", err)
+
 	}
 }
 

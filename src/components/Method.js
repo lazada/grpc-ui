@@ -3,17 +3,7 @@ import './Method.scss';
 import axios from 'axios/index';
 import Request from './request';
 import JSONTree from 'react-json-tree'
-
-
-const Response = (props) => {
-    return <div className="message">
-        <h4 className="message__title">Response</h4>
-
-        {props.fields.map((f) =>
-            <label className="field__label" htmlFor={f.name}>{f.name} = {f.number} (f.type_id)</label>
-        )}
-    </div>;
-};
+import Response from './Response';
 
 
 class Method extends Component {
@@ -80,7 +70,6 @@ class Method extends Component {
             base0E: '#d381c3',
             base0F: '#be643c'
         };
-        const type = this.props.types[this.props.in];
 
         return <div className={`method ${this.state.loading ? 'method--loading' : ''}`}>
             <div className="method__heading" onClick={this.onHeadingClick.bind(this)}>
@@ -88,12 +77,14 @@ class Method extends Component {
             </div>
 
             <div className="method__body" style={{display: this.state.expanded ? 'block' : 'none'}}>
-                <Request type={type} types={this.props.types} enums={this.props.enums} onInvokeMethod={this.handleInvokeMethod.bind(this)}/>
+                <Request type_name={this.props.in} types={this.props.types} enums={this.props.enums} onInvokeMethod={this.handleInvokeMethod.bind(this)}/>
                 {this.state.error ?
                     <div className="method__error">{this.state.error}</div> : null}
                 {this.state.result ?
                     <div className="method__result"><JSONTree data={this.state.result} theme={theme} /></div> : null}
-                <Response {...this.props.types[this.props.out]} types={this.props.types} enums={this.props.enums}/>
+
+
+                <Response type_name={this.props.out} types={this.props.types} enums={this.props.enums}/>
             </div>
         </div>
     }

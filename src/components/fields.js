@@ -16,7 +16,7 @@ export const Field = (props) => {
             if (!type) {
                 return <div>?????</div>;
             }
-            input = <Message fields={type.fields} types={props.types} val={props.val} enums={props.enums} onChange={props.onChange}/>
+            input = <Message type={type} types={props.types} val={props.val} enums={props.enums} onChange={props.onChange}/>
             break;
         case TYPE_ENUM:
             const enum_ = props.enums[props.type_name];
@@ -95,7 +95,7 @@ export const Message = (props) =>
                     }
                 </td>
                 <td className="message__cell message__cell--last">
-                    {getTypeName(f.type_id)} {f.is_repeated ? '(+)': ''}
+                    {f.type_id === TYPE_MESSAGE ? f.type_name : getTypeName(f.type_id)} {f.is_repeated ? '(+)': ''}
                 </td>
             </tr>
         )}
