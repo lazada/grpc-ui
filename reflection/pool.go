@@ -10,6 +10,14 @@ import (
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	"google.golang.org/grpc"
 	pb "google.golang.org/grpc/reflection/grpc_reflection_v1alpha"
+	"log"
+
+	_ "github.com/golang/protobuf/ptypes/any"
+	_ "github.com/golang/protobuf/ptypes/duration"
+	_ "github.com/golang/protobuf/ptypes/empty"
+	_ "github.com/golang/protobuf/ptypes/struct"
+	_ "github.com/golang/protobuf/ptypes/timestamp"
+	_ "github.com/golang/protobuf/ptypes/wrappers"
 )
 
 type descPool struct {
@@ -94,6 +102,32 @@ func (p *descPool) updateSymbolFile(name string) error {
 	return nil
 }
 
+
+func (p *descPool) parseFile(name string) error {
+	err := p.stream.SendMsg(&pb.ServerReflectionRequest{
+		MessageRequest: &pb.ServerReflectionRequest_FileByFilename{
+			FileByFilename: name,
+		},
+	})
+
+	file, err := p.stream.Recv()
+	if err != nil {
+		return err
+	}
+
+	if err := file.GetErrorResponse(); err != nil {
+		return errors.New(err.String())
+	}
+
+	for _, descData := range file.GetFileDescriptorResponse().FileDescriptorProto {
+		if err := p.parseFileDescriptor(descData); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (p *descPool) parseFileDescriptor(data []byte) error {
 	d := &descriptor.FileDescriptorProto{}
 	if err := proto.Unmarshal(data, d); err != nil {
@@ -127,6 +161,18 @@ func (p *descPool) parseFileDescriptor(data []byte) error {
 
 	p.processTypeDescriptors(fullName, d.MessageType)
 
+
+	for _, filename := range d.Dependency {
+		parts := strings.Split(filename, "/")
+		name := parts[len(parts) - 1]
+
+		if err := p.parseFile(filename); err != nil {
+			if err := p.parseFile(name); err != nil {
+				log.Printf("Can't resolve %v: %v", filename, err)
+			}
+			log.Printf("Can't resolve %v: %v", filename, err)
+		}
+	}
 	return nil
 }
 

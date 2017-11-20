@@ -43,10 +43,18 @@ class Method extends Component {
                 });
             })
             .catch((error) => {
-                this.setState({
-                    error: error.response.data.error,
-                    loading: false,
-                });
+                if (error.response) {
+                    this.setState({
+                        error: error.response.data.error,
+                        loading: false,
+                    });
+                } else {
+                    this.setState({
+                        error: error,
+                        loading: false,
+                    });
+                }
+
             })
     }
     render() {

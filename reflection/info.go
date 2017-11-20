@@ -5,6 +5,11 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
+	"github.com/golang/protobuf/proto"
+	"log"
+	"compress/gzip"
+	"bytes"
+	"io/ioutil"
 )
 
 type InfoResp struct {
@@ -65,6 +70,28 @@ func GetInfo(ctx context.Context, addr string) (*InfoResp, error) {
 	services, err := pool.getServicesDescriptors()
 	if err != nil {
 		return nil, err
+	}
+
+	for _, name := range []string{
+		"google/protobuf/any.proto",
+		"google/protobuf/duration.proto",
+		"google/protobuf/empty.proto",
+		"google/protobuf/struct.proto",
+		"google/protobuf/timestamp.proto",
+		"google/protobuf/wrappers.proto",
+		} {
+			gzdata := proto.FileDescriptor(name)
+			rd, err := gzip.NewReader(bytes.NewReader(gzdata))
+			if err != nil {
+				return nil, err
+			}
+			data, err := ioutil.ReadAll(rd)
+			if err != nil {
+				return nil, err
+			}
+		if err := pool.parseFileDescriptor(data); err != nil {
+			log.Printf("Can't parseFileDescriptor: %v", err)
+		}
 	}
 
 	res := &InfoResp{

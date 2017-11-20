@@ -58,6 +58,14 @@ export const RepeatedField = (props) =>
         </div>
     </div>;
 
+const getLabel = (type_id, type_name) => {
+    if (type_id === TYPE_MESSAGE) {
+        const parts = type_name.split('.');
+        return parts[parts.length - 1];
+    }
+    return getTypeName(type_id)
+}
+
 export const Message = (props) =>
     <table className="message">
         {props.type.fields.map((f, i) =>
@@ -95,7 +103,7 @@ export const Message = (props) =>
                     }
                 </td>
                 <td className="message__cell message__cell--last">
-                    {f.type_id === TYPE_MESSAGE ? f.type_name : getTypeName(f.type_id)} {f.is_repeated ? '(+)': ''}
+                    {getLabel(f.type_id, f.type_name)} {f.is_repeated ? '(+)': ''}
                 </td>
             </tr>
         )}
