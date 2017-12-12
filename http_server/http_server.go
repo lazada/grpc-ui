@@ -22,10 +22,6 @@ func New(addr string) *HTTPServer {
 
 	staticHandler := NewHTTPHandler()
 
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		staticHandler.ServeFile(w, r, "/index.html")
-	})
-
 	mux.Handle("/static/", http.StripPrefix("/static", staticHandler))
 
 	return s
