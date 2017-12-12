@@ -4,6 +4,7 @@ import { Root } from 'protobufjs';
 import { buildTree, TreeNode, getDefaultNode } from './util/tree';
 import { renderViewForObject } from './views/main';
 import Adapter from './adapter/Adapter';
+import logo from './logo.svg';
 
 interface Props {
   reflection: Root;
@@ -34,7 +35,9 @@ class MainState extends React.Component<Props, State> {
       <div>
       <nav className="pt-navbar .modifier">
         <div className="pt-navbar-group pt-align-left">
-          <div className="pt-navbar-heading">GRPC-UI</div>
+          <div className="pt-navbar-heading">
+            <img src={logo} width="80"/>
+          </div>
         </div>
       </nav>
       <div style={{ display: 'flex', marginTop: 20 }}>

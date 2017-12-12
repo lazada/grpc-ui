@@ -11,6 +11,7 @@ import {
   Toaster,
   Tooltip,
 } from '@blueprintjs/core';
+import logo from './logo.svg';
 
 interface InitData {
   reflection: Root;
@@ -76,8 +77,7 @@ class InitialState extends React.Component<Props, State> {
     return (
       <div style={{ position: 'absolute', width: '100%', height: '100%' }}>
         <NonIdealState
-          title="Start"
-          visual="folder-open"
+          visual={<img src={logo} width="100"/>}
           description={this.renderDescription()}
         />
       </div>
@@ -116,7 +116,7 @@ class InitialState extends React.Component<Props, State> {
         >
           <InputGroup
             inputRef={this.focusInput}
-            placeholder="GRPC server address"
+            placeholder="Enter server address"
             disabled={connecting}
             rightElement={rightElement}
             onChange={(e: React.FormEvent<HTMLInputElement>) => {
