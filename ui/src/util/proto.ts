@@ -1,5 +1,5 @@
 
-const numberTypes ={
+const numberTypes = {
   double: true,
   float: true,
   int32: true,

@@ -5,17 +5,16 @@ import { buildTree, TreeNode, getDefaultNode } from './util/tree';
 import { renderViewForObject } from './views/main';
 import Adapter from './adapter/Adapter';
 
-
 interface Props {
-  reflection: Root,
-  adapter: Adapter,
-  addr: string,
+  reflection: Root;
+  adapter: Adapter;
+  addr: string;
 }
 
 interface State {
-  reflection: Root,
-  tree: TreeNode,
-  currentObj: ReflectionObject | null,
+  reflection: Root;
+  tree: TreeNode;
+  currentObj: ReflectionObject | null;
 }
 
 class MainState extends React.Component<Props, State> {
@@ -45,13 +44,15 @@ class MainState extends React.Component<Props, State> {
             tree={this.state.tree}
             selected={this.state.currentObj ? this.state.currentObj.fullName : null}
             onSelect={node => {
-              this.setState({ currentObj: this.state.reflection.lookup(node)})
+              this.setState({ currentObj: this.state.reflection.lookup(node)});
             }}
           />
         </div>
         <div style={{ flex: 1 }}>
           {this.state.currentObj ?
-            <div key={this.state.currentObj.fullName}>{renderViewForObject(this.state.currentObj, this.props.adapter, this.props.addr)}</div> : null}
+            <div key={this.state.currentObj.fullName}>
+              {renderViewForObject(this.state.currentObj, this.props.adapter, this.props.addr)}
+            </div> : null}
         </div>
       </div>
     </div>

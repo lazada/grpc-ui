@@ -11,12 +11,11 @@ export type NodeType =
 ;
 
 export interface TreeNode {
-  type: NodeType,
-  obj: ReflectionObject,
-  name: string,
-  children: TreeNode[],
-};
-
+  type: NodeType;
+  obj: ReflectionObject;
+  name: string;
+  children: TreeNode[];
+}
 
 function convertObject(obj: ReflectionObject): TreeNode | null {
   const node: TreeNode = {
@@ -45,7 +44,7 @@ function convertObject(obj: ReflectionObject): TreeNode | null {
 
   if (obj instanceof Service) {
     node.type = 'Service';
-    node.children = obj.methodsArray.map(convertObject) as any;
+    node.children = obj.methodsArray.map(convertObject) as TreeNode[];
     return node;
   }
 
@@ -100,7 +99,6 @@ function flattenPackages(node: TreeNode): TreeNode {
   };
 }
 
-
 export function buildTree(root: Root): TreeNode {
   const node = convertObject(root);  
 
@@ -113,7 +111,6 @@ export function buildTree(root: Root): TreeNode {
     };
   }
 
-
   return flattenPackages(node);
 }
 
@@ -123,7 +120,6 @@ export function filterTree(node: TreeNode, term: string): TreeNode | null {
   }
 
   term = term.toLowerCase();
-
 
   const {
     type,

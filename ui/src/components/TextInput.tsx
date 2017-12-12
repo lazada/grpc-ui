@@ -1,9 +1,9 @@
 import * as React from 'react';
 
 interface Props {
-  value: string,
-  onChange: (value: string) => void,
-  isValid?: boolean,
+  value: string;
+  onChange: (value: string) => void;
+  isValid?: boolean;
 }
 
 const TextInput = ({ value, onChange, isValid = true }: Props) =>

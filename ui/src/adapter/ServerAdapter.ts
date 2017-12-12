@@ -45,18 +45,16 @@ export class ServerAdapter implements Adapter {
     return root;
   }
 
-  async runMethod(addr: string, method: protobuf.Method, data: any): Promise<{}> {
+  async runMethod(addr: string, method: protobuf.Method, data: {}): Promise<{}> {
     const requestType = method.resolvedRequestType as protobuf.Type;
     const responseType = method.resolvedResponseType as protobuf.Type;
     const payload = requestType.encode(data).finish();
     const service = method.parent as protobuf.Service;
-    const serviceName= service.fullName.slice(1);
+    const serviceName = service.fullName.slice(1);
     const req = InvokeRequest.encode({
       method: `/${serviceName}/${method.name}`,
       payload,
     }).finish();
-
-
 
     const res = await fetch(`${this.prefix}/api/invoke?host=${addr}`, {
       method: 'POST',
@@ -66,7 +64,6 @@ export class ServerAdapter implements Adapter {
     const buf = await res.arrayBuffer();
 
     const decoded = InvokeResponse.decode(new Uint8Array(buf));
-    console.log(decoded);
 
     if (decoded.error) {
       throw new Error(decoded.error.message || 'Failed to invoke method');

@@ -3,8 +3,8 @@ import TextInput from '../../components/TextInput';
 import { StringState } from './state';
 
 interface Props {
-  state: StringState,
-  onChange: (state: StringState) => void,
+  state: StringState;
+  onChange: (state: StringState) => void;
 }
 
 const StringInput = ({ state, onChange }: Props) =>
@@ -12,6 +12,6 @@ const StringInput = ({ state, onChange }: Props) =>
     value={state.getValue()}
     onChange={val => onChange(state.setValue(val))}
   />
-
+;
 
 export default StringInput;

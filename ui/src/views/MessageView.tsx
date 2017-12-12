@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 interface Props {
-  obj: protobuf.Type,
+  obj: protobuf.Type;
 }
 
 const MessageView = ({ obj }: Props) =>
@@ -10,6 +10,5 @@ const MessageView = ({ obj }: Props) =>
     <h1>{obj.name}</h1>
   </div>
 ;
-
 
 export default MessageView;

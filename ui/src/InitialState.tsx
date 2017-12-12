@@ -1,22 +1,30 @@
 import * as React from 'react';
 import { Root } from 'protobufjs';
-import Adapter from './adapter/Adapter'
-import { NonIdealState, InputGroup, Button, Tooltip, Classes, Intent, Spinner, Position, Toaster } from '@blueprintjs/core';
-
+import Adapter from './adapter/Adapter';
+import {
+  Classes,
+  InputGroup, Button,
+  Intent,
+  NonIdealState,
+  Position,
+  Spinner,
+  Toaster,
+  Tooltip,
+} from '@blueprintjs/core';
 
 interface InitData {
-  reflection: Root,
-  address: string,
+  reflection: Root;
+  address: string;
 }
 
 interface Props {
-  adapter: Adapter,
-  onInit: (data: InitData) => void,
+  adapter: Adapter;
+  onInit: (data: InitData) => void;
 }
 
 interface State {
-  address: string | void,
-  connecting: boolean,
+  address: string | void;
+  connecting: boolean;
 }
 
 const OurToaster = Toaster.create({
@@ -79,7 +87,6 @@ class InitialState extends React.Component<Props, State> {
   renderDescription() {
     const connecting = this.state.connecting;
 
-
     let rightElement;
 
     if (connecting) {
@@ -101,17 +108,19 @@ class InitialState extends React.Component<Props, State> {
 
     return (
       <div>
-        <form onSubmit={e => {
-          e.preventDefault();
-          this.connect()
-        }}>
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            this.connect();
+          }}
+        >
           <InputGroup
             inputRef={this.focusInput}
             placeholder="GRPC server address"
             disabled={connecting}
             rightElement={rightElement}
             onChange={(e: React.FormEvent<HTMLInputElement>) => {
-              this.setState({ address: (e.target as any).value })
+              this.setState({ address: (e.target as HTMLInputElement).value });
             }}
             value={this.state.address || ''}
           />

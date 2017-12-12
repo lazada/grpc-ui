@@ -6,17 +6,16 @@ import JSONTree from 'react-json-tree';
 import { Button, Intent } from '@blueprintjs/core';
 import Adapter from '../adapter/Adapter';
 
-
 interface Props {
-  obj: Method,
-  adapter: Adapter,
-  addr: string,
+  obj: Method;
+  adapter: Adapter;
+  addr: string;
 }
 
 interface State {
-  state: MessageState,
-  response: {} | null,
-  running: boolean,
+  state: MessageState;
+  response: {} | null;
+  running: boolean;
 }
 
 const theme = {
@@ -38,14 +37,13 @@ const theme = {
   base0D: '#66d9ef',
   base0E: '#ae81ff',
   base0F: '#cc6633'
-}
-
+};
 
 class MethodView extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      state: createDefaultStateForMessage(props.obj.resolvedRequestType as any),
+      state: createDefaultStateForMessage(props.obj.resolvedRequestType as protobuf.Type),
       response: null,
       running: false,
     };
@@ -72,7 +70,7 @@ class MethodView extends React.Component<Props, State> {
         <div style={{ display: 'flex' }}>
           <div style={{ flex: 1 }}>
             <MessageInput
-              message={obj.resolvedRequestType as any}
+              message={obj.resolvedRequestType as protobuf.Type}
               level={0}
               state={this.state.state}
               onChange={state => {
@@ -92,7 +90,8 @@ class MethodView extends React.Component<Props, State> {
           <div style={{ flex: 1, paddingTop: 10, paddingLeft: 10 }}>
             {
               response ?
-                <JSONTree data={response}
+                <JSONTree
+                  data={response}
                   hideRoot={true}
                   theme={theme}
                 /> : null
@@ -102,8 +101,6 @@ class MethodView extends React.Component<Props, State> {
       </div>
     );
   }
-}
-
-  
+}  
 
 export default MethodView;

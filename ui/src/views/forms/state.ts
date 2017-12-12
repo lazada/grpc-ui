@@ -7,10 +7,7 @@ export interface State {
   getValue(): any;
 }
 
-
-
 // TODO support specific types of numbers
-
 export class NumberState implements State {
   private value: number;
 
@@ -42,7 +39,7 @@ export class StringState implements State {
   constructor(private value: string) {}
 
   setValue(value: string) {
-    return new StringState(value)
+    return new StringState(value);
   }
 
   isValid(): boolean {

@@ -7,13 +7,13 @@ import StringInput from './StringInput';
 import NumberInput from './NumberInput';
 import EnumInput from './EnumInput';
 import BoolInput from './BoolInput';
-import { isNumberType } from '../../util/proto'
+import { isNumberType } from '../../util/proto';
 
 interface Props {
-  field: Field,
-  state: State,
-  onChange: (state: State) => void,
-  level: number,
+  field: Field;
+  state: State;
+  onChange: (state: State) => void;
+  level: number;
 }
 
 function renderInput({ field, state, level, onChange }: Props): JSX.Element {
@@ -85,10 +85,8 @@ function renderInput({ field, state, level, onChange }: Props): JSX.Element {
     );
   }
 
-
   throw new Error(`Unsupported type" ${field.type}`);
 }
-
 
 const FieldInput = (props: Props) => {
   return (
@@ -99,6 +97,6 @@ const FieldInput = (props: Props) => {
       </div>
     </div>
   );
-}
+};
 
 export default FieldInput;

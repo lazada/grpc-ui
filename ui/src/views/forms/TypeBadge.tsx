@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 interface Props {
-  field: protobuf.Field,
+  field: protobuf.Field;
 }
 
 const style: { style: React.CSSProperties } = {

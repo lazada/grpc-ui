@@ -6,15 +6,13 @@ import InitialState from './InitialState';
 import MainState from './MainState';
 import ServerAdapter from './adapter/ServerAdapter';
 
-
-let adapter = new ServerAdapter('');
-
+const adapter = new ServerAdapter(process.env.NODE_ENV === 'development' ? 'http://localhost:3030' : '');
 
 interface Props {}
 
 interface State {
-  address: string | void,
-  reflection: Root | void,
+  address: string | void;
+  reflection: Root | void;
 }
 
 class App extends React.Component<Props, State> {
@@ -28,6 +26,7 @@ class App extends React.Component<Props, State> {
 
   render() {
     const { reflection } = this.state;
+
     if (reflection) {
       return (
         <MainState reflection={reflection} adapter={adapter} addr={this.state.address as string}/>
@@ -35,12 +34,15 @@ class App extends React.Component<Props, State> {
     }
 
     return (
-      <InitialState adapter={adapter} onInit={data => {
-        this.setState({
-          address: data.address,
-          reflection: data.reflection,
-        });
-      }}/>
+      <InitialState
+        adapter={adapter}
+        onInit={data => {
+          this.setState({
+            address: data.address,
+            reflection: data.reflection,
+          });
+        }}
+      />
     );
   }
 }

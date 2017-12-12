@@ -21,6 +21,7 @@
         "jsdoc-format": true,
         "jsx-no-lambda": false,
         "jsx-no-multiline-js": false,
+        "jsx-wrap-multiline": false,
         "label-position": true,
         "max-line-length": [ true, 120 ],
         "member-ordering": [
@@ -29,7 +30,7 @@
             "static-before-instance",
             "variables-before-functions"
         ],
-        "no-any": true,
+        "no-any": false,
         "no-arg": true,
         "no-bitwise": true,
         "no-console": [
