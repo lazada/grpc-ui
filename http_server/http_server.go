@@ -1,185 +1,157 @@
 package http_server
 
 import (
-	"encoding/json"
-	"fmt"
-	"log"
+	"io/ioutil"
 	"net/http"
 
-	"github.com/gorilla/websocket"
-	"github.com/lazada/grpc-ui/proto"
+	proto "github.com/golang/protobuf/proto"
 	"github.com/lazada/grpc-ui/reflection"
+	"google.golang.org/grpc/status"
 )
 
-
-func New(addr, staticDir string) *HTTPServer {
+func New(addr string) *HTTPServer {
 	mux := http.NewServeMux()
 
 	s := &HTTPServer{
 		addr: addr,
-		mux: mux,
+		mux:  mux,
 	}
 
-	mux.HandleFunc("/api/info", s.infoHandler)
 	mux.HandleFunc("/api/invoke", s.invokeHandler)
+	mux.HandleFunc("/api/reflection", s.reflectionHandler)
+
 	staticHandler := NewHTTPHandler()
 
-	if staticDir != "" {
-		mux.HandleFunc("/", s.indexHandler)
-	} else {
-		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			staticHandler.ServeFile(w, r, "/index.html")
-		})
-	}
-	if staticDir != "" {
-		mux.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir(staticDir))))
-	} else {
-		mux.Handle("/static/", http.StripPrefix("/static",  staticHandler))
-	}
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		staticHandler.ServeFile(w, r, "/index.html")
+	})
+
+	mux.Handle("/static/", http.StripPrefix("/static", staticHandler))
 
 	return s
 }
 
-
-type HTTPServer struct{
+type HTTPServer struct {
 	addr string
-	targetAddr string
-	mux *http.ServeMux
+	mux  *http.ServeMux
 }
 
-type InvokeReq struct {
-	Addr string `json:"addr"`
-	ServiceName string `json:"service_name"`
-	PackageName string `json:"package_name"`
-	MethodName string `json:"method_name"`
-	GRPCArgs   []proto.FieldValue `json:"grpc_args"`
+func httpError(w http.ResponseWriter, code int) {
+	http.Error(w, http.StatusText(code), code)
 }
 
-type InvokeResp struct {
-	Status string      `json:"status"`
-	Data   interface{} `json:"data"`
-	Error  string      `json:"error"`
-}
+func respondWithProto(w http.ResponseWriter, msg proto.Message) {
+	marshalled, err := proto.Marshal(msg)
 
-type InvokeStreamReq struct {
-	GRPCMethod string `json:"grpc_method"`
-	GRPCArgs   string `json:"grpc_args"`
-}
-
-type InvokeStreamResp struct {
-	Status string      `json:"status"`
-	Data   interface{} `json:"data"`
-	Error  string      `json:"error"`
-}
-
-type InfoResp struct {
-	Status string      `json:"status"`
-	Data   interface{} `json:"data"`
-	Error  string      `json:"error"`
-}
-
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  2048,
-	WriteBufferSize: 2048,
-}
-
-func (h *HTTPServer) infoHandler(w http.ResponseWriter, r *http.Request) {
-	info, err := reflection.GetInfo(r.Context(), r.FormValue("addr"))
-	enc := json.NewEncoder(w)
 	if err != nil {
-		log.Printf("Can't get grpc info: %v", err)
-
-		w.WriteHeader(http.StatusInternalServerError)
-		resp := &InfoResp{
-			Status: "error",
-			Error: fmt.Sprintf("Can't get grpc info: %v", err),
-		}
-		if err := enc.Encode(resp); err != nil {
-			log.Printf("Can't encode json response: %v", err)
-
-		}
+		httpError(w, http.StatusInternalServerError)
 		return
 	}
 
+	w.Write(marshalled)
+}
 
-	resp := &InfoResp{
-		Status: "ok",
-		Data: info,
+func checkMethod(w http.ResponseWriter, r *http.Request, method string) bool {
+	if r.Method != method {
+		httpError(w, http.StatusMethodNotAllowed)
+		return true
 	}
-	if err := enc.Encode(resp); err != nil {
-		log.Printf("Can't encode json response: %v", err)
 
-	}
+	return false
 }
 
 func (h *HTTPServer) invokeHandler(w http.ResponseWriter, r *http.Request) {
-	if r.FormValue("stream") == "" {
-		h.handleUnary(w, r)
+	if checkMethod(w, r, http.MethodPost) {
 		return
 	}
-	h.handleStream(w, r)
-}
-
-func (h *HTTPServer) handleUnary(w http.ResponseWriter, r *http.Request) {
-	req := InvokeReq{}
 
 	defer r.Body.Close()
 
-	enc := json.NewEncoder(w)
+	target := r.FormValue("host")
 
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		enc.Encode(&InvokeResp{
-			Status: "error",
-			Error:  err.Error(),
-		})
-		log.Printf("Can't decode request body: %v", err)
+	if target == "" {
+		httpError(w, http.StatusBadRequest)
 		return
 	}
-	invokeRes, err := proto.Invoke(r.Context(), req.Addr, req.PackageName, req.ServiceName, req.MethodName, req.GRPCArgs)
+
+	buff, err := ioutil.ReadAll(r.Body)
+
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		enc.Encode(&InvokeResp{
-			Status: "error",
-			Error:  err.Error(),
-		})
 		return
 	}
-	enc.Encode(&InvokeResp{
-		Status: "ok",
-		Data:   invokeRes,
-	})
+
+	req := &InvokeRequest{}
+
+	err = proto.Unmarshal(buff, req)
+
+	if err != nil {
+		httpError(w, http.StatusBadRequest)
+		return
+	}
+
+	result, err := reflection.Invoke(r.Context(), target, req.Method, req.Payload)
+
+	resp := &InvokeResponse{}
+
+	if err != nil {
+		s, _ := status.FromError(err)
+
+		if s != nil {
+			resp.Response = &InvokeResponse_Error{
+				Error: &Error{
+					Message: s.Message(),
+				},
+			}
+		} else {
+			{
+				resp.Response = &InvokeResponse_Error{
+					Error: &Error{
+						Message: err.Error(),
+					},
+				}
+			}
+		}
+	} else {
+		resp.Response = &InvokeResponse_Payload{
+			Payload: result,
+		}
+	}
+
+	respondWithProto(w, resp)
 }
 
-func (h *HTTPServer) handleStream(w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Printf("Can't upgrade connection: %v", err)
+func (h *HTTPServer) reflectionHandler(w http.ResponseWriter, r *http.Request) {
+	if checkMethod(w, r, http.MethodGet) {
 		return
 	}
-	defer conn.Close()
 
-	log.Print("WebSocket connected")
-	defer log.Print("WebSocket disconnected")
-	//
-	//ctx, cancel := context.WithCancel(r.Context())
-	//defer cancel()
-	//
-	//for {
-	//	req := InvokeStreamReq{}
-	//	if err := conn.ReadJSON(&req); err != nil {
-	//		if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseNormalClosure) {
-	//			log.Printf("ReadJSON error: %v", err)
-	//		}
-	//		return
-	//	}
-	//}
+	target := r.FormValue("host")
 
-}
+	if target == "" {
+		httpError(w, http.StatusBadRequest)
+		return
+	}
 
+	data, err := reflection.GetReflection(r.Context(), target)
 
-func (h *HTTPServer) indexHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "static/index.html")
+	resp := &ReflectionResponse{}
+
+	if err != nil {
+		resp.Response = &ReflectionResponse_Error{
+			Error: &Error{
+				Message: err.Error(),
+			},
+		}
+	} else {
+		resp.Response = &ReflectionResponse_Reflection{
+			Reflection: &Reflection{
+				Service:        data.Services,
+				FileDescriptor: data.FileDescriptors,
+			},
+		}
+	}
+
+	respondWithProto(w, resp)
 }
 
 func (h *HTTPServer) Start() error {

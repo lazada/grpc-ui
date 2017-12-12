@@ -4,7 +4,8 @@
   "description": "A gRPC Web Interface",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile-proto": "pbjs -t static-module http_server/api.proto -o src/proto.js"
   },
   "repository": {
     "type": "git",
@@ -32,7 +33,8 @@
   },
   "dependencies": {
     "axios": "^0.17.0",
-    "qs": "^6.5.1",
+    "proto-descriptor": "0.0.4",
+    "protobufjs": "^6.8.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-json-tree": "^0.11.0",
