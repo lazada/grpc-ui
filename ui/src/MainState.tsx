@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Tree from './Tree';
-import { Root, ReflectionObject } from 'protobufjs';
+import { Root } from 'protobufjs';
 import { buildTree, TreeNode, getDefaultNode } from './util/tree';
 import { renderViewForObject } from './views/main';
 import Adapter from './adapter/Adapter';
@@ -14,19 +14,18 @@ interface Props {
 interface State {
   reflection: Root;
   tree: TreeNode;
-  currentObj: ReflectionObject | null;
+  currentNode: TreeNode | null;
 }
 
 class MainState extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     const tree = buildTree(props.reflection);
-    const defaultNode = getDefaultNode(tree);
 
     this.state = {
       reflection: props.reflection,
       tree,
-      currentObj: defaultNode ? defaultNode.obj : null,
+      currentNode: getDefaultNode(tree),
     };
   }
 
@@ -42,16 +41,16 @@ class MainState extends React.Component<Props, State> {
         <div style={{ width: 300 }}>
           <Tree
             tree={this.state.tree}
-            selected={this.state.currentObj ? this.state.currentObj.fullName : null}
+            selected={this.state.currentNode}
             onSelect={node => {
-              this.setState({ currentObj: this.state.reflection.lookup(node)});
+              this.setState({ currentNode: node });
             }}
           />
         </div>
         <div style={{ flex: 1 }}>
-          {this.state.currentObj ?
-            <div key={this.state.currentObj.fullName}>
-              {renderViewForObject(this.state.currentObj, this.props.adapter, this.props.addr)}
+          {this.state.currentNode ?
+            <div key={this.state.currentNode.obj.fullName}>
+              {renderViewForObject(this.state.currentNode.obj, this.props.adapter, this.props.addr)}
             </div> : null}
         </div>
       </div>

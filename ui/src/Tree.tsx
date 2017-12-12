@@ -1,17 +1,21 @@
 import * as React from 'react';
-import { Tree as BTree, ITreeNode, InputGroup, Classes } from '@blueprintjs/core';
+import { Tree as BTree, ITreeNode as BlueprintITreeNode, InputGroup, Classes } from '@blueprintjs/core';
 import { TreeNode, filterTree } from './util/tree';
 import { hasView } from './views/main';
 
+interface TreeNodeProps extends BlueprintITreeNode {
+  treeNode: TreeNode | null; 
+}
+
 interface Props {
   tree: TreeNode;
-  selected: string | null;
-  onSelect: (node: string) => void;
+  selected: TreeNode | null;
+  onSelect: (node: TreeNode) => void;
 }
 
 interface State {
-  collapsedNodes: Set<string>;
-  selected: string | null;
+  collapsedNodes: Set<number | string>;
+  selected: TreeNode | null;
   filterTerm: string;
 }
 
@@ -58,26 +62,66 @@ class Tree extends React.Component<Props, State> {
     };
   }
 
-  getContents(): ITreeNode[] {
-    const filtered = filterTree(this.props.tree, this.state.filterTerm);
+  getContents(): TreeNodeProps[] {
+    return [
+      {
+        id: '@services',
+        label: 'Services',
+        isExpanded: !this.state.collapsedNodes.has('@services'),
+        childNodes: this.getServices(),
+        treeNode: null,
+      },
+      {
+        id: '@types',
+        label: 'Types',
+        isExpanded: !this.state.collapsedNodes.has('@types'),
+        childNodes: this.getTypes(),
+        treeNode: null,
+      }
+    ];
+
+  }
+
+  getServices(): TreeNodeProps[] {
+    const term = this.state.filterTerm.toLowerCase();
+
+    const filtered = filterTree(this.props.tree, n =>
+      n.type === 'Service' &&  n.name.toLowerCase().includes(term)
+    );
 
     if (!filtered) {
       return [];
     }
 
-    return filtered.children.map(n => this.convertNode(n));
+    return filtered.children.map(n => this.convertNode(n, '@services.'));
   }
 
-  convertNode(node: TreeNode): ITreeNode {
-    const id = node.obj.fullName;
+  getTypes(): TreeNodeProps[] {
+    const term = this.state.filterTerm.toLowerCase();
+
+    const filtered = filterTree(this.props.tree, n =>
+      (n.type === 'Message' || n.type === 'Enum') && n.name.toLowerCase().includes(term)
+    );
+
+    if (!filtered) {
+      return [];
+    }
+
+    return filtered.children.map(n => this.convertNode(n, '@types.'));
+  }
+
+  convertNode(node: TreeNode, prefix: string): TreeNodeProps {
+    const id = prefix + '.' + node.obj.fullName;
+
     return {
       id,
       label: <span>{renderBadge(node)}{node.name}</span>,
-      isSelected: this.state.selected === id,
+      isSelected: this.state.selected === node,
       className: hasView(node.obj) ? 'selectable-node' : undefined,
       isExpanded: !this.state.collapsedNodes.has(id),
       hasCaret: node.type === 'Package',
-      childNodes: node.children.map(n => this.convertNode(n)),
+      childNodes: node.children.map(n => this.convertNode(n, prefix)),
+      treeNode: node,
     };
   }
 
@@ -98,20 +142,20 @@ class Tree extends React.Component<Props, State> {
         contents={this.getContents()}
         onNodeExpand={node => {
           const collapsedNodes = this.state.collapsedNodes;
-          collapsedNodes.delete(node.id as string);
+          collapsedNodes.delete(node.id);
           this.setState({ collapsedNodes });
         }}
         onNodeCollapse={node => {
           const collapsedNodes = this.state.collapsedNodes;
-          collapsedNodes.add(node.id as string);
+          collapsedNodes.add(node.id);
           this.setState({ collapsedNodes });
         }}
-        onNodeClick={node => {
-          if (node.className === 'selectable-node') { // TODO WTF
+        onNodeClick={(node: TreeNodeProps) => {
+          if (node.treeNode && hasView(node.treeNode.obj)) {
             this.setState({
-              selected: node.id as string,
+              selected: node.treeNode,
             });
-            this.props.onSelect(node.id as string);
+            this.props.onSelect(node.treeNode);
           }
         }}
       />

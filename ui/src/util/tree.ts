@@ -114,12 +114,10 @@ export function buildTree(root: Root): TreeNode {
   return flattenPackages(node);
 }
 
-export function filterTree(node: TreeNode, term: string): TreeNode | null {
-  if (!term || node.name.toLowerCase().includes(term)) {
+export function filterTree(node: TreeNode, pred: (node: TreeNode) => boolean): TreeNode | null {
+  if (pred(node)) {
     return node;
   }
-
-  term = term.toLowerCase();
 
   const {
     type,
@@ -131,7 +129,7 @@ export function filterTree(node: TreeNode, term: string): TreeNode | null {
   const filteredChildren: TreeNode[] = [];
 
   for (const child of children) {
-    const filteredChild = filterTree(child, term);
+    const filteredChild = filterTree(child, pred);
 
     if (filteredChild) {
       filteredChildren.push(filteredChild);
