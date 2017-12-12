@@ -9,13 +9,12 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func New(addr, staticDir, targetAddr string) *HTTPServer {
+func New(addr string) *HTTPServer {
 	mux := http.NewServeMux()
 
 	s := &HTTPServer{
-		addr:       addr,
-		targetAddr: targetAddr,
-		mux:        mux,
+		addr: addr,
+		mux:  mux,
 	}
 
 	mux.HandleFunc("/api/invoke", s.invokeHandler)
@@ -23,26 +22,18 @@ func New(addr, staticDir, targetAddr string) *HTTPServer {
 
 	staticHandler := NewHTTPHandler()
 
-	if staticDir != "" {
-		mux.HandleFunc("/", s.indexHandler)
-	} else {
-		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			staticHandler.ServeFile(w, r, "/index.html")
-		})
-	}
-	if staticDir != "" {
-		mux.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir(staticDir))))
-	} else {
-		mux.Handle("/static/", http.StripPrefix("/static", staticHandler))
-	}
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		staticHandler.ServeFile(w, r, "/index.html")
+	})
+
+	mux.Handle("/static/", http.StripPrefix("/static", staticHandler))
 
 	return s
 }
 
 type HTTPServer struct {
-	addr       string
-	targetAddr string
-	mux        *http.ServeMux
+	addr string
+	mux  *http.ServeMux
 }
 
 func httpError(w http.ResponseWriter, code int) {
@@ -76,6 +67,13 @@ func (h *HTTPServer) invokeHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
+	target := r.FormValue("host")
+
+	if target == "" {
+		httpError(w, http.StatusBadRequest)
+		return
+	}
+
 	buff, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -91,7 +89,7 @@ func (h *HTTPServer) invokeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := reflection.Invoke(r.Context(), h.targetAddr, req.Method, req.Payload)
+	result, err := reflection.Invoke(r.Context(), target, req.Method, req.Payload)
 
 	resp := &InvokeResponse{}
 
@@ -127,7 +125,14 @@ func (h *HTTPServer) reflectionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := reflection.GetReflection(r.Context(), h.targetAddr)
+	target := r.FormValue("host")
+
+	if target == "" {
+		httpError(w, http.StatusBadRequest)
+		return
+	}
+
+	data, err := reflection.GetReflection(r.Context(), target)
 
 	resp := &ReflectionResponse{}
 
@@ -147,10 +152,6 @@ func (h *HTTPServer) reflectionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondWithProto(w, resp)
-}
-
-func (h *HTTPServer) indexHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "static/index.html")
 }
 
 func (h *HTTPServer) Start() error {

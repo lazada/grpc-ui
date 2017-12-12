@@ -22,14 +22,15 @@
          * Properties of a ReflectionResponse.
          * @exports IReflectionResponse
          * @interface IReflectionResponse
-         * @property {IReflection} [reflection] ReflectionResponse reflection
-         * @property {IError} [error] ReflectionResponse error
+         * @property {IReflection|null} [reflection] ReflectionResponse reflection
+         * @property {IError|null} [error] ReflectionResponse error
          */
     
         /**
          * Constructs a new ReflectionResponse.
          * @exports ReflectionResponse
          * @classdesc Represents a ReflectionResponse.
+         * @implements IReflectionResponse
          * @constructor
          * @param {IReflectionResponse=} [properties] Properties to set
          */
@@ -42,7 +43,7 @@
     
         /**
          * ReflectionResponse reflection.
-         * @member {(IReflection|null|undefined)}reflection
+         * @member {IReflection|null|undefined} reflection
          * @memberof ReflectionResponse
          * @instance
          */
@@ -50,7 +51,7 @@
     
         /**
          * ReflectionResponse error.
-         * @member {(IError|null|undefined)}error
+         * @member {IError|null|undefined} error
          * @memberof ReflectionResponse
          * @instance
          */
@@ -61,7 +62,7 @@
     
         /**
          * ReflectionResponse response.
-         * @member {string|undefined} response
+         * @member {"reflection"|"error"|undefined} response
          * @memberof ReflectionResponse
          * @instance
          */
@@ -176,17 +177,21 @@
             var properties = {};
             if (message.reflection != null && message.hasOwnProperty("reflection")) {
                 properties.response = 1;
-                var error = $root.Reflection.verify(message.reflection);
-                if (error)
-                    return "reflection." + error;
+                {
+                    var error = $root.Reflection.verify(message.reflection);
+                    if (error)
+                        return "reflection." + error;
+                }
             }
             if (message.error != null && message.hasOwnProperty("error")) {
                 if (properties.response === 1)
                     return "response: multiple values";
                 properties.response = 1;
-                error = $root.Error.verify(message.error);
-                if (error)
-                    return "error." + error;
+                {
+                    var error = $root.Error.verify(message.error);
+                    if (error)
+                        return "error." + error;
+                }
             }
             return null;
         };
@@ -262,14 +267,15 @@
          * Properties of a Reflection.
          * @exports IReflection
          * @interface IReflection
-         * @property {Array.<string>} [service] Reflection service
-         * @property {Array.<Uint8Array>} [fileDescriptor] Reflection fileDescriptor
+         * @property {Array.<string>|null} [service] Reflection service
+         * @property {Array.<Uint8Array>|null} [fileDescriptor] Reflection fileDescriptor
          */
     
         /**
          * Constructs a new Reflection.
          * @exports Reflection
          * @classdesc Represents a Reflection.
+         * @implements IReflection
          * @constructor
          * @param {IReflection=} [properties] Properties to set
          */
@@ -284,7 +290,7 @@
     
         /**
          * Reflection service.
-         * @member {Array.<string>}service
+         * @member {Array.<string>} service
          * @memberof Reflection
          * @instance
          */
@@ -292,7 +298,7 @@
     
         /**
          * Reflection fileDescriptor.
-         * @member {Array.<Uint8Array>}fileDescriptor
+         * @member {Array.<Uint8Array>} fileDescriptor
          * @memberof Reflection
          * @instance
          */
@@ -506,13 +512,14 @@
          * Properties of an Error.
          * @exports IError
          * @interface IError
-         * @property {string} [message] Error message
+         * @property {string|null} [message] Error message
          */
     
         /**
          * Constructs a new Error.
          * @exports Error
          * @classdesc Represents an Error.
+         * @implements IError
          * @constructor
          * @param {IError=} [properties] Properties to set
          */
@@ -525,7 +532,7 @@
     
         /**
          * Error message.
-         * @member {string}message
+         * @member {string} message
          * @memberof Error
          * @instance
          */
@@ -684,6 +691,461 @@
         };
     
         return Error;
+    })();
+    
+    $root.InvokeRequest = (function() {
+    
+        /**
+         * Properties of an InvokeRequest.
+         * @exports IInvokeRequest
+         * @interface IInvokeRequest
+         * @property {string|null} [method] InvokeRequest method
+         * @property {Uint8Array|null} [payload] InvokeRequest payload
+         */
+    
+        /**
+         * Constructs a new InvokeRequest.
+         * @exports InvokeRequest
+         * @classdesc Represents an InvokeRequest.
+         * @implements IInvokeRequest
+         * @constructor
+         * @param {IInvokeRequest=} [properties] Properties to set
+         */
+        function InvokeRequest(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+    
+        /**
+         * InvokeRequest method.
+         * @member {string} method
+         * @memberof InvokeRequest
+         * @instance
+         */
+        InvokeRequest.prototype.method = "";
+    
+        /**
+         * InvokeRequest payload.
+         * @member {Uint8Array} payload
+         * @memberof InvokeRequest
+         * @instance
+         */
+        InvokeRequest.prototype.payload = $util.newBuffer([]);
+    
+        /**
+         * Creates a new InvokeRequest instance using the specified properties.
+         * @function create
+         * @memberof InvokeRequest
+         * @static
+         * @param {IInvokeRequest=} [properties] Properties to set
+         * @returns {InvokeRequest} InvokeRequest instance
+         */
+        InvokeRequest.create = function create(properties) {
+            return new InvokeRequest(properties);
+        };
+    
+        /**
+         * Encodes the specified InvokeRequest message. Does not implicitly {@link InvokeRequest.verify|verify} messages.
+         * @function encode
+         * @memberof InvokeRequest
+         * @static
+         * @param {IInvokeRequest} message InvokeRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        InvokeRequest.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.method != null && message.hasOwnProperty("method"))
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.method);
+            if (message.payload != null && message.hasOwnProperty("payload"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.payload);
+            return writer;
+        };
+    
+        /**
+         * Encodes the specified InvokeRequest message, length delimited. Does not implicitly {@link InvokeRequest.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof InvokeRequest
+         * @static
+         * @param {IInvokeRequest} message InvokeRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        InvokeRequest.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+    
+        /**
+         * Decodes an InvokeRequest message from the specified reader or buffer.
+         * @function decode
+         * @memberof InvokeRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {InvokeRequest} InvokeRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        InvokeRequest.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.InvokeRequest();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.method = reader.string();
+                    break;
+                case 2:
+                    message.payload = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+    
+        /**
+         * Decodes an InvokeRequest message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof InvokeRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {InvokeRequest} InvokeRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        InvokeRequest.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+    
+        /**
+         * Verifies an InvokeRequest message.
+         * @function verify
+         * @memberof InvokeRequest
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        InvokeRequest.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.method != null && message.hasOwnProperty("method"))
+                if (!$util.isString(message.method))
+                    return "method: string expected";
+            if (message.payload != null && message.hasOwnProperty("payload"))
+                if (!(message.payload && typeof message.payload.length === "number" || $util.isString(message.payload)))
+                    return "payload: buffer expected";
+            return null;
+        };
+    
+        /**
+         * Creates an InvokeRequest message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof InvokeRequest
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {InvokeRequest} InvokeRequest
+         */
+        InvokeRequest.fromObject = function fromObject(object) {
+            if (object instanceof $root.InvokeRequest)
+                return object;
+            var message = new $root.InvokeRequest();
+            if (object.method != null)
+                message.method = String(object.method);
+            if (object.payload != null)
+                if (typeof object.payload === "string")
+                    $util.base64.decode(object.payload, message.payload = $util.newBuffer($util.base64.length(object.payload)), 0);
+                else if (object.payload.length)
+                    message.payload = object.payload;
+            return message;
+        };
+    
+        /**
+         * Creates a plain object from an InvokeRequest message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof InvokeRequest
+         * @static
+         * @param {InvokeRequest} message InvokeRequest
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        InvokeRequest.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults) {
+                object.method = "";
+                object.payload = options.bytes === String ? "" : [];
+            }
+            if (message.method != null && message.hasOwnProperty("method"))
+                object.method = message.method;
+            if (message.payload != null && message.hasOwnProperty("payload"))
+                object.payload = options.bytes === String ? $util.base64.encode(message.payload, 0, message.payload.length) : options.bytes === Array ? Array.prototype.slice.call(message.payload) : message.payload;
+            return object;
+        };
+    
+        /**
+         * Converts this InvokeRequest to JSON.
+         * @function toJSON
+         * @memberof InvokeRequest
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        InvokeRequest.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+    
+        return InvokeRequest;
+    })();
+    
+    $root.InvokeResponse = (function() {
+    
+        /**
+         * Properties of an InvokeResponse.
+         * @exports IInvokeResponse
+         * @interface IInvokeResponse
+         * @property {Uint8Array|null} [payload] InvokeResponse payload
+         * @property {IError|null} [error] InvokeResponse error
+         */
+    
+        /**
+         * Constructs a new InvokeResponse.
+         * @exports InvokeResponse
+         * @classdesc Represents an InvokeResponse.
+         * @implements IInvokeResponse
+         * @constructor
+         * @param {IInvokeResponse=} [properties] Properties to set
+         */
+        function InvokeResponse(properties) {
+            if (properties)
+                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+    
+        /**
+         * InvokeResponse payload.
+         * @member {Uint8Array} payload
+         * @memberof InvokeResponse
+         * @instance
+         */
+        InvokeResponse.prototype.payload = $util.newBuffer([]);
+    
+        /**
+         * InvokeResponse error.
+         * @member {IError|null|undefined} error
+         * @memberof InvokeResponse
+         * @instance
+         */
+        InvokeResponse.prototype.error = null;
+    
+        // OneOf field names bound to virtual getters and setters
+        var $oneOfFields;
+    
+        /**
+         * InvokeResponse response.
+         * @member {"payload"|"error"|undefined} response
+         * @memberof InvokeResponse
+         * @instance
+         */
+        Object.defineProperty(InvokeResponse.prototype, "response", {
+            get: $util.oneOfGetter($oneOfFields = ["payload", "error"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+    
+        /**
+         * Creates a new InvokeResponse instance using the specified properties.
+         * @function create
+         * @memberof InvokeResponse
+         * @static
+         * @param {IInvokeResponse=} [properties] Properties to set
+         * @returns {InvokeResponse} InvokeResponse instance
+         */
+        InvokeResponse.create = function create(properties) {
+            return new InvokeResponse(properties);
+        };
+    
+        /**
+         * Encodes the specified InvokeResponse message. Does not implicitly {@link InvokeResponse.verify|verify} messages.
+         * @function encode
+         * @memberof InvokeResponse
+         * @static
+         * @param {IInvokeResponse} message InvokeResponse message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        InvokeResponse.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.payload != null && message.hasOwnProperty("payload"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.payload);
+            if (message.error != null && message.hasOwnProperty("error"))
+                $root.Error.encode(message.error, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            return writer;
+        };
+    
+        /**
+         * Encodes the specified InvokeResponse message, length delimited. Does not implicitly {@link InvokeResponse.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof InvokeResponse
+         * @static
+         * @param {IInvokeResponse} message InvokeResponse message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        InvokeResponse.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+    
+        /**
+         * Decodes an InvokeResponse message from the specified reader or buffer.
+         * @function decode
+         * @memberof InvokeResponse
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {InvokeResponse} InvokeResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        InvokeResponse.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.InvokeResponse();
+            while (reader.pos < end) {
+                var tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.payload = reader.bytes();
+                    break;
+                case 2:
+                    message.error = $root.Error.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+    
+        /**
+         * Decodes an InvokeResponse message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof InvokeResponse
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {InvokeResponse} InvokeResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        InvokeResponse.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+    
+        /**
+         * Verifies an InvokeResponse message.
+         * @function verify
+         * @memberof InvokeResponse
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        InvokeResponse.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            var properties = {};
+            if (message.payload != null && message.hasOwnProperty("payload")) {
+                properties.response = 1;
+                if (!(message.payload && typeof message.payload.length === "number" || $util.isString(message.payload)))
+                    return "payload: buffer expected";
+            }
+            if (message.error != null && message.hasOwnProperty("error")) {
+                if (properties.response === 1)
+                    return "response: multiple values";
+                properties.response = 1;
+                {
+                    var error = $root.Error.verify(message.error);
+                    if (error)
+                        return "error." + error;
+                }
+            }
+            return null;
+        };
+    
+        /**
+         * Creates an InvokeResponse message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof InvokeResponse
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {InvokeResponse} InvokeResponse
+         */
+        InvokeResponse.fromObject = function fromObject(object) {
+            if (object instanceof $root.InvokeResponse)
+                return object;
+            var message = new $root.InvokeResponse();
+            if (object.payload != null)
+                if (typeof object.payload === "string")
+                    $util.base64.decode(object.payload, message.payload = $util.newBuffer($util.base64.length(object.payload)), 0);
+                else if (object.payload.length)
+                    message.payload = object.payload;
+            if (object.error != null) {
+                if (typeof object.error !== "object")
+                    throw TypeError(".InvokeResponse.error: object expected");
+                message.error = $root.Error.fromObject(object.error);
+            }
+            return message;
+        };
+    
+        /**
+         * Creates a plain object from an InvokeResponse message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof InvokeResponse
+         * @static
+         * @param {InvokeResponse} message InvokeResponse
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        InvokeResponse.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (message.payload != null && message.hasOwnProperty("payload")) {
+                object.payload = options.bytes === String ? $util.base64.encode(message.payload, 0, message.payload.length) : options.bytes === Array ? Array.prototype.slice.call(message.payload) : message.payload;
+                if (options.oneofs)
+                    object.response = "payload";
+            }
+            if (message.error != null && message.hasOwnProperty("error")) {
+                object.error = $root.Error.toObject(message.error, options);
+                if (options.oneofs)
+                    object.response = "error";
+            }
+            return object;
+        };
+    
+        /**
+         * Converts this InvokeResponse to JSON.
+         * @function toJSON
+         * @memberof InvokeResponse
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        InvokeResponse.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+    
+        return InvokeResponse;
     })();
 
     return $root;
