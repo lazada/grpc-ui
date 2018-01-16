@@ -19,10 +19,7 @@ func New(addr string) *HTTPServer {
 
 	mux.HandleFunc("/api/invoke", s.invokeHandler)
 	mux.HandleFunc("/api/reflection", s.reflectionHandler)
-
-	staticHandler := NewHTTPHandler()
-
-	mux.Handle("/static/", http.StripPrefix("/static", staticHandler))
+	mux.Handle("/", NewHTTPHandler())
 
 	return s
 }
