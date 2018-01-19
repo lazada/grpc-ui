@@ -19,11 +19,23 @@ const proto = `
     int32 foo = 2;
   }
 
-  message SearchResponse {
+  message Empty {
+  }
+
+  message OneOfRequest {
+    string before = 1;
+
+    oneof test_oneof {
+      string option_a = 2;
+      int32 option_b = 3;
+    }
+
+    string after = 4;
   }
 
   service SearchService {
-    rpc Search (SearchRequest) returns (SearchResponse);
+    rpc Search (SearchRequest) returns (Empty);
+    rpc TestOneOf(OneOfRequest) returns (Empty);
   }
 `;
 

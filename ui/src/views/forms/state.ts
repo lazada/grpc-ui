@@ -93,20 +93,18 @@ function copyMap<A, B>(map: Map<A, B>): Map<A, B> {
 }
 
 export class MessageState implements State {
-  constructor(private fields: Map<string, State>) {}
+  constructor(private fields: Map<string, State>, private oneOfs: Map<string, OneOfState>) {}
 
   getFieldState(field: string) {
-    const fieldState = this.fields.get(field);
+    return this.fields.get(field)!;
+  }
 
-    if (!fieldState) {
-      throw new Error(`Invalid field: ${field}`);
-    }
-
-    return fieldState;
+  getOneOfState(name: string) {
+    return this.oneOfs.get(name)!;
   }
 
   isValid() {
-    const arr = Array.from(this.fields.values()); // TODO
+    const arr = [...Array.from(this.fields.values()), ...Array.from(this.oneOfs.values())]; // TODO
 
     for (const field of arr) {
       if (!field.isValid()) {
@@ -128,24 +126,91 @@ export class MessageState implements State {
       obj[key] = field.getValue();
     });
 
+    this.oneOfs.forEach((state, key) => {
+      const val = state.getValue();
+      obj[key] = val.field;
+      obj[val.field] = val.value;
+    });
+
     return obj;
   }
 
   setFieldState(field: string, state: State): MessageState {
     const fields = copyMap(this.fields);
     fields.set(field, state);
-    return new MessageState(fields);
+    return new MessageState(fields, this.oneOfs);
+  }
+
+  setOneOfState(field: string, state: OneOfState) {
+    const oneOfs = copyMap(this.oneOfs);
+    oneOfs.set(field, state);
+    return new MessageState(this.fields, oneOfs);
+  }
+}
+
+export class OneOfState implements State {
+  constructor(private fields: Map<string, State>, private current: string) {}
+
+  getCurrentFieldState() {
+    return this.fields.get(this.current)!;
+  }
+
+  setCurrentFieldState(state: State) {
+    const fields = copyMap(this.fields);
+    fields.set(this.current, state)
+    return new OneOfState(fields, this.current);
+  }
+
+  getCurrent() {
+    return this.current;
+  }
+
+  setCurrent(current: string) {
+    return new OneOfState(this.fields, current);
+  }
+
+  isValid(): boolean {
+    return this.fields.get(this.current)!.isValid();
+  }
+
+  getError(): string {
+    return this.fields.get(this.current)!.getError();
+  }
+
+  getValue() {
+    return {
+      field: this.current,
+      value: this.fields.get(this.current)!.getValue(),
+    };
   }
 }
 
 export function createDefaultStateForMessage(msg: Type): MessageState {
-  const fields:  Map<string, State> = new Map();
+  const fields: Map<string, State> = new Map();
 
   for (const field of msg.fieldsArray) {
+    if (!field.partOf) {
+      fields.set(field.name, createDefaultStateForField(field));
+    }
+  }
+
+  const oneOfs: Map<string, OneOfState> = new Map();
+
+  for (const oneOf of msg.oneofsArray) {
+    oneOfs.set(oneOf.name, createDefaultStateForOneOf(oneOf));
+  }
+
+  return new MessageState(fields, oneOfs);
+}
+
+export function createDefaultStateForOneOf(oneOf: protobuf.OneOf): OneOfState {
+  const fields: Map<string, State> = new Map();
+
+  for (const field of oneOf.fieldsArray) {
     fields.set(field.name, createDefaultStateForField(field));
   }
 
-  return new MessageState(fields);
+  return new OneOfState(fields, oneOf.fieldsArray[0].name); // TODO what if oneof has 0 fields?
 }
 
 function createDefaultStateForField(field: Field): State {

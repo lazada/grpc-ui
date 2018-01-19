@@ -16,7 +16,7 @@ interface Props {
   level: number;
 }
 
-function renderInput({ field, state, level, onChange }: Props): JSX.Element {
+export function renderInput({ field, state, level, onChange }: Props): JSX.Element {
   if (field.resolvedType instanceof Type) {
     if (!(state instanceof MessageState)) {
       throw new Error('Internal error');
