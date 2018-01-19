@@ -20,6 +20,6 @@ export default class MockAdapter implements Adapter {
   }
 
   runMethod(addr: string, method: protobuf.Method, data: any): Promise<{}> {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 }
